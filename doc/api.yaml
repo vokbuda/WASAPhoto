@@ -52,11 +52,45 @@ components:
       description: |-
         The request had been executed without login
   schemas:
-    Username:
-      title: username
-      description: unique username chosen by user
-      type: string
-      example: Username1
+  #below u see a data for another accounts
+  # there must be a different one for accounts inside
+    DataAccountUpdated:
+      title: user's account
+      description: represents user's account modifications
+      type: object
+      properties:
+        entity:
+          description: entity which is represented by user,
+          enum: ["username","password","avatar"]
+          example: "username"
+      example:
+        {
+          entity: account,
+          status: had been deleted
+        }
+        
+    DataAccountUpdate:
+      title: account update
+      description: represents request body for account update
+      type: object
+      properties:
+        entity:
+          description: data which can be update by user
+          enum: ["username","password","avatar"]
+          example: "username"
+        newValue:
+          description: new value for a component user wants change
+          type: string
+          #can be a binary string and then u can check data inside
+          
+          
+      example:
+        {
+          entity: username,
+          newValue: somenickname
+        }
+  
+    
       
     offset:
       title: offset
@@ -64,21 +98,23 @@ components:
       type: integer
       minimum: 0
       example: 10
-    Password:
-      title: password
-      description: Password will be used by user to execute authentication
-      type: string
-      minLength: 8
-      maxLength: 16
-      pattern: '^.*?$'
-      example: This is my password inside
+      
+    #data below we can remove from our account in openapi
+    #Password:
+    #  title: password
+    #  description: Password will be used by user to execute authentication
+    #  type: string
+    #  minLength: 8
+    #  maxLength: 16
+    #  pattern: '^.*?$'
+    #  example: 3I87XnRTj1*G
       #adjust pattern above
       
-    Avatar:
-      title: avatar
-      type: string
-      format: binary
-      description: Logo which can be associated with profile
+    #Avatar:
+    #  title: avatar
+    #  type: string
+    #  format: binary
+    #  description: Logo which can be associated with profile
     Like:
       title: Like
       description: Like entity
@@ -97,11 +133,17 @@ components:
           type: string
           enum: ["comment","post"]
           example: "comment"
+        status:
+          description: Type of operation
+          type: string
+          enum: ["added","removed"]
+          example: "added"
       example:
         {
           idLiked: 2,
           idUser: 1,
-          type: "comment"
+          type: "comment",
+          status: "added"
         }
     Dislike:
       title: Dislike
@@ -121,11 +163,17 @@ components:
           type: string
           enum: ["comment","post"]
           example: "comment"
+        status:
+          description: Type of operation
+          type: string
+          enum: ["added","removed"]
+          example: "added" 
       example:
         {
           idLiked: 2,
           idUser: 1,
-          type: "comment"
+          type: "comment",
+          status: "added"
         }
     banUser:
       title: ban user
@@ -140,10 +188,16 @@ components:
           description: Id of banned user
           type: integer
           example: 7
+        status:
+          description: type of operation
+          enum: ["added","deleted"]
+          type: string
+          example: added
       example:
         {
           banningUser: 2,
-          bannedUser: 1
+          bannedUser: 1,
+          status: added
         }
           
     Subscription:
@@ -159,10 +213,18 @@ components:
           description: Id of user who is following
           type: integer
           example: 5
+          
+        status:
+          description: Status of entity
+          enum: ["added","removed"]
+          type: string
+          example: removed
+          
       example:
         {
           followedUserId: 2,
-          followingUserId: 1
+          followingUserId: 1,
+          status: "added"
         }
     Post:
       title: Post
@@ -196,20 +258,27 @@ components:
           pattern: '(^[0-9]{1,3}\.[0-9]{1}k$)|(^[0-9]{1,3}\.[0-9]{1}m$)|(^[0-9]{1,3}$)|(^[0-9]{1,3}k$)|(^[0-9]{1,3}m$)'
           minLength: 1
           maxLength: 6
+        operation:
+          description: type operation executed by a user
+          type: string
+          enum: ["created","removed","updated","ok"]
       example:
         {
           postid: 2,
           text: This is some post inside,
           quantitylikes: '1k',
-          quantityDislikes: '2.3k'
-          
+          quantityDislikes: '2.3k',
+          operation: created
         }
-        
     Comment:
       title: Comment
       description: represents a single comment
       type: object
       properties:
+        postid:
+          description: Unique identifier of post which comment is related to
+          type: integer
+          example: 2
         commentid:
           description: Unique comment identifier
           type: integer
@@ -228,7 +297,6 @@ components:
           pattern: '(^[0-9]{1,3}\.[0-9]{1}k$)|(^[0-9]{1,3}\.[0-9]{1}m$)|(^[0-9]{1,3}$)|(^[0-9]{1,3}k$)|(^[0-9]{1,3}m$)'
           minLength: 1
           maxLength: 6
-          
         quantityDislikes: 
           description: dislikes quantity related to current comment
           type: string
@@ -236,10 +304,19 @@ components:
           pattern: '(^[0-9]{1,3}\.[0-9]{1}k$)|(^[0-9]{1,3}\.[0-9]{1}m$)|(^[0-9]{1,3}$)|(^[0-9]{1,3}k$)|(^[0-9]{1,3}m$)'
           minLength: 1
           maxLength: 6
-        postid:
-          description: Unique identifier of post which comment is related to
-          type: integer
-          example: 2
+        operation:
+          description: type operation executed by a user
+          type: string
+          enum: ["created","removed","updated","ok"]
+      example:
+        {
+          postid: 3,
+          commentid: 2,
+          text: This is some comment inside,
+          quantitylikes: '1k',
+          quantityDislikes: '2.3k',
+          operation: deleted
+        }
     Profile:
       title: Profile
       description: User represented as an object
@@ -264,7 +341,7 @@ components:
         password:
           description: password to enter inside application
           type: string
-          example: somepassword
+          example: "*zafgz3lU341"
           pattern: '^.*?$'
           minLength: 8
           maxLength: 16
@@ -275,6 +352,30 @@ components:
           pattern: '(^[0-9]{1,3}\.[0-9]{1}k$)|(^[0-9]{1,3}\.[0-9]{1}m$)|(^[0-9]{1,3}$)|(^[0-9]{1,3}k$)|(^[0-9]{1,3}m$)'
           minLength: 1
           maxLength: 6
+        quantitySubscriptions:
+          description: number of users current user subscribed to
+          type: string
+          example: "2k"
+          pattern: '(^[0-9]{1,3}\.[0-9]{1}k$)|(^[0-9]{1,3}\.[0-9]{1}m$)|(^[0-9]{1,3}$)|(^[0-9]{1,3}k$)|(^[0-9]{1,3}m$)'
+          minLength: 1
+          maxLength: 6
+          
+        status:
+          description: status of representation
+          type: string
+          enum: ["created","deleted","ok"]
+          example: created
+          
+      example:
+        {
+          avatar: "binary string",
+          userid: 1,
+          username: 'User1',
+          quantitySubscribers: '2.3k',
+          quantitySubscriptions: '34m',
+          status: deleted
+        }
+      
           
 #there are some paths inside which u can check below          
 paths:
@@ -314,7 +415,7 @@ paths:
       operationId: getUserProfile
       tags:
         - User
-      summary: show information about user
+      summary: show user and all posts related to current user
       description: |-
         Return information about current user from a database
       responses:
@@ -347,14 +448,14 @@ paths:
       #      schema:
       #        $ref: '#/components/schemas/Pet'
       responses:
-        "201":
+        "200":
           description: Post created successfully
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Post" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
-        "404": { description: Posgt is not found }
+        "404": { description: Post is not found }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles/me/{postid}:
     parameters:
@@ -368,7 +469,7 @@ paths:
         Removes a post with a photo using the properties in the request body.
         The server will remove a photo
       responses:
-        "204":
+        "200":
           description: Post had been deleted
           content:
             application/json:
@@ -393,7 +494,7 @@ paths:
       #      schema:
       #        $ref: '#/components/schemas/Pet'
       responses:
-        "204":
+        "200":
           description: Post had been deleted
           content:
             application/json:
@@ -419,6 +520,7 @@ paths:
           description: Posts of another user had been retrieved
           content:
             application/json:
+            #this is must be an array and we should return array data for certain profile
               schema: { $ref: "#/components/schemas/Profile" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -436,6 +538,16 @@ paths:
       description: |-
         Add pair user(who will have subscriptions)-user(subscriber) into database,
         if there is no pair created in that way
+        
+        
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+            #u must implement some scheme below for getting better results
+              $ref: '#/components/schemas/Subscription'
+        
       #requestBody:
       #  description: Optional description in *Markdown*
       #  required: true
@@ -462,7 +574,7 @@ paths:
         Remove pair user(who will has subscriptions)-user(subscriber) from database,
         if there is a pair
       responses:
-        "204":
+        "200":
           description: Subscription had been removed
           content:
             application/json:
@@ -507,7 +619,7 @@ paths:
       description: |-
         Removes like related to post
       responses:
-        "204":
+        "200":
           description: Like had been removed from photo
           content:
             application/json:
@@ -525,6 +637,14 @@ paths:
       summary: puts dislike on post
       description: |-
         adding a dislike to the collection of dislikes
+      requestBody:
+        required: true
+        content:
+          application/json:
+          #there must be token inside of request, with userid
+            schema:
+              $ref: '#/components/schemas/Dislike'
+        
       #requestBody:
       #  description: Optional description in *Markdown*
       #  required: true
@@ -551,7 +671,7 @@ paths:
           Removes like related to post
       
       responses:
-        "204":
+        "200":
           description: Dislike had been removed to the photo
           content:
             application/json:
@@ -574,7 +694,12 @@ paths:
           description: Comments had been retrieved
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Subscription" }
+              schema:
+                type: array
+                minItems: 0
+                maxItems: 10
+                description: Posts in reverse order taken by offset equal 10
+                items: { $ref: "#/components/schemas/Comment" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { description: Post is not found }
@@ -590,15 +715,16 @@ paths:
       summary: create a comment under Photo
       description: |-
         Create a comment under photo
-      #requestBody:
-      #  description: Optional description in *Markdown*
-      #  required: true
-      #  content:
-      #    application/json:
-      #      schema:
-      #        $ref: '#/components/schemas/Pet'
+      requestBody:
+        description: Needed to create some comment under the post
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
       responses:
         "200":
+        
           description: Comments had been retrieved
           content:
             application/json:
@@ -613,13 +739,13 @@ paths:
       summary: update a comment created before
       description: |-
         Update a comment under photoPost
-      #requestBody:
-      #  description: Optional description in *Markdown*
-      #  required: true
-      #  content:
-      #    application/json:
-      #      schema:
-      #        $ref: '#/components/schemas/Pet'
+      requestBody:
+        description: Needed to update comment under some post
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
       responses:
         "200":
           description: Comment had been updated
@@ -640,7 +766,7 @@ paths:
       
         
       responses:
-        "204":
+        "200":
           description: Comment is removed successfully
           content:
             application/json:
@@ -648,7 +774,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /profiles/{userid}/banuser:
+  /profiles/me/account/banuser/{userid}:
   
     parameters:
       - $ref: "#/components/parameters/userid"
@@ -667,6 +793,14 @@ paths:
       #    application/json:
       #      schema:
       #        $ref: '#/components/schemas/Pet'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataAccountUpdate" }
+      
+      
+      
       responses:
         "201":
           description: Entity for banning had been created
@@ -686,7 +820,7 @@ paths:
         after that operation banned user can see posts of userBans
       
       responses:
-        "204":
+        "200":
           description: Entity for banning had been deleted
           content:
             application/json:
@@ -715,19 +849,17 @@ paths:
   
     
         
-  /profiles/me/settings/changePassword:
+  /profiles/me/account/changePassword:
     patch:
       operationId: changePassword
       tags:
       - Account
       summary: Modifies password of user
-      #requestBody:
-      #  description: Optional description in *Markdown*
-      #  required: true
-      #  content:
-      #    application/json:
-      #      schema:
-      #        $ref: '#/components/schemas/Pet'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataAccountUpdate" }
          
       description: |-
         Changes user's password
@@ -736,11 +868,11 @@ paths:
           description: user password had been changed successfully
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Password" }
+              schema: { $ref: "#/components/schemas/DataAccountUpdated" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /profiles/me/settings/changeAvatar:
+  /profiles/me/account/changeAvatar:
     patch:
       operationId: changeAvatar
       tags:
@@ -748,24 +880,21 @@ paths:
       summary: Changes avatar of user
       description: |-
         Changes user's avatar
-        
-      #requestBody:
-      #  description: Optional description in *Markdown*
-      #  required: true
-      #  content:
-      #    application/json:
-      #      schema:
-      #        $ref: '#/components/schemas/Pet'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/DataAccountUpdate" }
       responses:
         "200":
           description: user's avatar had been changed successfully
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Avatar" }
+              schema: { $ref: "#/components/schemas/DataAccountUpdated" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /profiles/me/settings/deleteAccount:
+  /profiles/me/account/deleteAccount:
     delete:
       operationId: deleteAccount
       tags:
@@ -774,15 +903,15 @@ paths:
       description: |-
         Delete account from application
       responses:
-        "204":
+        "200":
           description: user's profile had been deleted successfully
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/Profile" }
+              schema: { $ref: "#/components/schemas/DataAccountUpdated" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /profiles/me/settings/changeUsername:
+  /profiles/me/account/changeUsername:
     patch:
       tags:
       - Account
@@ -792,15 +921,16 @@ paths:
         Update a username using a new one in a request body.
         The server will update a username with a new one
       requestBody:
+        required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/Username" }
+            schema: { $ref: "#/components/schemas/DataAccountUpdate" }
       responses:
         "200":
           description: username had been modified successfully
           content: 
             application/json:
-              schema: { $ref: "#/components/schemas/Username" }
+              schema: { $ref: "#/components/schemas/DataAccountUpdated" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
