@@ -719,6 +719,62 @@ components:
           
 #there are some paths inside which u can check below          
 paths:
+  /session:
+    post:
+      tags: ["login"]
+      summary: Logs in the user
+      description: |-
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              description: this is a request body for login execution
+              type: object
+              properties:
+                name:
+                  description: This is a username of person
+                  type: string
+                  example: check
+                  pattern: '^.*?$'
+                  minLength: 3
+                  maxLength: 16
+                password:
+                  description: this is a password for login execution
+                  type: string 
+                  pattern: '^.*?$'
+                  minLength: 3
+                  maxLength: 16
+              example:
+                {
+                  name: "username",
+                  password: "password"
+                }
+                
+        required: true
+      responses:
+        '201':
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    type: string
+                    example: "somedata inside"
+                    pattern: '^.*?$'
+                    minLength: 3
+                    maxLength: 16
+                example:
+                  {
+                    identifier: ebala
+                  }
+
   /posts:
     get:
       operationId: getMyStream
@@ -766,6 +822,7 @@ paths:
           content:
             application/json:
               schema:
+                description: returns list of profiles in reverse order
                 type: array
                 minItems: 0
                 maxItems: 10
@@ -789,6 +846,7 @@ paths:
           content:
             application/json:
               schema:
+                description: returns list of post to read in reverse order
                 type: array
                 minItems: 0
                 maxItems: 10
@@ -897,9 +955,9 @@ paths:
       - $ref: "#/components/parameters/userid"
     get:
       tags:
-        - Posts
-      operationId: listPostUser
-      summary: list all posts related to userid
+        - Account
+      operationId: show Account info
+      summary: shows all information related to certain account
       description: |-
         Show all posts of current user inside of application
       
@@ -1182,10 +1240,9 @@ paths:
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
-  /posts/{postid}/comments/{commentid}/like/{userid}:
+  /posts/{postid}/comments/{commentid}/like:
     parameters:
       - $ref: "#/components/parameters/postid"
-      - $ref: "#/components/parameters/userid"
       - $ref: "#/components/parameters/commentid"
     post:
       operationId: likeComment
@@ -1228,10 +1285,9 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /posts/{postid}/comments/{commentid}/dislike/{userid}:
+  /posts/{postid}/comments/{commentid}/dislike:
     parameters:
       - $ref: "#/components/parameters/postid"
-      - $ref: "#/components/parameters/userid"
       - $ref: "#/components/parameters/commentid"
     post:
       operationId: dislikeComment
@@ -1328,6 +1384,33 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
+  /profiles/me/banuser:
+    get:
+      operationId: bannedUsers
+      tags:
+      - Account
+      summary: shows list of banned users
+      
+         
+      description: |-
+        Shows list of banned users by current one
+      responses:
+        "200":
+          description: list of banned users returned
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                maxItems: 10
+                description: Profiles blocked some time ago
+                items: { $ref: "#/components/schemas/Profile" }
+          
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
+        "403": { $ref: "#/components/responses/ForbiddenRequest" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
+    
         
   # i am not sure if the method below should exist
 
@@ -1440,14 +1523,4 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-    
-  
-        
-        
-                
-          
-        
-      
-      
-
   
