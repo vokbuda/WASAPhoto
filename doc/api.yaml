@@ -70,6 +70,10 @@ components:
     UnauthorizedRequest:
       description: |-
         The request had been executed without login
+    NotFound:
+      description: |-
+        Component is not found
+      
   schemas:
     LoginRequest:
       description: this is a request body for login execution
@@ -903,7 +907,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
-        "404": { description: Post is not found }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles/me/posts/{postid}:
     parameters:
@@ -926,7 +930,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
-        "404": { description: Post is not found }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     put:
       operationId: modifyPhoto
@@ -952,7 +956,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
-        "404": { description: Post is not found }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
   /profiles/{userid}:
@@ -976,7 +980,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
-        "404": { description: User is not found }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles/{userid}/subscribe:
     parameters:
@@ -1016,7 +1020,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
-        "404": { description: User is not found }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
       operationId: unfollowUser
@@ -1037,7 +1041,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
-        "404": { description: User is not found }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
   /posts/{postid}/like:
@@ -1164,7 +1168,7 @@ paths:
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
-        "404": { description: Post is not found }
+        "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /posts/{postid}/comments/{commentid}:
     parameters:
