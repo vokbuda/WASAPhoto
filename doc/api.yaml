@@ -5,11 +5,26 @@ info:
   version: 1.0.0
 servers:
   - url: http://localhost:3000
-
+tags:
+  - name: Search
+    description: Searhing users inside of database
+  - name: Stream
+    description: feed of authenticated user
+  - name: User
+    description: all information related to authenticated user
+  - name: Posts
+    description: everything related to the post entity
+  - name: Profiles
+    description: everything related to subscriptions
+  - name: Comments
+    description: everything related to comments
+  - name: Account
+    description: everything related to account's management
 components:
   parameters:
     userid:
       schema:
+        description: unique id related to user
         type: integer
         example: 1
         readOnly: true
@@ -19,6 +34,7 @@ components:
       description: User ID
     postid:
       schema:
+        description: unique id related to the post
         type: integer
         example: 1
         readOnly: true
@@ -28,6 +44,7 @@ components:
       description: Post ID
     commentid:
       schema:
+        description: unique id related to the comment
         type: integer
         example: 1
         readOnly: true
@@ -52,8 +69,6 @@ components:
       description: |-
         The request had been executed without login
   schemas:
-  #below u see a data for another accounts
-  # there must be a different one for accounts inside
     DataAccountUpdated:
       title: user's account
       description: represents user's account modifications
@@ -65,7 +80,7 @@ components:
           example: "username"
         operation:
           description: operation executed by user
-          enum: ['had been changed','had been removed']
+          enum: ['changed','removed']
           example: 'changed'
       example:
         {
@@ -90,6 +105,8 @@ components:
           description: new value for a component user wants change
           type: string
           example: newusername
+          minLength: 3
+          maxLength: 255
           #can be a binary string and then u can check data inside
       example:
         {
@@ -385,6 +402,8 @@ components:
         text:
           description: Text related to post
           type: string
+          minLength: 0
+          maxLength: 255
           example: I had been create the first post
         image:
           description: image related to post
@@ -429,6 +448,8 @@ components:
         text:
           description: Text related to post
           type: string
+          minLength: 0
+          maxLength: 255
           example: I had been create the first post
         image:
           description: image related to post
@@ -460,6 +481,8 @@ components:
         text:
           description: Text related to post
           type: string
+          minLength: 0
+          maxLength: 255
           example: I had been create the first post
         image:
           description: image related to post
@@ -484,6 +507,9 @@ components:
           format: date-time
           description: Creation post date and time
           example: "2022-11-20T08:30:00Z"
+          minLength: 21
+          maxLength: 21
+          
       example:
         {
           postid: 2,
@@ -538,6 +564,8 @@ components:
           format: date-time
           description: Creation post date and time
           example: "2022-11-20T08:30:00Z"
+          minLength: 21
+          maxLength: 21
       example:
         {
           postid: 3,
@@ -620,6 +648,8 @@ components:
           format: date-time
           description: last change related to comment
           example: "2022-11-20T08:30:00Z"
+          minLength: 21
+          maxLength: 21
         
       example:
         {
@@ -1341,7 +1371,7 @@ paths:
       description: |-
         Delete account from application
       responses:
-        "204":
+        204:
           description:  user's profile had been deleted successfully.
 #        "200":
 #          description: user's profile had been deleted successfully
