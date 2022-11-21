@@ -1045,9 +1045,10 @@ paths:
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /posts/{postid}/like:
+  /posts/{postid}/like/{userid}:
     parameters:
       - $ref: "#/components/parameters/postid"
+      - $ref: "#/components/parameters/userid"
     post:
       operationId: likePhoto
       tags:
@@ -1089,9 +1090,10 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /posts/{postid}/dislike:
+  /posts/{postid}/dislike/{userid}:
     parameters:
       - $ref: "#/components/parameters/postid"
+      - $ref: "#/components/parameters/userid"
     post:
       operationId: dislikePostAdd
       tags:
@@ -1250,10 +1252,11 @@ paths:
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
-  /posts/{postid}/comments/{commentid}/like:
+  /posts/{postid}/comments/{commentid}/like/{userid}:
     parameters:
       - $ref: "#/components/parameters/postid"
       - $ref: "#/components/parameters/commentid"
+      - $ref: "#/components/parameters/userid"
     post:
       operationId: likeComment
       tags:
@@ -1295,10 +1298,11 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /posts/{postid}/comments/{commentid}/dislike:
+  /posts/{postid}/comments/{commentid}/dislike/{userid}:
     parameters:
       - $ref: "#/components/parameters/postid"
       - $ref: "#/components/parameters/commentid"
+      - $ref: "#/components/parameters/userid"
     post:
       operationId: dislikeComment
       tags:
