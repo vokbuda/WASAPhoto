@@ -92,7 +92,8 @@ components:
           pattern: '^.*?$'
           minLength: 3
           maxLength: 16
-          example:
+          example: somepasswo
+      example:
             {
               name: "username",
               password: "password"
@@ -126,7 +127,7 @@ components:
       example:
         {
           entity: username,
-          status: had been changed
+          operation: changed
         }
         
     DataAccountUpdate:
