@@ -20,6 +20,8 @@ tags:
     description: everything related to comments
   - name: Account
     description: everything related to account's management
+  - name: Login
+    description: login user
 components:
   parameters:
     userid:
@@ -69,6 +71,41 @@ components:
       description: |-
         The request had been executed without login
   schemas:
+    LoginRequest:
+      description: this is a request body for login execution
+      type: object
+      properties:
+        name:
+          description: This is a username of person
+          type: string
+          example: check
+          pattern: '^.*?$'
+          minLength: 3
+          maxLength: 16
+        password:
+          description: this is a password for login execution
+          type: string 
+          pattern: '^.*?$'
+          minLength: 3
+          maxLength: 16
+          example:
+            {
+              name: "username",
+              password: "password"
+            }
+    LoginResponse:
+      type: object
+      properties:
+        identifier:
+          type: string
+          example: "somedata inside"
+          pattern: '^.*?$'
+          minLength: 3
+          maxLength: 16
+      example:
+        {
+          identifier: ebala
+        }
     DataAccountUpdated:
       title: user's account
       description: represents user's account modifications
@@ -721,7 +758,8 @@ components:
 paths:
   /session:
     post:
-      tags: ["login"]
+      tags:
+      - Login
       summary: Logs in the user
       description: |-
         If the user does not exist, it will be created,
@@ -732,48 +770,15 @@ paths:
         description: User details
         content:
           application/json:
-            schema:
-              description: this is a request body for login execution
-              type: object
-              properties:
-                name:
-                  description: This is a username of person
-                  type: string
-                  example: check
-                  pattern: '^.*?$'
-                  minLength: 3
-                  maxLength: 16
-                password:
-                  description: this is a password for login execution
-                  type: string 
-                  pattern: '^.*?$'
-                  minLength: 3
-                  maxLength: 16
-              example:
-                {
-                  name: "username",
-                  password: "password"
-                }
-                
+            schema: { $ref: "#/components/schemas/LoginRequest" }
         required: true
       responses:
         '201':
           description: User log-in action successful
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  identifier:
-                    type: string
-                    example: "somedata inside"
-                    pattern: '^.*?$'
-                    minLength: 3
-                    maxLength: 16
-                example:
-                  {
-                    identifier: ebala
-                  }
+              schema: { $ref: "#/components/schemas/LoginResponse" }
+                
 
   /posts:
     get:
@@ -1166,7 +1171,7 @@ paths:
       - $ref: "#/components/parameters/postid"
       - $ref: "#/components/parameters/commentid"
     post:
-      operationId: commentPost
+      operationId: commentPhoto
       tags:
       - Comments
       summary: create a comment under Photo
@@ -1248,7 +1253,7 @@ paths:
       operationId: likeComment
       tags:
         - Comments
-      summary: puts like on comment
+      summary: adding a like in collections of likes under related comment
       description: |-
         Add like to collections of likes related to comment
       requestBody:
@@ -1293,9 +1298,9 @@ paths:
       operationId: dislikeComment
       tags:
         - Comments
-      summary: puts dislike on comment
+      summary: add dislike on comment
       description: |-
-        Add like to collections of likes related to comment
+        Add dislike to collections of dislikes related to comment
       requestBody:
         description: request to add like on comment
         required: true
@@ -1319,7 +1324,7 @@ paths:
         - Comments
       summary: removes like from the post
       description: |-
-        Removes like related to post
+        Removing dislike related to post
       responses:
         "204":
           description: Like had been removed from photo
@@ -1340,8 +1345,7 @@ paths:
       - Account
       summary: ban User without giving possibility to see posts
       description: |-
-        Add a pair (userBans, userBanned) inside of a database
-        after that operation banned user can't see posts of userBans
+        addition banned user to collection of banned users by a certain one
       #requestBody:
       #  description: Optional description in *Markdown*
       #  required: true
