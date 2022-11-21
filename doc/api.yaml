@@ -106,7 +106,8 @@ components:
           type: string
           example: newusername
           minLength: 3
-          maxLength: 255
+          maxLength: 1000000
+          pattern: '^.*?$'
           #can be a binary string and then u can check data inside
       example:
         {
@@ -450,11 +451,14 @@ components:
           type: string
           minLength: 0
           maxLength: 255
+          pattern: '^.*?$'
           example: I had been create the first post
         image:
           description: image related to post
           type: string
           format: binary
+          minLength: 0
+          maxLength: 100000
         operation:
           description: type operation executed by a user
           type: string
@@ -507,8 +511,8 @@ components:
           format: date-time
           description: Creation post date and time
           example: "2022-11-20T08:30:00Z"
-          minLength: 21
-          maxLength: 21
+          minLength: 20
+          maxLength: 20
           
       example:
         {
@@ -564,8 +568,8 @@ components:
           format: date-time
           description: Creation post date and time
           example: "2022-11-20T08:30:00Z"
-          minLength: 21
-          maxLength: 21
+          minLength: 20
+          maxLength: 20
       example:
         {
           postid: 3,
@@ -648,8 +652,8 @@ components:
           format: date-time
           description: last change related to comment
           example: "2022-11-20T08:30:00Z"
-          minLength: 21
-          maxLength: 21
+          minLength: 20
+          maxLength: 20
         
       example:
         {
@@ -742,7 +746,10 @@ paths:
                 items: { $ref: "#/components/schemas/PostRead" }
           
           #above u see some component w  
+          
+        
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles:
@@ -763,6 +770,10 @@ paths:
                 minItems: 0
                 maxItems: 10
                 items: { $ref: "#/components/schemas/Profile" }
+        "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
+        "403": { $ref: "#/components/responses/ForbiddenRequest" }
+        "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles/me:
   #this component is for getting user inside of list
     get:
@@ -783,6 +794,7 @@ paths:
                 maxItems: 10
                 items: { $ref: "#/components/schemas/PostRead" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles/me/posts:
@@ -800,6 +812,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/Profile" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     post:
@@ -825,6 +838,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/PostChanged" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { description: Post is not found }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -847,6 +861,7 @@ paths:
 #            application/json:
 #              schema: { $ref: "#/components/schemas/PostChanged" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { description: Post is not found }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -872,6 +887,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/PostChanged" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { description: Post is not found }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -895,6 +911,7 @@ paths:
             #this is must be an array and we should return array data for certain profile
               schema: { $ref: "#/components/schemas/Profile" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { description: User is not found }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -934,6 +951,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/SubscribedToUser" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { description: User is not found }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -954,6 +972,7 @@ paths:
 #            application/json:
 #              schema: { $ref: "#/components/schemas/SubscribedToUser" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { description: User is not found }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -983,6 +1002,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/PostLiked" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
@@ -999,6 +1019,7 @@ paths:
 #            application/json:
 #              schema: { $ref: "#/components/schemas/PostLiked" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /posts/{postid}/dislike:
@@ -1034,6 +1055,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/PostDisliked" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
@@ -1053,6 +1075,7 @@ paths:
         #    application/json:
         #      schema: { $ref: "#/components/schemas/PostDisliked" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /posts/{postid}/comments:
@@ -1077,6 +1100,7 @@ paths:
                 description: Comments in reverse order taken by offset equal 10
                 items: { $ref: "#/components/schemas/CommentRead" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { description: Post is not found }
         "500": { $ref: "#/components/responses/InternalServerError" }
@@ -1105,6 +1129,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/CommentChanged" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     put:
@@ -1132,6 +1157,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/CommentChanged" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
       
@@ -1153,6 +1179,7 @@ paths:
         #    application/json:
         #      schema: { $ref: "#/components/schemas/CommentChanged" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
@@ -1182,6 +1209,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/CommentLiked" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
@@ -1198,6 +1226,7 @@ paths:
 #            application/json:
 #              schema: { $ref: "#/components/schemas/PostLiked" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /posts/{postid}/comments/{commentid}/dislike/{userid}:
@@ -1226,6 +1255,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/CommentDisliked" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
@@ -1242,6 +1272,7 @@ paths:
 #            application/json:
 #              schema: { $ref: "#/components/schemas/PostLiked" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles/me/account/banuser/{userid}:
@@ -1275,6 +1306,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/userBanChanged" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     delete:
@@ -1294,6 +1326,7 @@ paths:
 #            application/json:
 #              schema: { $ref: "#/components/schemas/userBanChanged" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
         
@@ -1338,6 +1371,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/DataAccountUpdated" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles/me/account/changeAvatar:
@@ -1360,6 +1394,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/DataAccountUpdated" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles/me/account/deleteAccount:
@@ -1379,6 +1414,7 @@ paths:
 #            application/json:
 #              schema: { $ref: "#/components/schemas/DataAccountUpdated" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
   /profiles/me/account/changeUsername:
@@ -1402,6 +1438,7 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/DataAccountUpdated" }
         "400": { $ref: "#/components/responses/BadRequest" }
+        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
     
