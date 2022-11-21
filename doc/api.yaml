@@ -69,41 +69,6 @@ components:
       description: |-
         The request had been executed without login
   schemas:
-    LoginRequest:
-      description: this is a request body for login execution
-      type: object
-      properties:
-        name:
-          description: This is a username of person
-          type: string
-          example: check
-          pattern: '^.*?$'
-          minLength: 3
-          maxLength: 16
-        password:
-          description: this is a password for login execution
-          type: string 
-          pattern: '^.*?$'
-          minLength: 3
-          maxLength: 16
-          example:
-            {
-              name: "username",
-              password: "password"
-            }
-    LoginResponse:
-      type: object
-      properties:
-        identifier:
-          type: string
-          example: "somedata inside"
-          pattern: '^.*?$'
-          minLength: 3
-          maxLength: 16
-      example:
-        {
-          identifier: ebala
-        }
     DataAccountUpdated:
       title: user's account
       description: represents user's account modifications
@@ -767,15 +732,48 @@ paths:
         description: User details
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/LoginRequest" }
+            schema:
+              description: this is a request body for login execution
+              type: object
+              properties:
+                name:
+                  description: This is a username of person
+                  type: string
+                  example: check
+                  pattern: '^.*?$'
+                  minLength: 3
+                  maxLength: 16
+                password:
+                  description: this is a password for login execution
+                  type: string 
+                  pattern: '^.*?$'
+                  minLength: 3
+                  maxLength: 16
+              example:
+                {
+                  name: "username",
+                  password: "password"
+                }
+                
         required: true
       responses:
         '201':
           description: User log-in action successful
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/LoginResponse" }
-                
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    type: string
+                    example: "somedata inside"
+                    pattern: '^.*?$'
+                    minLength: 3
+                    maxLength: 16
+                example:
+                  {
+                    identifier: ebala
+                  }
 
   /posts:
     get:
