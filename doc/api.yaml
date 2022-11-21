@@ -977,10 +977,9 @@ paths:
         "404": { description: User is not found }
         "500": { $ref: "#/components/responses/InternalServerError" }
   
-  /posts/{postid}/like/{userid}:
+  /posts/{postid}/like:
     parameters:
       - $ref: "#/components/parameters/postid"
-      - $ref: "#/components/parameters/userid"
     post:
       operationId: likePhoto
       tags:
@@ -1275,7 +1274,7 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /profiles/me/account/banuser/{userid}:
+  /profiles/me/banuser/{userid}:
   
     parameters:
       - $ref: "#/components/parameters/userid"
@@ -1350,7 +1349,7 @@ paths:
   
     
         
-  /profiles/me/account/changePassword:
+  /profiles/me/changePassword:
     patch:
       operationId: changePassword
       tags:
@@ -1374,7 +1373,7 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /profiles/me/account/changeAvatar:
+  /profiles/me/changeAvatar:
     patch:
       operationId: changeAvatar
       tags:
@@ -1397,7 +1396,7 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /profiles/me/account/deleteAccount:
+  /profiles/me/deleteAccount:
     delete:
       operationId: deleteAccount
       tags:
@@ -1417,7 +1416,7 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /profiles/me/account/changeUsername:
+  /profiles/me/changeUsername:
     patch:
       tags:
       - Account
