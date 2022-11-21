@@ -789,7 +789,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PostToChange'
       responses:
-        "200":
+        "201":
           description: Post created successfully
           content:
             application/json:
@@ -898,7 +898,7 @@ paths:
       #      schema:
       #        $ref: '#/components/schemas/Pet'
       responses:
-        "200":
+        "201":
           description: Subscription had been executed
           content:
             application/json:
@@ -947,7 +947,7 @@ paths:
             schema:
               $ref: '#/components/schemas/LikeToPost'
       responses:
-        "200":
+        "201":
           description: Like had been added to the post
           content:
             application/json:
@@ -998,7 +998,7 @@ paths:
       #      schema:
       #        $ref: '#/components/schemas/Pet'
       responses:
-        "200":
+        "201":
           description: Dislike had been added to collections of dislikes under the photo
           content:
             application/json:
@@ -1069,8 +1069,8 @@ paths:
             schema:
               $ref: '#/components/schemas/CommentToChange'
       responses:
-        "200":
-          description: Comment had been retrieved
+        "201":
+          description: Comment had been created
           content:
             application/json:
               schema: { $ref: "#/components/schemas/CommentChanged" }
@@ -1146,7 +1146,7 @@ paths:
             schema:
               $ref: '#/components/schemas/LikeToComment'
       responses:
-        "200":
+        "201":
           description: Like had been added to comment
           content:
             application/json:
@@ -1157,13 +1157,13 @@ paths:
     delete:
       operationId: unlikeComment
       tags:
-        - Posts
+        - Comments
       summary: removes like from the post
       description: |-
         Removes like related to post
       responses:
         "204":
-          description: Like had been removed from photo
+          description: Like had been deleted from collection of likes from relative photo
 #          content:
 #            application/json:
 #              schema: { $ref: "#/components/schemas/PostLiked" }
@@ -1190,8 +1190,8 @@ paths:
             schema:
               $ref: '#/components/schemas/DislikeToComment'
       responses:
-        "200":
-          description: Like had been added to comment
+        "201":
+          description: Dislike had been added to collections of dislikes for relative comment
           content:
             application/json:
               schema: { $ref: "#/components/schemas/CommentDisliked" }
@@ -1201,7 +1201,7 @@ paths:
     delete:
       operationId: undislikeComment
       tags:
-        - Posts
+        - Comments
       summary: removes like from the post
       description: |-
         Removes like related to post
@@ -1341,7 +1341,7 @@ paths:
       description: |-
         Delete account from application
       responses:
-        204:
+        "204":
           description:  user's profile had been deleted successfully.
 #        "200":
 #          description: user's profile had been deleted successfully
