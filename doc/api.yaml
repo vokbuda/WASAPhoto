@@ -22,7 +22,22 @@ tags:
     description: everything related to account's management
   - name: Login
     description: login user
+security:
+  - BasicAuth:
+      - read
+      - write  
+  - BearerAuth:
+      - read
+      - write
+
 components:
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    BearerAuth:
+      type: http
+      scheme: bearer
   parameters:
     userid:
       schema:
@@ -100,8 +115,10 @@ components:
             }
     LoginResponse:
       type: object
+      description: response in case if user logged in
       properties:
         identifier:
+          description: identifier of user which is needed to identify user when logged in
           type: string
           example: "somedata inside"
           pattern: '^.*?$'
@@ -768,6 +785,8 @@ paths:
       tags:
       - Stream
       summary: get latest available photos in a stream
+      security:
+        - BearerAuth: [read]
       description: |-
         Return current profile page with posts on that one
       parameters:
@@ -824,6 +843,8 @@ paths:
       operationId: getUserProfile
       tags:
         - User
+      security:
+        - BasicAuth: [read]
       summary: show user information
       description: |-
         Return information about current user from a database
@@ -868,6 +889,8 @@ paths:
       description: |-
         Create a post with a photo using the properties in the request body.
         The server will add photo to server
+      security:
+        - BearerAuth: [write]
       requestBody:
         description: Request for photo Upload
         required: true
@@ -892,6 +915,8 @@ paths:
       - $ref: "#/components/parameters/postid"
     delete:
       operationId: deletePhoto
+      security:
+        - BearerAuth: [write]
       tags:
         - User
       summary: delete a picture/post from profile
@@ -966,6 +991,8 @@ paths:
       operationId: followUser
       tags:
       - Profiles
+      security:
+        - BearerAuth: [write]
       summary: follow user if not followed yet
       description: |-
         Add pair user(who will have subscriptions)-user(subscriber) into database,
@@ -1002,6 +1029,8 @@ paths:
       operationId: unfollowUser
       tags:
       - Profiles
+      security:
+        - BearerAuth: [write]
       summary: unfollow user if he had been followed before
       description: |-
         Remove pair user(who will has subscriptions)-user(subscriber) from database,
@@ -1026,6 +1055,8 @@ paths:
       - $ref: "#/components/parameters/userid"
     post:
       operationId: likePhoto
+      security:
+        - BearerAuth: [write]
       tags:
         - Posts
       summary: puts like on post
@@ -1052,6 +1083,8 @@ paths:
       operationId: unlikePhoto
       tags:
         - Posts
+      security:
+        - BearerAuth: [write]
       summary: removes like from the post
       description: |-
         Removes like related to post
@@ -1156,6 +1189,8 @@ paths:
       operationId: commentPhoto
       tags:
       - Comments
+      security:
+        - BearerAuth: [write]
       summary: create a comment under Photo
       description: |-
         Create a comment under photo
@@ -1207,6 +1242,8 @@ paths:
       
     delete:
       operationId: uncommentPhoto
+      security:
+        - BearerAuth: [write]
       tags:
       - Comments
       summary: removes a comment under Photo
@@ -1330,13 +1367,8 @@ paths:
       summary: ban User without giving possibility to see posts
       description: |-
         addition banned user to collection of banned users by a certain one
-      #requestBody:
-      #  description: Optional description in *Markdown*
-      #  required: true
-      #  content:
-      #    application/json:
-      #      schema:
-      #        $ref: '#/components/schemas/Pet'
+      security:
+        - BearerAuth: [write]
       requestBody:
         required: true
         content:
@@ -1356,6 +1388,8 @@ paths:
       operationId: unbanUser
       tags:
         - Account
+      security:
+        - BearerAuth: [write]
       summary: unban User and give possibility to see posts
       description: |-
         Removes a pair (userBans, userBanned) from a database
@@ -1491,11 +1525,13 @@ paths:
     patch:
       tags:
       - Account
-      operationId: setMyUsername
+      operationId: setMyUserName
       summary: update current username related to current userprofile
       description: |-
         Update a username using a new one in a request body.
         The server will update a username with a new one
+      security:
+        - BearerAuth: [write]
       requestBody:
         required: true
         content:
