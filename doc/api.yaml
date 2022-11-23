@@ -23,12 +23,8 @@ tags:
   - name: Login
     description: login user
 security:
-  - BasicAuth:
-      - read
-      - write  
-  - BearerAuth:
-      - read
-      - write
+  - BasicAuth: []
+  - BearerAuth: []
 
 components:
   securitySchemes:
@@ -38,6 +34,7 @@ components:
     BearerAuth:
       type: http
       scheme: bearer
+      bearerFormat: JWT
   parameters:
     userid:
       schema:
@@ -786,7 +783,7 @@ paths:
       - Stream
       summary: get latest available photos in a stream
       security:
-        - BearerAuth: [read]
+        - BearerAuth: []
       description: |-
         Return current profile page with posts on that one
       parameters:
@@ -844,7 +841,7 @@ paths:
       tags:
         - User
       security:
-        - BasicAuth: [read]
+        - BasicAuth: []
       summary: show user information
       description: |-
         Return information about current user from a database
@@ -890,7 +887,7 @@ paths:
         Create a post with a photo using the properties in the request body.
         The server will add photo to server
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       requestBody:
         description: Request for photo Upload
         required: true
@@ -916,7 +913,7 @@ paths:
     delete:
       operationId: deletePhoto
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       tags:
         - User
       summary: delete a picture/post from profile
@@ -992,7 +989,7 @@ paths:
       tags:
       - Profiles
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       summary: follow user if not followed yet
       description: |-
         Add pair user(who will have subscriptions)-user(subscriber) into database,
@@ -1030,7 +1027,7 @@ paths:
       tags:
       - Profiles
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       summary: unfollow user if he had been followed before
       description: |-
         Remove pair user(who will has subscriptions)-user(subscriber) from database,
@@ -1056,7 +1053,7 @@ paths:
     post:
       operationId: likePhoto
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       tags:
         - Posts
       summary: puts like on post
@@ -1084,7 +1081,7 @@ paths:
       tags:
         - Posts
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       summary: removes like from the post
       description: |-
         Removes like related to post
@@ -1190,7 +1187,7 @@ paths:
       tags:
       - Comments
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       summary: create a comment under Photo
       description: |-
         Create a comment under photo
@@ -1243,7 +1240,7 @@ paths:
     delete:
       operationId: uncommentPhoto
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       tags:
       - Comments
       summary: removes a comment under Photo
@@ -1368,7 +1365,7 @@ paths:
       description: |-
         addition banned user to collection of banned users by a certain one
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       requestBody:
         required: true
         content:
@@ -1389,7 +1386,7 @@ paths:
       tags:
         - Account
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       summary: unban User and give possibility to see posts
       description: |-
         Removes a pair (userBans, userBanned) from a database
@@ -1531,7 +1528,7 @@ paths:
         Update a username using a new one in a request body.
         The server will update a username with a new one
       security:
-        - BearerAuth: [write]
+        - BearerAuth: []
       requestBody:
         required: true
         content:
