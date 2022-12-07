@@ -8,6 +8,7 @@ func (db *appdbimpl) ListFountains() ([]Fountain, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	defer func() { _ = rows.Close() }()
 
 	// Here we read the resultset and we build the list to be returned

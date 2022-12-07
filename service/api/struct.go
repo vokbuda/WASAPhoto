@@ -16,6 +16,79 @@ type Fountain struct {
 	Longitude float64 `json:"longitude"`
 	Status    string  `json:"status"`
 }
+type PostCreate struct {
+	Postid   uint64 `json:"postid"`
+	Authorid uint64 `json:"authorid"`
+	Text     string `json:"text"`
+	Image    string `json:"image"`
+}
+
+type DataAccountUpdate struct {
+	Userid   uint64 `json:"userid"`
+	Entity   uint64 `json:"entity"`
+	NewValue string `json:"newValue"`
+}
+type DataAccountUpdated struct {
+	Entity   uint64 `json:"entity"`
+	NewValue string `json:"newValue"`
+}
+
+type BanningUser struct {
+	BanningUser uint64 `json:"banningUser"`
+	BannedUser  uint64 `json:"bannedUser"`
+}
+
+type PostToChange struct {
+	Postid uint64 `json:"postid"`
+	Text   string `json:"text"`
+	Image  string `json:"image"`
+}
+type CommentToCreate struct {
+	CommentId uint64 `json:"commentid"`
+	PostId    uint64 `json:"postid"`
+	Text      string `json:"text"`
+	Authorid  uint64 `json:"authorid"`
+}
+
+type CommentToChange struct {
+	CommentId uint64 `json:"commentid"`
+	PostId    uint64 `json:"postid"`
+	Text      string `json:"text"`
+}
+type CommentToDelete struct {
+	CommentId uint64 `json:"commentid"`
+	PostId    uint64 `json:"postid"`
+}
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type SessionUser struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Image    string `json:"image"`
+}
+
+type Subscription struct {
+	FollowedUserId  uint64 `json:"followedUserId"`
+	FollowingUserId uint64 `json:"followingUserId"`
+}
+type RequestEmotionToPost struct {
+	IdPostEmotion uint64 `json:"idPostEmotion"`
+	IdUser        uint64 `json:"idUser"`
+}
+type RequestEmotionToComment struct {
+	IdPost           uint64 `json:"idPost"`
+	IdCommentEmotion uint64 `json:"idCommentEmotion"`
+	IdUser           uint64 `json:"idUser"`
+}
+type CommentToUpdate struct {
+	CommentId uint64 `json:"CommentId"`
+	PostId    uint64 `json:"PostId"`
+	Authorid  uint64 `json:"authorId"`
+	text      string `text:"text"`
+}
 
 // FromDatabase populates the struct with data from the database, overwriting all values.
 // You might think this is code duplication, which is correct. However, it's "good" code duplication because it allows
@@ -32,6 +105,15 @@ func (f *Fountain) FromDatabase(fountain database.Fountain) {
 	f.Status = fountain.Status
 }
 
+/*
+func (p *Profile) profileToDatabase() database.Profile{
+	return database.Profile{
+		Username: p.username,
+		Avatar: p.Avatar,
+		QuantitySubscribers: p.QuantitySubscribers,
+		QuantitySubscriptions: p.QuantitySubscriptions,
+	}
+}*/
 // ToDatabase returns the fountain in a database-compatible representation
 func (f *Fountain) ToDatabase() database.Fountain {
 	return database.Fountain{

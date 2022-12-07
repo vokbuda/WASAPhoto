@@ -37,6 +37,14 @@ import (
 )
 
 var ErrFountainDoesNotExist = errors.New("fountain does not exist")
+var ErrPostDoesNotExist = errors.New("post doesn't exist")
+var ErrCommentDoesNotExist = errors.New("comment doesn't exist")
+var ErrLikePostDoesNotExist = errors.New("like post doesn't exist")
+var ErrDislikePostDoesNotExist = errors.New("dislike post doesn't exist")
+var ErrLikeCommentDoesNotExist = errors.New("like comment doesn't exist")
+var ErrDislikeCommentDoesNotExist = errors.New("dislike comment doesn't exist")
+
+// then when it is necessary check for the rest of components inside of your data
 
 // Fountain struct represent a fountain in every API call between this package and the outside world.
 // Note that the internal representation of fountain in the database might be different.
@@ -47,8 +55,78 @@ type Fountain struct {
 	Status    string
 }
 
+// adjust post component below and check for re
+type Post struct {
+	ID         uint64 `json:"postid"`
+	Text       string `json:"text"`
+	Image      string `json:"image"`
+	Authorid   uint64 `json:"authorid"`
+	LastChange string `json:"lastChange"`
+}
+type Comment struct {
+	Postid           uint64 `json:"postid"`
+	Commentid        uint64 `json:"commentid"`
+	Text             string `json:"text"`
+	QuantityLikes    string `json:"quantityLikes"`
+	QuantityDislikes string `json:"quantityDislikes"`
+	LastChange       string `json:"lastChange"`
+	Authorid         string `json:"authorid"`
+}
+type Profile struct {
+	Userid                uint64 `json:"userid"`
+	Username              string `json:"username"`
+	Avatar                string `json:"avatar"`
+	QuantitySubscribers   string `json:"quantitySubscribers"`
+	QuantitySubscriptions string `json:"quantitySubscriptions"`
+}
+
+//after all u should implement all
+//that entities inside of your url handlers and check the final result inside of your database
+
 // AppDatabase is the high level interface for the DB
+
 type AppDatabase interface {
+	// UpdatePost(Post) (string, error) is equaivalent of updatepost my profile check for the values inside of your component
+
+	GetBannedUsers(userid uint64, offset uint64) ([]Profile, error)
+	BanUser(banninguserid uint64, banneduserid uint64) error
+	UnbanUser(banninguserid uint64, banneduserid uint64) error
+	UserSearch(searchedData string, offset uint64) ([]Profile, error)
+	GetMyStream(userid uint64, offset uint64) ([]Post, error)
+	// then implement data for getting current stream inside
+	GetMyProfile(userid uint64) (Profile, error)
+	GetMyProfilePosts(userid uint64, offset uint64) ([]Post, error)
+
+	//below u see data for update current post and then implement it inside of your component
+	CreateMyProfilePost(text string, image string, authorid uint64) error
+	UpdateMyProfilePost(postid uint64, text string, image string) error
+	DeleteMyProfilePost(postid uint64) error
+	AddLikePost(idPostLiked uint64, idUserLiked uint64) error
+	DeleteLikePost(idPostLiked uint64, idUserLiked uint64) error
+	AddDislikePost(idPostDisliked uint64, idUserDislike uint64) error
+	DeleteDislikePost(idPostDisliked uint64, idUserDislike uint64) error
+	FollowUser(idFolloweduser uint64, idFollowingUser uint64) error
+	UnfollowUser(idFolloweduser uint64, idFollowingUser uint64) error
+	GetCommentsRelatedToPost(postid uint64, offset uint64) ([]Comment, error)
+	CreateCommentRelatedToPost(commentText string, authorid uint64, postid uint64) error
+	UpdateCommentRelatedToPost(commentid uint64, postid uint64, authorid uint64, text string) error
+	DeleteCommentRelatedToPost(idForPost uint64, idForComment uint64) error
+
+	// u should implement methods below written inside of your database activity
+
+	AddLikeToCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
+	RemoveLikeFromCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
+	AddDislikeToCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
+	RemoveDislikeFromCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
+
+	ChangeMyPassword(userid uint64, password string) error
+	ChangeMyAvatar(userid uint64, avatar string) error
+	ChangeMyUsername(userid uint64, username string) error
+	DeleteMyAccount(userid uint64) error
+	// below u have component for register different users
+	Session(username string, password string, image string) error
+	// then in case of username u should remove data from current accoutn
+
 	// ListFountains returns the list of fountains with their status
 	ListFountains() ([]Fountain, error)
 
@@ -82,13 +160,16 @@ func New(db *sql.DB) (AppDatabase, error) {
 	// Check if table exists. If not, the database is empty, and we need to create the structure
 	var tableName string
 	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='fountains';`).Scan(&tableName)
+	// below u should create data for your component and check for the rest
+
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE fountains (
     id INTEGER NOT NULL PRIMARY KEY,
     latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL,
     status TEXT NOT NULL
-);`
+	);`
+
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
