@@ -135,7 +135,7 @@ components:
       type: object
       description: response in case if user logged in
       properties:
-        identifier:
+        session:
           description: identifier of user which is needed to identify user when logged in
           type: string
           example: "somedata inside"
@@ -144,7 +144,7 @@ components:
           maxLength: 16
       example:
         {
-          identifier: ebala
+          session: ebala
         }
     DataAccountUpdated:
       title: user's account
@@ -155,18 +155,12 @@ components:
           description: entity which is represented by user
           enum: ["username","password","avatar"]
           example: "username"
-        newValue:
-          description: new value for a component user wants change
-          type: string
-          example: newusername
-          minLength: 3
-          maxLength: 1000000
-          pattern: '^.*?$'
+        
          
       example:
         {
-          entity: username,
-          newValue: something,
+          entity: username
+          
         }
         
     DataAccountUpdate:
@@ -205,23 +199,6 @@ components:
       type: integer
       minimum: 0
       example: 10
-      
-    #data below we can remove from our account in openapi
-    #Password:
-    #  title: password
-    #  description: Password will be used by user to execute authentication
-    #  type: string
-    #  minLength: 8
-    #  maxLength: 16
-    #  pattern: '^.*?$'
-    #  example: 3I87XnRTj1*G
-      #adjust pattern above
-      
-    #Avatar:
-    #  title: avatar
-    #  type: string
-    #  format: binary
-    #  description: Logo which can be associated with profile
     EmotionToPost:
       title: requests emotion on post
       description: requests to put emotion on post
@@ -239,44 +216,6 @@ components:
         {
           idPost: 2,
           idUser: 1,
-        }
-    PostLiked:
-      title: Like post
-      description: Like entity for post
-      type: object
-      properties:
-        idLiked:
-          description: Id of liked post
-          type: integer
-          example: 2
-        idUser:
-          description: Id of user who had been put like
-          type: integer
-          example: 4
-      example:
-        {
-          idLiked: 2,
-          idUser: 1
-
-        }
-    PostDisliked:
-      title: Dislike post
-      description: Dislike entity for post
-      type: object
-      properties:
-        idDisliked:
-          description: Id of disliked post
-          type: integer
-          example: 2
-        idUser:
-          description: Id of user who had been put dislike
-          type: integer
-          example: 4
-         
-      example:
-        {
-          idLiked: 2,
-          idUser: 1
         }
         
     EmotionToComment:
@@ -302,52 +241,7 @@ components:
           idLikedComment: 2,
           idUser: 1
         } 
-    CommentLiked:
-      title: Like comment
-      description: Like entity for comment
-      type: object
-      properties:
-        idPost:
-          description: Id of post related to comment where user had been put his like
-          type: integer
-          example: 2
-        idLikedComment:
-          description: Id of liked entity
-          type: integer
-          example: 2
-        idUser:
-          description: Id of user who had been put like
-          type: integer
-          example: 4
-      example:
-        {
-          idPost: 3,
-          idLikedComment: 2,
-          idUser: 1
-        }
-    CommentDisliked:
-      title: Dislike comment
-      description: Dislike entity for comment
-      type: object
-      properties:
-        idPost:
-          description: Id of post related to comment where user had been put his dislike
-          type: integer
-          example: 2
-        idDisliked:
-          description: Id of liked entity
-          type: integer
-          example: 2
-        idUser:
-          description: Id of user who had been put like
-          type: integer
-          example: 4
-      example:
-        {
-          idPost: 3,
-          idDisLikedComment: 2,
-          idUser: 1
-        }
+        
     banToUser:
       title: ban user
       description: ban user entity
@@ -406,26 +300,6 @@ components:
           followingUserId: 1
         }
       
-          
-    SubscribedToUser:
-      title: subscription
-      description: subscription entity
-      type: object
-      properties:
-        followedUserId:
-          description: Id of user who had been followed by others
-          type: integer
-          example: 4
-        followingUserId:
-          description: Id of user who is following
-          type: integer
-          example: 5
-      example:
-        {
-          followedUserId: 2,
-          followingUserId: 1,
-          
-        }
     PostChanged:
       title: Post
       description: "This object represent a single Post after some operation"
@@ -436,16 +310,6 @@ components:
           type: integer
           example: 1
           readOnly: true
-        text:
-          description: Text related to post
-          type: string
-          minLength: 0
-          maxLength: 255
-          example: I had been create the first post
-        image:
-          description: image related to post
-          type: string
-          format: binary
         quantitylikes:
           description: likes quantity related to current post
           type: string
@@ -461,13 +325,43 @@ components:
           minLength: 1
           maxLength: 6
         
+        
       example:
         {
           postid: 2,
-          text: This is some post inside,
           quantitylikes: '1k',
           quantityDislikes: '2.3k'
         }
+        
+    PostCreated:
+      title: PostCreated
+      description: "This object represents a single Post after operation create"
+      type: object
+      properties:
+        postid:
+          description: Unique post identifier.
+          type: integer
+          example: 1
+          readOnly: true
+      example:
+          {
+            postid: 2
+          }
+    CommentCreated:
+      title: CommentCreated
+      description: "This object represents a single Comment after operation create"
+      type: object
+      properties:
+        commentid:
+          description: Unique comment identifier.
+          type: integer
+          example: 1
+          readOnly: true
+      example:
+          {
+            commentid: 2
+          }
+      
     PostToChange:
       title: Post
       description: "This object represent a single Post after some operation"
@@ -562,13 +456,6 @@ components:
           description: Unique comment identifier
           type: integer
           example: 1
-        text:
-          description: text related to the comment
-          type: string
-          example: I wrote some comment inside
-          pattern: '^.*?$'
-          minLength: 0
-          maxLength: 255
         quantitylikes:
           description: likes quantity related to current comment
           type: string
@@ -585,21 +472,14 @@ components:
           maxLength: 6
        
           
-        lastChange:
-          type: string
-          format: date-time
-          description: Creation post date and time
-          example: "2022-11-20T08:30:00Z"
-          minLength: 20
-          maxLength: 20
+        
       example:
         {
           postid: 3,
           commentid: 2,
-          text: This is some comment inside,
-          quantitylikes: '1k',
+          quantityLikes: '1k',
           quantityDislikes: '2.3k',
-          lastChange: "2022-11-20T08:30:00Z"
+          
         }
     CommentToChange:
       title: Comment request body
@@ -901,11 +781,11 @@ paths:
             schema:
               $ref: '#/components/schemas/PostToChange'
       responses:
-        "201":
-          description: Post created successfully
+        "200":
+          description: Post had been updated
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/PostChanged" }
+              schema: { $ref: "#/components/schemas/PostCreated" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -914,7 +794,6 @@ paths:
   /profiles/{userid}/posts/{postid}:
     parameters:
       - $ref: "#/components/parameters/userid"
-    parameters:
       - $ref: "#/components/parameters/postid"
     delete:
       operationId: deletePhoto
@@ -930,9 +809,6 @@ paths:
       responses:
         "204":
           description: Post had been deleted
-#          content:
-#            application/json:
-#              schema: { $ref: "#/components/schemas/PostChanged" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -987,7 +863,7 @@ paths:
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /profiles/{userid}/subscribe:
+  /profiles/{userid}/subscribe/{userid}:
     parameters:
       - $ref: "#/components/parameters/userid"
     post:
@@ -1018,11 +894,8 @@ paths:
       #      schema:
       #        $ref: '#/components/schemas/Pet'
       responses:
-        "201":
+        "204":
           description: Subscription had been executed
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/SubscribedToUser" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -1041,11 +914,6 @@ paths:
       responses:
         "204":
           description: Subscription had been removed
-#        "200":
-#          description: Subscription had been removed
-#          content:
-#            application/json:
-#              schema: { $ref: "#/components/schemas/SubscribedToUser" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -1073,11 +941,9 @@ paths:
             schema:
               $ref: '#/components/schemas/EmotionToPost'
       responses:
-        "201":
-          description: Like had been added to the post
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/PostLiked" }
+        "204":
+          description: Emotion had been added to the post
+          
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -1129,11 +995,8 @@ paths:
       #      schema:
       #        $ref: '#/components/schemas/Pet'
       responses:
-        "201":
+        "204":
           description: Dislike had been added to collections of dislikes under the photo
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/PostDisliked" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -1205,10 +1068,6 @@ paths:
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "404": { $ref: "#/components/responses/NotFound" }
         "500": { $ref: "#/components/responses/InternalServerError" }
-  /posts/{postid}/comments/{commentid}:
-    parameters:
-      - $ref: "#/components/parameters/postid"
-      - $ref: "#/components/parameters/commentid"
     post:
       operationId: commentPhoto
       tags:
@@ -1226,11 +1085,11 @@ paths:
             schema:
               $ref: '#/components/schemas/CommentToChange'
       responses:
-        "201":
-          description: Comment had been created
+        "200":
+          description: Comment had been updated
           content:
             application/json:
-              schema: { $ref: "#/components/schemas/CommentChanged" }
+              schema: { $ref: "#/components/schemas/CommentCreated" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -1277,12 +1136,7 @@ paths:
         
       responses:
         "204":
-          description: Comment was deleted successfully.
-        #"200":
-        #  description: Comment is removed successfully
-        #  content:
-        #    application/json:
-        #      schema: { $ref: "#/components/schemas/CommentChanged" }
+          description: Comment was deleted successfully
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -1308,11 +1162,8 @@ paths:
             schema:
               $ref: '#/components/schemas/EmotionToComment'
       responses:
-        "201":
+        "204":
           description: Like had been added to comment
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/CommentLiked" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -1327,9 +1178,7 @@ paths:
       responses:
         "204":
           description: Like had been deleted from collection of likes from relative photo
-#          content:
-#            application/json:
-#              schema: { $ref: "#/components/schemas/PostLiked" }
+#          
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
@@ -1354,11 +1203,8 @@ paths:
             schema:
               $ref: '#/components/schemas/EmotionToComment'
       responses:
-        "201":
+        "204":
           description: Dislike had been added to collections of dislikes for relative comment
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/CommentDisliked" }
         "400": { $ref: "#/components/responses/BadRequest" }
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
