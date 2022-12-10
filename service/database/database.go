@@ -1,33 +1,3 @@
-/*
-Package database is the middleware between the app database and the code. All data (de)serialization (save/load) from a
-persistent database are handled here. Database specific logic should never escape this package.
-
-To use this package you need to apply migrations to the database if needed/wanted, connect to it (using the database
-data source name from config), and then initialize an instance of AppDatabase from the DB connection.
-
-For example, this code adds a parameter in `webapi` executable for the database data source name (add it to the
-main.WebAPIConfiguration structure):
-
-	DB struct {
-		Filename string `conf:""`
-	}
-
-This is an example on how to migrate the DB and connect to it:
-
-	// Start Database
-	logger.Println("initializing database support")
-	db, err := sql.Open("sqlite3", "./foo.db")
-	if err != nil {
-		logger.WithError(err).Error("error opening SQLite DB")
-		return fmt.Errorf("opening SQLite: %w", err)
-	}
-	defer func() {
-		logger.Debug("database stopping")
-		_ = db.Close()
-	}()
-
-Then you can initialize the AppDatabase and pass it to the api package.
-*/
 package database
 
 import (
@@ -87,11 +57,6 @@ type SessionData struct {
 	Lastlogin string `json:lastlogin`
 }
 
-//after all u should implement all
-//that entities inside of your url handlers and check the final result inside of your database
-
-// AppDatabase is the high level interface for the DB
-
 type AppDatabase interface {
 	// UpdatePost(Post) (string, error) is equaivalent of updatepost my profile check for the values inside of your component
 
@@ -134,24 +99,12 @@ type AppDatabase interface {
 	Session(username string, password string, bearerToken string) (uint64, string, error)
 	// then in case of username u should remove data from current accoutn
 
-	// ListFountains returns the list of fountains with their status
-	ListFountains() ([]Fountain, error)
 	Auth(token string) error
 	AuthUid(token string) (uint64, error)
 
 	// and then after all implement token inside of your component
 
 	// ListFountainsWithFilter returns the list of fountains with their status, filtered using the specified parameters
-	ListFountainsWithFilter(latitude float64, longitude float64, filterRange float64) ([]Fountain, error)
-
-	// CreateFountain creates a new fountain in the database. It returns an updated Fountain object (with the ID)
-	CreateFountain(Fountain) (Fountain, error)
-
-	// UpdateFountain updates the fountain, replacing every value with those provided in the argument
-	UpdateFountain(Fountain) error
-
-	// DeleteFountain removes the fountain with the given ID
-	DeleteFountain(id uint64) error
 
 	// Ping checks whether the database is available or not (in that case, an error will be returned)
 	Ping() error

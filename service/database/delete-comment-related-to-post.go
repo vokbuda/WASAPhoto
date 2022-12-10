@@ -9,8 +9,11 @@ func (db *appdbimpl) DeleteCommentRelatedToPost(postid uint64, commentid uint64,
 	//comment_text, comment_author, postid
 
 	res, err := db.c.Exec(`delete from comments where postid=? and commentid=? and authorid=?`, postid, commentid, authorid)
-	affected, err := res.RowsAffected()
 	if err != nil {
+		return err
+	}
+	affected, checkerr := res.RowsAffected()
+	if checkerr != nil {
 		return err
 	} else if affected == 0 {
 		// If we didn't delete any row, then the fountain didn't exist

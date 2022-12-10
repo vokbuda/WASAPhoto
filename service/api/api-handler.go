@@ -8,11 +8,6 @@ import (
 func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/profiles/:userid/subscribe/:userid", rt.wrap(rt.followUser))
 
-	rt.router.GET("/fountains/", rt.wrap(rt.listFountains))
-	rt.router.POST("/fountains/", rt.wrap(rt.createFountain))
-	rt.router.PUT("/fountains/:id", rt.wrap(rt.updateFountain))
-	rt.router.DELETE("/fountains/:id", rt.wrap(rt.deleteFountain))
-
 	rt.router.GET("/profiles", rt.wrap(rt.userSearch))
 	rt.router.POST("/session", rt.wrap(rt.session))
 	rt.router.GET("/posts", rt.wrap(rt.getStream))

@@ -4,6 +4,8 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 
@@ -31,8 +33,18 @@ func (rt *_router) createProfilePost(w http.ResponseWriter, r *http.Request,
 	}
 	var postToCreate PostCreate
 	json.NewDecoder(r.Body).Decode(&postToCreate)
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var result = splited[len(splited)-2]
 
-	if postToCreate.Authorid != uid {
+	uidQuery, errParsUserid := strconv.ParseUint(result, 10, 64)
+	if errParsUserid != nil {
+		ctx.Logger.WithError(errParsUserid).Error("userid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if uidQuery != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -42,7 +54,7 @@ func (rt *_router) createProfilePost(w http.ResponseWriter, r *http.Request,
 	// then u should have some data related to comment:::::commentid and postid commenttext and add that data inside of current component
 	// commenttext authorid and postid
 	// text, image, authorid
-	postid, err := rt.db.CreateProfilePost(postToCreate.Text, postToCreate.Image, postToCreate.Authorid)
+	postid, err := rt.db.CreateProfilePost(postToCreate.Text, postToCreate.Image, uidQuery)
 
 	if err != nil {
 
@@ -51,7 +63,6 @@ func (rt *_router) createProfilePost(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
 	var createdPost PostCreated
 	createdPost.Postid = postid
 	_ = json.NewEncoder(w).Encode(createdPost)

@@ -17,10 +17,8 @@ type Fountain struct {
 	Status    string  `json:"status"`
 }
 type PostCreate struct {
-	Postid   uint64 `json:"postid"`
-	Authorid uint64 `json:"authorid"`
-	Text     string `json:"text"`
-	Image    string `json:"image"`
+	Text  string `json:"text"`
+	Image string `json:"image"`
 }
 
 type DataAccountUpdate struct {
