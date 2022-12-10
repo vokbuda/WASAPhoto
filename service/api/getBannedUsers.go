@@ -37,7 +37,7 @@ func (rt *_router) getBannedUsers(w http.ResponseWriter, r *http.Request, ps htt
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	bearerToken := r.Header.Get("Bearer")
+	bearerToken := r.Header.Get("Authorization")
 	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

@@ -26,7 +26,7 @@ func (rt *_router) getCommentsRelatedToPost(w http.ResponseWriter, r *http.Reque
 	var postid = splited[len(splited)-2]
 
 	idPostAssociated, errParsUserid := strconv.ParseUint(postid, 10, 64)
-	bearerToken := r.Header.Get("Bearer")
+	bearerToken := r.Header.Get("Authorization")
 	errAuth := rt.db.Auth(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

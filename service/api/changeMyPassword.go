@@ -25,7 +25,8 @@ func (rt *_router) changePassword(w http.ResponseWriter, r *http.Request, ps htt
 
 	var err error
 
-	bearerToken := r.Header.Get("Bearer")
+	bearerToken := r.Header.Get("Authorization")
+
 	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

@@ -68,7 +68,7 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 
 		_, errorInsertSession := db.c.Exec(`insert into session(token, lastlogin,created, userid) 
 		VALUES (?, strftime('%Y-%m-%d %H-%M-%S','now'), strftime('%Y-%m-%d %H-%M-%S','now'), ?)`,
-			token, lastuid)
+			"Bearer "+token, lastuid)
 
 		if errorInsertSession != nil {
 			return 0, "", err

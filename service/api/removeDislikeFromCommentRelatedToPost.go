@@ -20,7 +20,7 @@ func (rt *_router) removeDislikeFromCommentRelatedToPost(w http.ResponseWriter, 
 	var err error
 
 	var requestEmotionToComment RequestEmotionToComment
-	bearerToken := r.Header.Get("Bearer")
+	bearerToken := r.Header.Get("Authorization")
 	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

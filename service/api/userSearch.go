@@ -15,7 +15,7 @@ import (
 // below u should have component UserSearch
 
 func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	bearerToken := r.Header.Get("Bearer")
+	bearerToken := r.Header.Get("Authorization")
 	errAuth := rt.db.Auth(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

@@ -12,7 +12,7 @@ func (rt *_router) deleteAccount(w http.ResponseWriter, r *http.Request, ps http
 
 	var err error
 
-	bearerToken := r.Header.Get("Bearer")
+	bearerToken := r.Header.Get("Authorization")
 	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

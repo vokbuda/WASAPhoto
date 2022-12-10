@@ -17,7 +17,7 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request,
 
 	var err error
 	// there should be data inside of current componetn
-	bearerToken := r.Header.Get("Bearer")
+	bearerToken := r.Header.Get("Authorization")
 	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
