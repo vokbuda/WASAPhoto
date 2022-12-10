@@ -2,13 +2,16 @@
 package database
 
 // then below u should also change data for your post
-func (db *appdbimpl) DeleteMyProfilePost(postid uint64) error {
-	_, err := db.c.Exec(`delete from posts where postid=?`,
-		postid)
+func (db *appdbimpl) DeleteProfilePost(postid uint64, authorid uint64) error {
+	res, err := db.c.Exec(`delete from posts where postid=? and authorid=?`,
+		postid, authorid)
 
+	affected, err := res.RowsAffected()
 	if err != nil {
 		return err
+	} else if affected == 0 {
+		// If we didn't delete any row, then the fountain didn't exist
+		return ErrNotAuthorized
 	}
-
 	return nil
 }

@@ -4,15 +4,17 @@
 package database
 
 // then below u should also change data for your post
-func (db *appdbimpl) CreateCommentRelatedToPost(commentText string, authorid uint64, postid uint64) error {
+func (db *appdbimpl) CreateCommentRelatedToPost(commentText string, authorid uint64, postid uint64) (uint64, error) {
 	//comment_text, comment_author, postid
 
-	_, err := db.c.Exec(`INSERT INTO comments ( text, authorid, postid ) VALUES (?, ?, ?)`,
+	res, err := db.c.Exec(`INSERT INTO comments ( text, authorid, postid, lastupdate ) VALUES (?, ?, ?, strftime('%Y-%m-%d %H-%M-%S','now'))`,
 		commentText, authorid, postid)
 
+	lastInsertID, err := res.LastInsertId()
+
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return uint64(lastInsertID), nil
 }

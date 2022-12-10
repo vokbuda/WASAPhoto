@@ -6,24 +6,21 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/database"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 //here u should implement your current profile with data inside and then also u should have some data inside another components
 
-func (rt *_router) deleteMyProfilePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) deleteProfilePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var err error
 
-	var myPosts []database.Post
 	var path = r.URL.Path
 	var splited = strings.Split(path, "/")
 	var result = splited[len(splited)-1]
@@ -33,10 +30,17 @@ func (rt *_router) deleteMyProfilePost(w http.ResponseWriter, r *http.Request, p
 		ctx.Logger.WithError(err).Error("userid is not valid")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
+	}
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
 	}
 
-	err = rt.db.DeleteMyProfilePost(uint64(idPostToDelete))
+	err = rt.db.DeleteProfilePost(uint64(idPostToDelete), uid)
 
 	if err != nil {
 
@@ -46,5 +50,6 @@ func (rt *_router) deleteMyProfilePost(w http.ResponseWriter, r *http.Request, p
 	}
 	w.Header().Set("Content-Type", "application/json")
 
-	_ = json.NewEncoder(w).Encode(myPosts)
+	w.WriteHeader(http.StatusNoContent)
+
 }

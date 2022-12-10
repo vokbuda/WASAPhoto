@@ -19,7 +19,24 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request,
 	var err error
 	// there should be data inside of current componetn
 	var subscription Subscription
+
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+
+	}
+
 	json.NewDecoder(r.Body).Decode(&subscription)
+
+	if subscription.FollowingUserId != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
 	// then u should take commentid and postid
 
 	err = rt.db.UnfollowUser(subscription.FollowedUserId, subscription.FollowingUserId)
@@ -32,5 +49,6 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
 
 }

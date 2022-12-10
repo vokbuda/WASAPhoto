@@ -18,12 +18,26 @@ func (rt *_router) createCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var err error
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
+	}
 	var commentToCreate CommentToCreate
 	json.NewDecoder(r.Body).Decode(&commentToCreate)
+
+	if commentToCreate.Authorid != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	// then u should have some data related to comment:::::commentid and postid commenttext and add that data inside of current component
 	// commenttext authorid and postid
-	err = rt.db.CreateCommentRelatedToPost(commentToCreate.Text, commentToCreate.Authorid, commentToCreate.CommentId)
+	commentid, err := rt.db.CreateCommentRelatedToPost(commentToCreate.Text, commentToCreate.Authorid, commentToCreate.CommentId)
 
 	if err != nil {
 
@@ -31,7 +45,10 @@ func (rt *_router) createCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	var commentCreated CommentCreated
+	commentCreated.Commentid = commentid
 
-	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
+	_ = json.NewEncoder(w).Encode(commentCreated)
 
 }

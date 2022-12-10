@@ -18,11 +18,24 @@ import (
 //here u should implement your current profile with data inside and then also u should have some data inside another components
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
-	var err error
-
+	}
 	var banning_user BanningUser
 	json.NewDecoder(r.Body).Decode(&banning_user)
+
+	if banning_user.BanningUser != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
+	var err error
 
 	err = rt.db.BanUser(banning_user.BanningUser, banning_user.BannedUser)
 
@@ -37,6 +50,8 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	// Send the list to the user.
-	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(http.StatusNoContent)
+
 	// _ = json.NewEncoder(w).Encode(myPosts)
 }

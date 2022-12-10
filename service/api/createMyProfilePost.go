@@ -18,17 +18,31 @@ type PostCreation struct {
 
 //here u should implement your current profile with data inside and then also u should have some data inside another components
 
-func (rt *_router) createMyProfilePost(w http.ResponseWriter, r *http.Request,
+func (rt *_router) createProfilePost(w http.ResponseWriter, r *http.Request,
 	ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var err error
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
+	}
 	var postToCreate PostCreate
 	json.NewDecoder(r.Body).Decode(&postToCreate)
+
+	if postToCreate.Authorid != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	// then u can implement that data inside of your component
 	// then u should have some data related to comment:::::commentid and postid commenttext and add that data inside of current component
 	// commenttext authorid and postid
 	// text, image, authorid
-	err = rt.db.CreateMyProfilePost(postToCreate.Text, postToCreate.Image, postToCreate.Authorid)
+	postid, err := rt.db.CreateProfilePost(postToCreate.Text, postToCreate.Image, postToCreate.Authorid)
 
 	if err != nil {
 
@@ -37,6 +51,9 @@ func (rt *_router) createMyProfilePost(w http.ResponseWriter, r *http.Request,
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
+	var createdPost PostCreated
+	createdPost.Postid = postid
+	_ = json.NewEncoder(w).Encode(createdPost)
 
 }

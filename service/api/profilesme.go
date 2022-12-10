@@ -11,7 +11,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) getMyProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var err error
 	var profile database.Profile
 	var userid, errParsUserid = strconv.ParseUint(r.URL.Query().Get("userid"), 10, 64)
@@ -22,7 +22,7 @@ func (rt *_router) getMyProfile(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 
 	}
-	profile, err = rt.db.GetMyProfile(userid)
+	profile, err = rt.db.GetProfile(userid)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("can't list fountains")
@@ -31,4 +31,5 @@ func (rt *_router) getMyProfile(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(profile)
+	w.WriteHeader(http.StatusOK)
 }

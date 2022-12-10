@@ -29,8 +29,7 @@ type DataAccountUpdate struct {
 	NewValue string `json:"newValue"`
 }
 type DataAccountUpdated struct {
-	Entity   uint64 `json:"entity"`
-	NewValue string `json:"newValue"`
+	Entity string `json:"entity"`
 }
 
 type BanningUser struct {
@@ -67,7 +66,10 @@ type LoginRequest struct {
 type SessionUser struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Image    string `json:"image"`
+	Token    string `json:"token"`
+}
+type SessionResponse struct {
+	Session string `json:"session"`
 }
 
 type Subscription struct {
@@ -86,8 +88,25 @@ type RequestEmotionToComment struct {
 type CommentToUpdate struct {
 	CommentId uint64 `json:"CommentId"`
 	PostId    uint64 `json:"PostId"`
-	Authorid  uint64 `json:"authorId"`
 	text      string `text:"text"`
+}
+
+type CommentChanged struct {
+	Postid           uint64 `json:"postid"`
+	Commentid        uint64 `json:"commentid"`
+	QuantityLikes    string `json:"quantityLikes"`
+	QuantityDislikes string `json:"quantityDislikes"`
+}
+type PostChanged struct {
+	Postid           uint64 `json:"postid"`
+	QuantityLikes    string `json:"quantityLikes"`
+	QuantityDislikes string `json:"quantityDislikes"`
+}
+type PostCreated struct {
+	Postid uint64 `json:"postid"`
+}
+type CommentCreated struct {
+	Commentid uint64 `json:"commentid"`
 }
 
 // FromDatabase populates the struct with data from the database, overwriting all values.

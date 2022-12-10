@@ -15,12 +15,25 @@ import (
 )
 
 func (rt *_router) addLikeToCommentRelatedToPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
-	var err error
-
+	}
 	var requestEmotionToComment RequestEmotionToComment
 
 	json.NewDecoder(r.Body).Decode(&requestEmotionToComment)
+
+	if requestEmotionToComment.IdUser != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
+	var err error
 
 	err = rt.db.AddLikeToCommentRelatedToPost(requestEmotionToComment.IdPost,
 		requestEmotionToComment.IdCommentEmotion, requestEmotionToComment.IdUser)
@@ -30,5 +43,6 @@ func (rt *_router) addLikeToCommentRelatedToPost(w http.ResponseWriter, r *http.
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
+
 }

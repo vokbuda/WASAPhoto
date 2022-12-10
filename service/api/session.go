@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
-
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -19,7 +18,19 @@ func (rt *_router) session(w http.ResponseWriter, r *http.Request,
 	// then u should have some data related to comment:::::commentid and postid commenttext and add that data inside of current component
 	// commenttext authorid and postid
 	// text, image, authorid
-	err = rt.db.Session(sessionUser.Username, sessionUser.Password, sessionUser.Image)
+
+	token, err := rt.db.Session(sessionUser.Username, sessionUser.Password, sessionUser.Token)
+	// above u see a token for our user which u can use for client
+	if token == "" {
+		ctx.Logger.WithError(err).Error("it is not possible to login with current data")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+
+	}
+	var sessionResponse SessionResponse
+	sessionResponse.Session = token
+
+	// then below u can implement every component
 
 	if err != nil {
 
@@ -29,6 +40,9 @@ func (rt *_router) session(w http.ResponseWriter, r *http.Request,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	_ = json.NewEncoder(w).Encode(sessionResponse)
+
+	// there should be data for another componenets
 
 	// then u should add responses whatever u need them
 

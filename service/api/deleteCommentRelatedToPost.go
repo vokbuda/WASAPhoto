@@ -19,9 +19,23 @@ func (rt *_router) deleteCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var err error
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
+	}
 	var commentToDelete CommentToDelete
 	json.NewDecoder(r.Body).Decode(&commentToDelete)
+
+	if postToCreate.Authorid != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
 	// then u should take commentid and postid
 
 	err = rt.db.DeleteCommentRelatedToPost(commentToDelete.PostId, commentToDelete.CommentId)
@@ -34,5 +48,6 @@ func (rt *_router) deleteCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
 
 }

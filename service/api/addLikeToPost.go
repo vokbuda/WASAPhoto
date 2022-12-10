@@ -12,9 +12,23 @@ import (
 
 func (rt *_router) addLikePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// The Fountain ID in the path is a 64-bit unsigned integer. Let's parse it.
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
+	}
 	var emotionToPost RequestEmotionToPost
 	json.NewDecoder(r.Body).Decode(&emotionToPost)
+
+	if emotionToPost.IdUser != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
 
 	// then take data from json requestbody
 

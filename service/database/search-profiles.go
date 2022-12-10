@@ -14,11 +14,6 @@ quantitySubscriptions: '30m'
 func (db *appdbimpl) ListProfiles(userid float64, username string,
 	quantitySubscribers string, quantitySubscriptions string) ([]Profile, error) {
 
-	const query = `
-SELECT id, latitude, longitude, status
-FROM fountains
-WHERE ? <= latitude AND latitude <= ? AND ? <= longitude AND longitude <= ?`
-
 	const query_ins = `select *,
 		(select count(subscriberid) from user_subscription 
 		where profiles.userid=user_subscription.userid),
@@ -52,7 +47,7 @@ WHERE ? <= latitude AND latitude <= ? AND ? <= longitude AND longitude <= ?`
 
 	// Issue the query, using the bounding box as filter
 	//here we should have some data inside for returning to the server and checking inside
-	rows, err := db.c.Query(query, offset)
+	rows, err := db.c.Query(query_ins, offset)
 	if err != nil {
 		return nil, err
 	}

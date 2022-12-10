@@ -13,11 +13,27 @@ import (
 )
 
 func (rt *_router) deleteDislikePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+
+	}
+	var requestEmotionPost RequestEmotionToPost
+	json.NewDecoder(r.Body).Decode(&requestEmotionPost)
+
+	if requestEmotionPost.IdUser != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
 	// The Fountain ID in the path is a 64-bit unsigned integer. Let's parse it.
 	var err error
 
-	var requestEmotionPost RequestEmotionToPost
-	json.NewDecoder(r.Body).Decode(&requestEmotionPost)
 	// then u should take commentid and postid
 
 	err = rt.db.DeleteDislikePost(requestEmotionPost.IdPostEmotion, requestEmotionPost.IdUser)
@@ -30,4 +46,5 @@ func (rt *_router) deleteDislikePost(w http.ResponseWriter, r *http.Request, ps 
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
 }

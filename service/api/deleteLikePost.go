@@ -14,8 +14,23 @@ func (rt *_router) deleteLikePost(w http.ResponseWriter, r *http.Request, ps htt
 	// Read the new content for the fountain from the request body.
 	var err error
 
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+
+	}
 	var requestEmotionPost RequestEmotionToPost
 	json.NewDecoder(r.Body).Decode(&requestEmotionPost)
+
+	if requestEmotionPost.IdUser != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
 	// then u should take commentid and postid
 
 	err = rt.db.DeleteLikePost(requestEmotionPost.IdPostEmotion, requestEmotionPost.IdUser)
@@ -28,4 +43,5 @@ func (rt *_router) deleteLikePost(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
 }

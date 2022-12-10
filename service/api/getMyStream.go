@@ -21,7 +21,7 @@ import (
 
 //here u should implement your current profile with data inside and then also u should have some data inside another components
 
-func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	// Parse the query string part. To do that, we need to check whether the latitude, longitude and range exists.
 	// If latitude and longitude are specified, we parse them, and we filter results for them. If range is specified,
@@ -56,7 +56,7 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	myPosts, err = rt.db.GetMyProfilePosts(userid, offset)
+	myPosts, err = rt.db.GetProfilePosts(userid, offset)
 
 	//here u should iterate over values inside of your component
 
@@ -72,31 +72,3 @@ func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httpro
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(myPosts)
 }
-
-/*
-
-rows, err := db.c.Query(`SELECT id, latitude, longitude, status FROM fountains`)
-	if err != nil {
-		return nil, err
-	}
-	defer func() { _ = rows.Close() }()
-
-	// Here we read the resultset and we build the list to be returned
-	for rows.Next() {
-		var f Fountain
-		err = rows.Scan(&f.ID, &f.Latitude, &f.Longitude, &f.Status)
-		if err != nil {
-			return nil, err
-		}
-
-		ret = append(ret, f)
-	}
-	if rows.Err() != nil {
-		return nil, err
-	}
-
-
-
-
-
-*/

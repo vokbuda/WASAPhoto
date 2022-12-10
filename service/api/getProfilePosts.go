@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/database"
@@ -13,13 +14,22 @@ import (
 
 //here u should implement your current profile with data inside and then also u should have some data inside another components
 
-func (rt *_router) getMyProfilePosts(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getProfilePosts(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var err error
 	// in data like that u should take userid from session table and go on
 	var commentsRelatedToPost []database.Post
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var result = splited[len(splited)-2]
 
-	var userid uint64
+	userid, errParsUserid := strconv.ParseUint(result, 10, 64)
+
+	if errParsUserid != nil {
+		ctx.Logger.WithError(err).Error("userid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	var offset, errParsOffset = strconv.ParseUint(r.URL.Query().Get("offset"), 10, 64)
 	if errParsOffset != nil {
@@ -28,7 +38,7 @@ func (rt *_router) getMyProfilePosts(w http.ResponseWriter, r *http.Request, ps 
 		return
 	}
 
-	commentsRelatedToPost, err = rt.db.GetMyProfilePosts(userid, offset)
+	commentsRelatedToPost, err = rt.db.GetProfilePosts(userid, offset)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("can't list your posts")

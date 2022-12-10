@@ -20,12 +20,24 @@ func (rt *_router) updateCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 
 	var err error
 
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+
+	}
+
 	var commentToUpdate CommentToUpdate
 	json.NewDecoder(r.Body).Decode(&commentToUpdate)
+
 	// then u should have some data related to comment:::::commentid and postid commenttext and add that data inside of current component
 	// commenttext authorid and postid
 	// comment id postid authorid and text
-	err = rt.db.UpdateCommentRelatedToPost(commentToUpdate.CommentId, commentToUpdate.PostId, commentToUpdate.Authorid, commentToUpdate.text)
+	err = rt.db.UpdateCommentRelatedToPost(commentToUpdate.CommentId, commentToUpdate.PostId, uid, commentToUpdate.text)
+	var quantityLikes string
+	var quantityDislikes string
 
 	if err != nil {
 
@@ -35,5 +47,12 @@ func (rt *_router) updateCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
+	var commentChanged CommentChanged
+	commentChanged.Commentid = commentToUpdate.CommentId
+	commentChanged.Postid = commentToUpdate.PostId
+	commentChanged.QuantityDislikes = quantityDislikes
+	commentChanged.QuantityLikes = quantityLikes
+	_ = json.NewEncoder(w).Encode(commentChanged)
 
 }

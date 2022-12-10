@@ -43,6 +43,7 @@ var ErrLikePostDoesNotExist = errors.New("like post doesn't exist")
 var ErrDislikePostDoesNotExist = errors.New("dislike post doesn't exist")
 var ErrLikeCommentDoesNotExist = errors.New("like comment doesn't exist")
 var ErrDislikeCommentDoesNotExist = errors.New("dislike comment doesn't exist")
+var ErrNotAuthorized = errors.New("U don't have authorization")
 
 // then when it is necessary check for the rest of components inside of your data
 
@@ -79,6 +80,12 @@ type Profile struct {
 	QuantitySubscribers   string `json:"quantitySubscribers"`
 	QuantitySubscriptions string `json:"quantitySubscriptions"`
 }
+type SessionData struct {
+	Token     string `json:"token"`
+	Userid    uint64 `json:"userid"`
+	Created   string `json:"created"`
+	Lastlogin string `json:lastlogin`
+}
 
 //after all u should implement all
 //that entities inside of your url handlers and check the final result inside of your database
@@ -94,13 +101,13 @@ type AppDatabase interface {
 	UserSearch(searchedData string, offset uint64) ([]Profile, error)
 	GetMyStream(userid uint64, offset uint64) ([]Post, error)
 	// then implement data for getting current stream inside
-	GetMyProfile(userid uint64) (Profile, error)
-	GetMyProfilePosts(userid uint64, offset uint64) ([]Post, error)
+	GetProfile(userid uint64) (Profile, error)
+	GetProfilePosts(userid uint64, offset uint64) ([]Post, error)
 
 	//below u see data for update current post and then implement it inside of your component
-	CreateMyProfilePost(text string, image string, authorid uint64) error
-	UpdateMyProfilePost(postid uint64, text string, image string) error
-	DeleteMyProfilePost(postid uint64) error
+	CreateProfilePost(text string, image string, authorid uint64) (uint64, error)
+	UpdateProfilePost(postid uint64, text string, image string, uid uint64) error
+	DeleteProfilePost(postid uint64, authorid uint64) error
 	AddLikePost(idPostLiked uint64, idUserLiked uint64) error
 	DeleteLikePost(idPostLiked uint64, idUserLiked uint64) error
 	AddDislikePost(idPostDisliked uint64, idUserDislike uint64) error
@@ -108,9 +115,9 @@ type AppDatabase interface {
 	FollowUser(idFolloweduser uint64, idFollowingUser uint64) error
 	UnfollowUser(idFolloweduser uint64, idFollowingUser uint64) error
 	GetCommentsRelatedToPost(postid uint64, offset uint64) ([]Comment, error)
-	CreateCommentRelatedToPost(commentText string, authorid uint64, postid uint64) error
+	CreateCommentRelatedToPost(commentText string, authorid uint64, postid uint64) (uint64, error)
 	UpdateCommentRelatedToPost(commentid uint64, postid uint64, authorid uint64, text string) error
-	DeleteCommentRelatedToPost(idForPost uint64, idForComment uint64) error
+	DeleteCommentRelatedToPost(idForPost uint64, idForComment uint64, authorid uint64) error
 
 	// u should implement methods below written inside of your database activity
 
@@ -119,16 +126,21 @@ type AppDatabase interface {
 	AddDislikeToCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
 	RemoveDislikeFromCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
 
-	ChangeMyPassword(userid uint64, password string) error
-	ChangeMyAvatar(userid uint64, avatar string) error
-	ChangeMyUsername(userid uint64, username string) error
-	DeleteMyAccount(userid uint64) error
+	ChangePassword(userid uint64, password string) error
+	ChangeAvatar(userid uint64, avatar string) error
+	ChangeUsername(userid uint64, username string) error
+	DeleteAccount(userid uint64) error
+
 	// below u have component for register different users
-	Session(username string, password string, image string) error
+	Session(username string, password string, bearerToken string) (string, error)
 	// then in case of username u should remove data from current accoutn
 
 	// ListFountains returns the list of fountains with their status
 	ListFountains() ([]Fountain, error)
+	Auth(token string) error
+	AuthUid(token string) (uint64, error)
+
+	// and then after all implement token inside of your component
 
 	// ListFountainsWithFilter returns the list of fountains with their status, filtered using the specified parameters
 	ListFountainsWithFilter(latitude float64, longitude float64, filterRange float64) ([]Fountain, error)

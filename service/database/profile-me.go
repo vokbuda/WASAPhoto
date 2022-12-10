@@ -13,7 +13,7 @@ quantitySubscriptions: '30m'
 
 */
 
-func (db *appdbimpl) GetMyProfile(userid uint64) (Profile, error) {
+func (db *appdbimpl) GetProfile(userid uint64) (Profile, error) {
 
 	// Here we need to get all fountains inside a given range. One simple solution is to rely on GIS/Spatial functions
 	// from the DB itself. GIS/Spatial functions are those dedicated to geometry/geography/space computation.

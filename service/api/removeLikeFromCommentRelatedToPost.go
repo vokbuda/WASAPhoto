@@ -20,7 +20,23 @@ func (rt *_router) removeLikeFromCommentRelatedToPost(w http.ResponseWriter, r *
 
 	var requestEmotionToComment RequestEmotionToComment
 
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+
+	}
+
 	json.NewDecoder(r.Body).Decode(&requestEmotionToComment)
+
+	if requestEmotionToComment.IdUser != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
 
 	err = rt.db.RemoveLikeFromCommentRelatedToPost(requestEmotionToComment.IdPost,
 		requestEmotionToComment.IdCommentEmotion, requestEmotionToComment.IdUser)
@@ -31,5 +47,6 @@ func (rt *_router) removeLikeFromCommentRelatedToPost(w http.ResponseWriter, r *
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
 
 }

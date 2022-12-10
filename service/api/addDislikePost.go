@@ -16,9 +16,24 @@ import (
 func (rt *_router) addDislikePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	// The Fountain ID in the path is a 64-bit unsigned integer. Let's parse it.
 
-	var requestEmotionPost RequestEmotionToPost
+	// below u have a data to check inside of your component
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
+	}
+	var requestEmotionPost RequestEmotionToPost
 	json.NewDecoder(r.Body).Decode(&requestEmotionPost)
+
+	if requestEmotionPost.IdUser != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
 
 	// in case of some request u should take data and send it on server
 

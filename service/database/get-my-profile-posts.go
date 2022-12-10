@@ -1,7 +1,7 @@
 // then check for data inside of your component
 package database
 
-func (db *appdbimpl) GetMyProfilePosts(userid uint64,
+func (db *appdbimpl) GetProfilePosts(userid uint64,
 	offset uint64) ([]Post, error) {
 
 	const query = `

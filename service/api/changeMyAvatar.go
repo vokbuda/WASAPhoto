@@ -19,14 +19,27 @@ import (
 
 //here u should implement your current profile with data inside and then also u should have some data inside another components
 
-func (rt *_router) changeMyAvatar(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) changeAvatar(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
-	var err error
-
+	}
 	var data_account_update DataAccountUpdate
 	json.NewDecoder(r.Body).Decode(&data_account_update)
 
-	err = rt.db.ChangeMyAvatar(data_account_update.Userid, data_account_update.NewValue)
+	if data_account_update.Userid != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	var err error
+
+	err = rt.db.ChangeAvatar(data_account_update.Userid, data_account_update.NewValue)
 
 	//here u should iterate over values inside of your component
 
@@ -39,6 +52,10 @@ func (rt *_router) changeMyAvatar(w http.ResponseWriter, r *http.Request, ps htt
 	}
 
 	// Send the list to the user.
+
+	var dataAccountUpdated DataAccountUpdated
+	dataAccountUpdated.Entity = "avatar"
+
 	w.Header().Set("Content-Type", "application/json")
-	// _ = json.NewEncoder(w).Encode(myPosts)
+	_ = json.NewEncoder(w).Encode(dataAccountUpdated)
 }

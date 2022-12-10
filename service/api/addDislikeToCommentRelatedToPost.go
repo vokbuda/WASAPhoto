@@ -13,7 +13,6 @@ import (
 	"net/http"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
-	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/database"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -22,11 +21,26 @@ import (
 
 func (rt *_router) addDislikeToCommentRelatedToPost(w http.ResponseWriter, r *http.Request,
 	ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var err error
-	var myPosts []database.Post
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
 
+	}
 	var dislikeToComment RequestEmotionToComment
 	json.NewDecoder(r.Body).Decode(&dislikeToComment)
+
+	if dislikeToComment.IdUser != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
+
+	var err error
+
 	err = rt.db.AddDislikeToCommentRelatedToPost(dislikeToComment.IdPost, dislikeToComment.IdCommentEmotion, dislikeToComment.IdUser)
 
 	if err != nil {
@@ -38,7 +52,8 @@ func (rt *_router) addDislikeToCommentRelatedToPost(w http.ResponseWriter, r *ht
 	}
 
 	// Send the list to the user.
-	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(myPosts)
+
+	w.WriteHeader(http.StatusNoContent)
+
 	// should we have some data which will be returned to the client
 }

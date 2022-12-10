@@ -15,6 +15,14 @@ import (
 // below u should have component UserSearch
 
 func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	bearerToken := r.Header.Get("Bearer")
+	errAuth := rt.db.Auth(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+
+	}
 
 	var err error
 
@@ -39,4 +47,5 @@ func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprou
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(foundUsers)
+	w.WriteHeader(http.StatusOK)
 }

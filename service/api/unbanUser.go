@@ -23,7 +23,24 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	var err error
 
 	var banning_user BanningUser
+
+	bearerToken := r.Header.Get("Bearer")
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+
+	}
+
 	json.NewDecoder(r.Body).Decode(&banning_user)
+
+	if banning_user.BanningUser != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
 
 	err = rt.db.UnbanUser(banning_user.BanningUser, banning_user.BannedUser)
 
@@ -39,5 +56,6 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 
 	// Send the list to the user.
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusNoContent)
 	// _ = json.NewEncoder(w).Encode(myPosts)
 }
