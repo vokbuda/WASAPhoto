@@ -1,16 +1,5 @@
 package database
 
-/*
-these are components which must be in profile user in database::::
-avatar: "binary string",
-userid: 1,
-username: 'User1',
-quantitySubscribers: '2.9k',
-quantitySubscriptions: '30m'
-
-
-*/
-
 func (db *appdbimpl) ListProfiles(userid float64, username string,
 	quantitySubscribers string, quantitySubscriptions string) ([]Profile, error) {
 
