@@ -30,15 +30,11 @@ func (rt *_router) deleteCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	var commentToDelete CommentToDelete
 	json.NewDecoder(r.Body).Decode(&commentToDelete)
 
-	if postToCreate.Authorid != uid {
-		ctx.Logger.WithError(errAuth).Error("not authorized request")
-		w.WriteHeader(http.StatusForbidden)
-		return
-	}
+	// before u should check for data inside of yo
 
 	// then u should take commentid and postid
 
-	err = rt.db.DeleteCommentRelatedToPost(commentToDelete.PostId, commentToDelete.CommentId)
+	err = rt.db.DeleteCommentRelatedToPost(commentToDelete.PostId, commentToDelete.CommentId, uid)
 
 	if err != nil {
 

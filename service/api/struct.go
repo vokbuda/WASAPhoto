@@ -24,8 +24,6 @@ type PostCreate struct {
 }
 
 type DataAccountUpdate struct {
-	Userid   uint64 `json:"userid"`
-	Entity   uint64 `json:"entity"`
 	NewValue string `json:"newValue"`
 }
 type DataAccountUpdated struct {
@@ -70,6 +68,7 @@ type SessionUser struct {
 }
 type SessionResponse struct {
 	Session string `json:"session"`
+	Uid     uint64 `json:"uid"`
 }
 
 type Subscription struct {

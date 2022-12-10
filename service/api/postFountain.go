@@ -13,9 +13,6 @@ type FountainCreated struct {
 	FountainBuilt Fountain `json:"fountainCreated"`
 }
 
-//here u can create fountains and add them to json
-//below must be list of fountains and single fountain struct
-
 // getHelloWorld is an example of HTTP endpoint that returns "Hello world!" as a plain text
 func (rt *_router) postFountain(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	w.Header().Set("content-type", "application/json")

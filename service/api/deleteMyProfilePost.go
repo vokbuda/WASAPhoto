@@ -1,8 +1,3 @@
-//function name inside of your database for checking inside
-
-//below u have name of function to get inside your component and then get certain result
-//updateMyProfilePost
-
 package api
 
 import (
@@ -14,8 +9,6 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 )
-
-//here u should implement your current profile with data inside and then also u should have some data inside another components
 
 func (rt *_router) deleteProfilePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 

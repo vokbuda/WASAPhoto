@@ -34,23 +34,14 @@ func (db *appdbimpl) GetProfile(userid uint64) (Profile, error) {
 
 	row := db.c.QueryRow(query_ins, offset)
 
-	//below u check for errors inside of database
 	switch err := row.Scan(&myProfile.Userid, &myProfile.Username, &myProfile.Avatar,
 		&myProfile.QuantitySubscribers, myProfile.QuantitySubscriptions); err {
 	case sql.ErrNoRows:
 		return Profile{}, err
-
-		//if there are no rows u should return nothing and check for result inside
-
-		//u should log for data inside of your switch
 	case nil:
 		return Profile{}, nil
 	default:
 		panic(err)
 	}
-
-	//defer func() { _ = row.Close() }()
-
-	// Read all fountains in the resultset
 
 }

@@ -19,7 +19,7 @@ func (rt *_router) session(w http.ResponseWriter, r *http.Request,
 	// commenttext authorid and postid
 	// text, image, authorid
 
-	token, err := rt.db.Session(sessionUser.Username, sessionUser.Password, sessionUser.Token)
+	uid, token, err := rt.db.Session(sessionUser.Username, sessionUser.Password, sessionUser.Token)
 	// above u see a token for our user which u can use for client
 	if token == "" {
 		ctx.Logger.WithError(err).Error("it is not possible to login with current data")
@@ -29,6 +29,7 @@ func (rt *_router) session(w http.ResponseWriter, r *http.Request,
 	}
 	var sessionResponse SessionResponse
 	sessionResponse.Session = token
+	sessionResponse.Uid = uid
 
 	// then below u can implement every component
 

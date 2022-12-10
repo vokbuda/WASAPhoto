@@ -104,7 +104,6 @@ type AppDatabase interface {
 	GetProfile(userid uint64) (Profile, error)
 	GetProfilePosts(userid uint64, offset uint64) ([]Post, error)
 
-	//below u see data for update current post and then implement it inside of your component
 	CreateProfilePost(text string, image string, authorid uint64) (uint64, error)
 	UpdateProfilePost(postid uint64, text string, image string, uid uint64) error
 	DeleteProfilePost(postid uint64, authorid uint64) error
@@ -132,7 +131,7 @@ type AppDatabase interface {
 	DeleteAccount(userid uint64) error
 
 	// below u have component for register different users
-	Session(username string, password string, bearerToken string) (string, error)
+	Session(username string, password string, bearerToken string) (uint64, string, error)
 	// then in case of username u should remove data from current accoutn
 
 	// ListFountains returns the list of fountains with their status

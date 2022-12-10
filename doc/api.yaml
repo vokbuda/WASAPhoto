@@ -157,9 +157,15 @@ components:
           pattern: '^.*?$'
           minLength: 3
           maxLength: 16
+        uid:
+          description: Unique user identifier
+          type: integer
+          example: 1
+          readOnly: true
       example:
         {
-          session: ebala
+          session: ebala,
+          uid: 5
         }
     DataAccountUpdated:
       title: user's account
@@ -183,14 +189,6 @@ components:
       description: represents request body for account update
       type: object
       properties:
-        userid:
-          description: userid of user who requests for update
-          type: integer
-          example: 15
-        entity:
-          description: data which can be update by user
-          enum: ["username","password","avatar"]
-          example: "username"
         newValue:
           description: new value for a component user wants change
           type: string
@@ -201,8 +199,6 @@ components:
           #can be a binary string and then u can check data inside
       example:
         {
-          userid: 10,
-          entity: username,
           newValue: somenickname
         }
   

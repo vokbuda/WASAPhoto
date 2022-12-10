@@ -1,8 +1,5 @@
 // addLikeToCommentRelatedToPost
 
-//below u have name of function to get inside your component and then get certain result
-//updateMyProfilePost
-
 package api
 
 import (

@@ -1,9 +1,6 @@
 // banUser
 // then implement the rest of database
 
-//below u have name of function to get inside your component and then get certain result
-//updateMyProfilePost
-
 package api
 
 import (
@@ -14,8 +11,6 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 )
-
-//here u should implement your current profile with data inside and then also u should have some data inside another components
 
 func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	bearerToken := r.Header.Get("Bearer")
@@ -38,8 +33,6 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	var err error
 
 	err = rt.db.BanUser(banning_user.BanningUser, banning_user.BannedUser)
-
-	//here u should iterate over values inside of your component
 
 	if err != nil {
 		// In this case, we have an error on our side. Log the error (so we can be notified) and send a 500 to the user

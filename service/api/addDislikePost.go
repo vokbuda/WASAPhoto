@@ -1,6 +1,3 @@
-//below u should implement data for dislike addition to database
-//addDislikePost
-
 package api
 
 import (

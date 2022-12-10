@@ -2,21 +2,18 @@
 // banUser
 // then implement the rest of database
 
-//below u have name of function to get inside your component and then get certain result
-//updateMyProfilePost
-
 package api
 
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 
 	"github.com/julienschmidt/httprouter"
 )
-
-//here u should implement your current profile with data inside and then also u should have some data inside another components
 
 func (rt *_router) changePassword(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
@@ -36,18 +33,26 @@ func (rt *_router) changePassword(w http.ResponseWriter, r *http.Request, ps htt
 		return
 
 	}
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var result = splited[len(splited)-2]
+
+	uidQuery, errParsUserid := strconv.ParseUint(result, 10, 64)
+	if errParsUserid != nil {
+		ctx.Logger.WithError(errParsUserid).Error("userid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	var data_account_update DataAccountUpdate
 	json.NewDecoder(r.Body).Decode(&data_account_update)
 
-	if data_account_update.Userid != uid {
+	if uidQuery != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
-	err = rt.db.ChangePassword(data_account_update.Userid, data_account_update.NewValue)
-
-	//here u should iterate over values inside of your component
+	err = rt.db.ChangePassword(uidQuery, data_account_update.NewValue)
 
 	if err != nil {
 		// In this case, we have an error on our side. Log the error (so we can be notified) and send a 500 to the user

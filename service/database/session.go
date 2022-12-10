@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func (db *appdbimpl) Session(username string, password string, bearerToken string) (string, error) {
+func (db *appdbimpl) Session(username string, password string, bearerToken string) (uint64, string, error) {
 
 	// then u should also have component for insertion data inside of
 
@@ -42,12 +42,12 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 			username, hash)
 
 		if errorinsertDatabase != nil {
-			return "", errorinsertDatabase
+			return 0, "", errorinsertDatabase
 		}
 
 		lastInsertID, err := res.LastInsertId()
 		if err != nil {
-			return "", err
+			return 0, "", err
 		}
 
 		var lastuid uint64 = uint64(lastInsertID)
@@ -71,15 +71,15 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 			token, lastuid)
 
 		if errorInsertSession != nil {
-			return "", err
+			return 0, "", err
 		}
 
-		return string(token), err
+		return lastuid, string(token), err
 
 	case nil:
-		return "", nil
+		return 0, "", nil
 	default:
-		return bearerToken, nil
+		return 0, bearerToken, nil
 	}
 
 }

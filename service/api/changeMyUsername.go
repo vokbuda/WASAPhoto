@@ -1,24 +1,15 @@
-//changeMyUsername
-
-// changeMyPassword
-// banUser
-// then implement the rest of database
-
-//below u have name of function to get inside your component and then get certain result
-//updateMyProfilePost
-
 package api
 
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 
 	"github.com/julienschmidt/httprouter"
 )
-
-//here u should implement your current profile with data inside and then also u should have some data inside another components
 
 func (rt *_router) changeUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
@@ -34,14 +25,24 @@ func (rt *_router) changeUsername(w http.ResponseWriter, r *http.Request, ps htt
 	}
 	var data_account_update DataAccountUpdate
 	json.NewDecoder(r.Body).Decode(&data_account_update)
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var result = splited[len(splited)-2]
 
-	if data_account_update.Userid != uid {
+	uidQuery, errParsUserid := strconv.ParseUint(result, 10, 64)
+	if errParsUserid != nil {
+		ctx.Logger.WithError(errParsUserid).Error("userid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if uidQuery != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
-	err = rt.db.ChangeUsername(data_account_update.Userid, data_account_update.NewValue)
+	err = rt.db.ChangeUsername(uidQuery, data_account_update.NewValue)
 
 	if err != nil {
 
