@@ -41,9 +41,9 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.POST("/posts/:postid/comments", rt.wrap(rt.createCommentRelatedToPost))
 	rt.router.PUT("/posts/:postid/comments/:commentid", rt.wrap(rt.updateCommentRelatedToPost))
 	rt.router.DELETE("/posts/:postid/comments/:commentid", rt.wrap(rt.deleteCommentRelatedToPost))
-	rt.router.POST("/posts/:postid/comments/:commentid/like/:userid", rt.wrap(rt.addLikeToCommentRelatedToPost))
+	rt.router.PUT("/posts/:postid/comments/:commentid/like/:userid", rt.wrap(rt.addLikeToCommentRelatedToPost))
 	rt.router.DELETE("/posts/:postid/comments/:commentid/like/:userid", rt.wrap(rt.removeLikeFromCommentRelatedToPost))
-	rt.router.POST("/posts/:postid/comments/:commentid/dislike/:userid", rt.wrap(rt.addDislikeToCommentRelatedToPost))
+	rt.router.PUT("/posts/:postid/comments/:commentid/dislike/:userid", rt.wrap(rt.addDislikeToCommentRelatedToPost))
 	rt.router.DELETE("/posts/:postid/comments/:commentid/dislike/:userid", rt.wrap(rt.removeDislikeFromCommentRelatedToPost))
 
 	rt.router.GET("/profiles/:userid", rt.wrap(rt.getProfile))
