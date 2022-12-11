@@ -1,6 +1,8 @@
 package database
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 // then below u should also change data for your post
 func (db *appdbimpl) Auth(token string) error {

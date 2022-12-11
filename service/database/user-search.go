@@ -2,9 +2,9 @@
 package database
 
 func (db *appdbimpl) UserSearch(searchedData string, offset uint64) ([]Profile, error) {
-
-	rows, err := db.c.Query(`select userid,username,image from profiles where username like '%?%' limit 10 offset ?`,
-		searchedData, offset)
+	final_string := "select userid,username,avatar from profiles where username like '%" + searchedData + "%' limit 10 offset ?"
+	rows, err := db.c.Query(final_string,
+		offset)
 
 	var ret []Profile
 
@@ -16,12 +16,14 @@ func (db *appdbimpl) UserSearch(searchedData string, offset uint64) ([]Profile, 
 	// case of different users u should have some data
 
 	for rows.Next() {
+
 		var userProfile Profile
 
 		err = rows.Scan(&userProfile.Userid, &userProfile.Username, &userProfile.Avatar)
 		if err != nil {
 			return nil, err
 		}
+		ret = append(ret, userProfile)
 
 		// Check if the result is inside the circle
 

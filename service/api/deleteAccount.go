@@ -2,6 +2,8 @@ package api
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 
@@ -19,6 +21,23 @@ func (rt *_router) deleteAccount(w http.ResponseWriter, r *http.Request, ps http
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 
+	}
+
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var result = splited[len(splited)-2]
+
+	uidQuery, errParsUserid := strconv.ParseUint(result, 10, 64)
+	if errParsUserid != nil {
+		ctx.Logger.WithError(errParsUserid).Error("userid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	if uidQuery != uid {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusForbidden)
+		return
 	}
 
 	err = rt.db.DeleteAccount(uid)

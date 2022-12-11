@@ -26,12 +26,28 @@ func (rt *_router) getStream(w http.ResponseWriter, r *http.Request, ps httprout
 
 	var err error
 
+	bearerToken := r.Header.Get("Authorization")
+
+	uid, errAuth := rt.db.AuthUid(bearerToken)
+	if errAuth != nil {
+		ctx.Logger.WithError(errAuth).Error("not authorized request")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+
+	}
+
 	var myPosts []database.Post
 
 	var userid, errParsUserid = strconv.ParseUint(r.URL.Query().Get("userid"), 10, 64)
 
 	if errParsUserid != nil {
 		ctx.Logger.WithError(err).Error("userid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
+	if uid != userid {
+		ctx.Logger.WithError(err).Error("passed userid in query is not valid")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 

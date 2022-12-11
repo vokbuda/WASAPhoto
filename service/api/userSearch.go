@@ -37,9 +37,9 @@ func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	foundUsers, err = rt.db.UserSearch(username, offset)
+	foundUsers, findUsersErr := rt.db.UserSearch(username, offset)
 
-	if err != nil {
+	if findUsersErr != nil {
 		ctx.Logger.WithError(err).Error("can't list your posts")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -47,5 +47,5 @@ func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprou
 
 	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewEncoder(w).Encode(foundUsers)
-	w.WriteHeader(http.StatusOK)
+
 }

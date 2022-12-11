@@ -36,13 +36,14 @@ type Post struct {
 	Me         bool   `json:"me"`
 }
 type Comment struct {
-	Postid           uint64 `json:"postid"`
-	Commentid        uint64 `json:"commentid"`
-	Text             string `json:"text"`
-	QuantityLikes    string `json:"quantityLikes"`
-	QuantityDislikes string `json:"quantityDislikes"`
-	LastChange       string `json:"lastChange"`
-	Authorid         string `json:"authorid"`
+	Postid           uint64         `json:"postid"`
+	Commentid        uint64         `json:"commentid"`
+	Text             string         `json:"text"`
+	QuantityLikes    sql.NullString `json:"quantityLikes"`
+	QuantityDislikes sql.NullString `json:"quantityDislikes"`
+	LastChange       string         `json:"lastChange"`
+	Authorid         string         `json:"authorid"`
+	Me               bool           `json:"me"`
 }
 type BannedUser struct {
 	Userid   uint64         `json:"userid"`
@@ -127,6 +128,12 @@ type appdbimpl struct {
 func New(db *sql.DB) (AppDatabase, error) {
 	if db == nil {
 		return nil, errors.New("database is required when building a AppDatabase")
+	}
+	const q = "PRAGMA foreign_keys=ON;"
+	_, errForeignKeys := db.Exec(q)
+	if errForeignKeys != nil {
+		return nil, fmt.Errorf("error creating foreign keys data: %w", errForeignKeys)
+
 	}
 
 	// Check if table exists. If not, the database is empty, and we need to create the structure

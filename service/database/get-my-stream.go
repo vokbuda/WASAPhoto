@@ -4,10 +4,11 @@ package database
 func (db *appdbimpl) GetMyStream(userid uint64,
 	offset uint64) ([]Post, error) {
 
-	const query = `select * from posts where posts.id in (select userid from subscriptions where followerid=?) limit 10 offset ?`
+	const query = `select * from posts where authorid in (select followeduserid from subscriptions where followeruserid=?)
+	 and ? not in(select banneduserid from banusers where banninguserid=authorid) limit 10 offset ?`
 	var ret []Post
 	rows, err := db.c.Query(query,
-		userid, offset)
+		userid, userid, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -16,10 +17,11 @@ func (db *appdbimpl) GetMyStream(userid uint64,
 	// Read all fountains in the resultset
 	for rows.Next() {
 		var f Post
-		err = rows.Scan(&f.ID, &f.Text, &f.Image, &f.Authorid)
+		err = rows.Scan(&f.ID, &f.Text, &f.Image, &f.Authorid, &f.LastChange)
 		if err != nil {
 			return nil, err
 		}
+		ret = append(ret, f)
 
 		// Check if the result is inside the circle
 
