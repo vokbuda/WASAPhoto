@@ -44,6 +44,11 @@ type Comment struct {
 	LastChange       string `json:"lastChange"`
 	Authorid         string `json:"authorid"`
 }
+type BannedUser struct {
+	Userid   uint64         `json:"userid"`
+	Username string         `json:"username"`
+	Avatar   sql.NullString `json:"avatar"`
+}
 type Profile struct {
 	Userid                uint64         `json:"userid"`
 	Username              string         `json:"username"`
@@ -62,7 +67,7 @@ type SessionData struct {
 type AppDatabase interface {
 	// UpdatePost(Post) (string, error) is equaivalent of updatepost my profile check for the values inside of your component
 
-	GetBannedUsers(userid uint64, offset uint64) ([]Profile, error)
+	GetBannedUsers(userid uint64, offset uint64) ([]BannedUser, error)
 	BanUser(banninguserid uint64, banneduserid uint64) error
 	UnbanUser(banninguserid uint64, banneduserid uint64) error
 	UserSearch(searchedData string, offset uint64) ([]Profile, error)

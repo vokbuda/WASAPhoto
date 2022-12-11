@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/database"
@@ -19,16 +20,17 @@ import (
 func (rt *_router) getBannedUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var err error
+	var bannedUsers []database.BannedUser
 
-	var bannedUsers []database.Profile
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var result = splited[len(splited)-2]
 
-	var userid, errParsUserid = strconv.ParseUint(r.URL.Query().Get("userid"), 10, 64)
-
+	uidQuery, errParsUserid := strconv.ParseUint(result, 10, 64)
 	if errParsUserid != nil {
-		ctx.Logger.WithError(err).Error("userid is not valid")
+		ctx.Logger.WithError(errParsUserid).Error("userid is not valid")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
-
 	}
 
 	var offset, errParsOffset = strconv.ParseUint(r.URL.Query().Get("offset"), 10, 64)
@@ -46,14 +48,14 @@ func (rt *_router) getBannedUsers(w http.ResponseWriter, r *http.Request, ps htt
 
 	}
 
-	if userid != uid {
+	if uidQuery != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusForbidden)
 		return
 
 	}
 
-	bannedUsers, err = rt.db.GetBannedUsers(userid, offset)
+	bannedUsers, err = rt.db.GetBannedUsers(uidQuery, offset)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("can't list your posts")

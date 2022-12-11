@@ -2,14 +2,14 @@
 package database
 
 // then below u should also change data for your post
-func (db *appdbimpl) GetBannedUsers(banninguserid uint64, offset uint64) ([]Profile, error) {
+func (db *appdbimpl) GetBannedUsers(banninguserid uint64, offset uint64) ([]BannedUser, error) {
 
-	rows, err := db.c.Query(`select userid,username,image from profiles right join 
+	rows, err := db.c.Query(`select userid,username,avatar from profiles right join 
 	(SELECT banneduserid FROM banusers WHERE banninguserid=?) as foo 
 	on banneduserid=profiles.userid limit 10 offset ?`,
-		banninguserid, offset)
+		banninguserid, offset*10)
 
-	var ret []Profile
+	var ret []BannedUser
 
 	if err != nil {
 		return nil, err
@@ -19,7 +19,7 @@ func (db *appdbimpl) GetBannedUsers(banninguserid uint64, offset uint64) ([]Prof
 	// case of different users u should have some data
 
 	for rows.Next() {
-		var userProfile Profile
+		var userProfile BannedUser
 
 		err = rows.Scan(&userProfile.Userid, &userProfile.Username, &userProfile.Avatar)
 
@@ -27,6 +27,7 @@ func (db *appdbimpl) GetBannedUsers(banninguserid uint64, offset uint64) ([]Prof
 		if err != nil {
 			return nil, err
 		}
+		ret = append(ret, userProfile)
 
 		// Check if the result is inside the circle
 
@@ -36,10 +37,6 @@ func (db *appdbimpl) GetBannedUsers(banninguserid uint64, offset uint64) ([]Prof
 	}
 
 	// below u should have list of us
-
-	if err != nil {
-		return nil, err
-	}
 
 	return ret, nil
 }
