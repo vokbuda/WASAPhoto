@@ -33,6 +33,7 @@ type Post struct {
 	Image      string `json:"image"`
 	Authorid   uint64 `json:"authorid"`
 	LastChange string `json:"lastChange"`
+	Me         bool   `json:"me"`
 }
 type Comment struct {
 	Postid           uint64 `json:"postid"`
@@ -68,7 +69,7 @@ type AppDatabase interface {
 	GetMyStream(userid uint64, offset uint64) ([]Post, error)
 	// then implement data for getting current stream inside
 	GetProfile(userid uint64) (uint64, uint64, Profile, error)
-	GetProfilePosts(userid uint64, offset uint64) ([]Post, error)
+	GetProfilePosts(userid uint64, caller uint64, offset uint64) ([]Post, error)
 
 	CreateProfilePost(text string, image string, authorid uint64) (uint64, error)
 	UpdateProfilePost(postid uint64, text string, image string, uid uint64) (uint64, uint64, error)
