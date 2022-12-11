@@ -4,8 +4,8 @@ package database
 func (db *appdbimpl) AddLikePost(postid uint64, userid uint64) error {
 	//then in case of database u should implement
 
-	_, err := db.c.Exec(`insert into emotions_post(postid, userid, emotion) VALUES (?, ?, ?)`,
-		postid, userid, true)
+	_, err := db.c.Exec(`insert into post_emotion(postid, userid, emotion) VALUES (?, ?, ?)`,
+		postid, userid, 1)
 
 	if err != nil {
 		return err

@@ -29,20 +29,16 @@ type DataAccountUpdated struct {
 }
 
 type BanningUser struct {
-	BanningUser uint64 `json:"banningUser"`
-	BannedUser  uint64 `json:"bannedUser"`
+	BanningUserid uint64 `json:"banningUserid"`
+	BannedUserid  uint64 `json:"bannedUserid"`
 }
 
 type PostToChange struct {
-	Postid uint64 `json:"postid"`
-	Text   string `json:"text"`
-	Image  string `json:"image"`
+	Text  string `json:"text"`
+	Image string `json:"image"`
 }
 type CommentToCreate struct {
-	CommentId uint64 `json:"commentid"`
-	PostId    uint64 `json:"postid"`
-	Text      string `json:"text"`
-	Authorid  uint64 `json:"authorid"`
+	Text string `json:"text"`
 }
 
 type CommentToChange struct {
@@ -83,9 +79,7 @@ type RequestEmotionToComment struct {
 	IdUser           uint64 `json:"idUser"`
 }
 type CommentToUpdate struct {
-	CommentId uint64 `json:"CommentId"`
-	PostId    uint64 `json:"PostId"`
-	text      string `text:"text"`
+	text string `text:"text"`
 }
 
 type CommentChanged struct {

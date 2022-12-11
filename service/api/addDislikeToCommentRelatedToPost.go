@@ -36,7 +36,7 @@ func (rt *_router) addDislikeToCommentRelatedToPost(w http.ResponseWriter, r *ht
 
 	var err error
 
-	err = rt.db.AddDislikeToCommentRelatedToPost(dislikeToComment.IdPost, dislikeToComment.IdCommentEmotion, dislikeToComment.IdUser)
+	err = rt.db.AddDislikeToCommentRelatedToPost(dislikeToComment.IdCommentEmotion, dislikeToComment.IdUser)
 
 	if err != nil {
 		// In this case, we have an error on our side. Log the error (so we can be notified) and send a 500 to the user

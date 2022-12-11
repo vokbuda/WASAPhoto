@@ -15,6 +15,7 @@ func (rt *_router) addDislikePost(w http.ResponseWriter, r *http.Request, ps htt
 
 	// below u have a data to check inside of your component
 	bearerToken := r.Header.Get("Authorization")
+
 	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
@@ -36,7 +37,7 @@ func (rt *_router) addDislikePost(w http.ResponseWriter, r *http.Request, ps htt
 
 	var err error
 
-	err = rt.db.AddDislikePost(requestEmotionPost.IdUser, requestEmotionPost.IdUser)
+	err = rt.db.AddDislikePost(requestEmotionPost.IdPostEmotion, requestEmotionPost.IdUser)
 	// then u should add the same error for emotions inside of backend
 
 	// create additional errors inside of that component

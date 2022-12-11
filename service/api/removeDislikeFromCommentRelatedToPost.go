@@ -38,8 +38,7 @@ func (rt *_router) removeDislikeFromCommentRelatedToPost(w http.ResponseWriter, 
 
 	}
 
-	err = rt.db.RemoveDislikeFromCommentRelatedToPost(requestEmotionToComment.IdPost,
-		requestEmotionToComment.IdCommentEmotion, requestEmotionToComment.IdUser)
+	err = rt.db.RemoveDislikeFromCommentRelatedToPost(requestEmotionToComment.IdCommentEmotion, requestEmotionToComment.IdUser)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("can't remove dislike from comment")

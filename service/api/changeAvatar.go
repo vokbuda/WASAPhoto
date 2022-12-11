@@ -7,7 +7,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -19,12 +18,7 @@ import (
 
 func (rt *_router) changeAvatar(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	bearerToken := r.Header.Get("Authorization")
-	for name, values := range r.Header {
-		// Loop over all values for the name.
-		for _, value := range values {
-			fmt.Println(name, value)
-		}
-	}
+
 	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

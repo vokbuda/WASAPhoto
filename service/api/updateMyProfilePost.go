@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 
@@ -21,6 +23,24 @@ func (rt *_router) updateProfilePost(w http.ResponseWriter, r *http.Request, ps 
 
 	}
 
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var result = splited[len(splited)-1]
+
+	postuidQuery, errParsUserid := strconv.ParseUint(result, 10, 64)
+	if errParsUserid != nil {
+		ctx.Logger.WithError(errParsUserid).Error("postid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	postAuthUid, errorAuthor := rt.db.PostAuthUidCheck(postuidQuery)
+	if errorAuthor != nil || postAuthUid != uid {
+		ctx.Logger.WithError(errParsUserid).Error("Not authorized to modify posts of others")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	var postToChange PostToChange
 	json.NewDecoder(r.Body).Decode(&postToChange)
 
@@ -30,7 +50,9 @@ func (rt *_router) updateProfilePost(w http.ResponseWriter, r *http.Request, ps 
 
 	// then it is possible to update post inside of your current component
 
-	err = rt.db.UpdateProfilePost(postToChange.Postid, postToChange.Text, postToChange.Image, uid)
+	num_likes, num_dislikes, err := rt.db.UpdateProfilePost(postuidQuery, postToChange.Text, postToChange.Image, uid)
+	var likesNum string = rt.adjustNumber(num_likes)
+	var dislikesNum string = rt.adjustNumber(num_dislikes)
 
 	if err != nil {
 
@@ -38,13 +60,12 @@ func (rt *_router) updateProfilePost(w http.ResponseWriter, r *http.Request, ps 
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-	var quantitylikes string
-	var quantitydislikes string
+
 	w.Header().Set("Content-Type", "application/json")
 	var updatedPost PostChanged
-	updatedPost.Postid = postToChange.Postid
-	updatedPost.QuantityDislikes = quantitydislikes
-	updatedPost.QuantityLikes = quantitylikes
+	updatedPost.Postid = postuidQuery
+	updatedPost.QuantityDislikes = likesNum
+	updatedPost.QuantityLikes = dislikesNum
 	_ = json.NewEncoder(w).Encode(updatedPost)
 
 }

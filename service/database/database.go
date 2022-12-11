@@ -44,17 +44,18 @@ type Comment struct {
 	Authorid         string `json:"authorid"`
 }
 type Profile struct {
-	Userid                uint64 `json:"userid"`
-	Username              string `json:"username"`
-	Avatar                string `json:"avatar"`
-	QuantitySubscribers   string `json:"quantitySubscribers"`
-	QuantitySubscriptions string `json:"quantitySubscriptions"`
+	Userid                uint64         `json:"userid"`
+	Username              string         `json:"username"`
+	Avatar                sql.NullString `json:"avatar"`
+	QuantitySubscribers   string         `json:"quantitySubscribers"`
+	QuantitySubscriptions string         `json:"quantitySubscriptions"`
+	Me                    bool           `json:"me"`
 }
 type SessionData struct {
 	Token     string `json:"token"`
 	Userid    uint64 `json:"userid"`
 	Created   string `json:"created"`
-	Lastlogin string `json:lastlogin`
+	Lastlogin string `json:"lastlogin"`
 }
 
 type AppDatabase interface {
@@ -66,11 +67,11 @@ type AppDatabase interface {
 	UserSearch(searchedData string, offset uint64) ([]Profile, error)
 	GetMyStream(userid uint64, offset uint64) ([]Post, error)
 	// then implement data for getting current stream inside
-	GetProfile(userid uint64) (Profile, error)
+	GetProfile(userid uint64) (uint64, uint64, Profile, error)
 	GetProfilePosts(userid uint64, offset uint64) ([]Post, error)
 
 	CreateProfilePost(text string, image string, authorid uint64) (uint64, error)
-	UpdateProfilePost(postid uint64, text string, image string, uid uint64) error
+	UpdateProfilePost(postid uint64, text string, image string, uid uint64) (uint64, uint64, error)
 	DeleteProfilePost(postid uint64, authorid uint64) error
 	AddLikePost(idPostLiked uint64, idUserLiked uint64) error
 	DeleteLikePost(idPostLiked uint64, idUserLiked uint64) error
@@ -80,20 +81,21 @@ type AppDatabase interface {
 	UnfollowUser(idFolloweduser uint64, idFollowingUser uint64) error
 	GetCommentsRelatedToPost(postid uint64, offset uint64) ([]Comment, error)
 	CreateCommentRelatedToPost(commentText string, authorid uint64, postid uint64) (uint64, error)
-	UpdateCommentRelatedToPost(commentid uint64, postid uint64, authorid uint64, text string) error
+	UpdateCommentRelatedToPost(commentid uint64, postid uint64, authorid uint64, text string) (uint64, uint64, error)
 	DeleteCommentRelatedToPost(idForPost uint64, idForComment uint64, authorid uint64) error
 
 	// u should implement methods below written inside of your database activity
 
-	AddLikeToCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
-	RemoveLikeFromCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
-	AddDislikeToCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
-	RemoveDislikeFromCommentRelatedToPost(postid uint64, commentid uint64, userid uint64) error
+	AddLikeToCommentRelatedToPost(commentid uint64, userid uint64) error
+	RemoveLikeFromCommentRelatedToPost(commentid uint64, userid uint64) error
+	AddDislikeToCommentRelatedToPost(commentid uint64, userid uint64) error
+	RemoveDislikeFromCommentRelatedToPost(commentid uint64, userid uint64) error
 
 	ChangePassword(userid uint64, password string) error
 	ChangeAvatar(userid uint64, avatar string) error
 	ChangeUsername(userid uint64, username string) error
 	DeleteAccount(userid uint64) error
+	PostAuthUidCheck(postauthorid uint64) (uint64, error)
 
 	// below u have component for register different users
 	Session(username string, password string, bearerToken string) (uint64, string, error)

@@ -6,6 +6,8 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 
@@ -28,16 +30,21 @@ func (rt *_router) createCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	}
 	var commentToCreate CommentToCreate
 	json.NewDecoder(r.Body).Decode(&commentToCreate)
+	// there should be split of data and then
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var result = splited[len(splited)-2]
 
-	if commentToCreate.Authorid != uid {
-		ctx.Logger.WithError(errAuth).Error("not authorized request")
-		w.WriteHeader(http.StatusForbidden)
+	postUidQuery, errParsUserid := strconv.ParseUint(result, 10, 64)
+	if errParsUserid != nil {
+		ctx.Logger.WithError(errParsUserid).Error("postid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	// then u should have some data related to comment:::::commentid and postid commenttext and add that data inside of current component
 	// commenttext authorid and postid
-	commentid, err := rt.db.CreateCommentRelatedToPost(commentToCreate.Text, commentToCreate.Authorid, commentToCreate.CommentId)
+	commentid, err := rt.db.CreateCommentRelatedToPost(commentToCreate.Text, uid, postUidQuery)
 
 	if err != nil {
 
@@ -48,7 +55,6 @@ func (rt *_router) createCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	var commentCreated CommentCreated
 	commentCreated.Commentid = commentid
 
-	w.WriteHeader(http.StatusNoContent)
 	_ = json.NewEncoder(w).Encode(commentCreated)
 
 }

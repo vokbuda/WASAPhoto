@@ -32,7 +32,7 @@ func (rt *_router) addLikeToCommentRelatedToPost(w http.ResponseWriter, r *http.
 	}
 	var err error
 
-	err = rt.db.AddLikeToCommentRelatedToPost(requestEmotionToComment.IdPost,
+	err = rt.db.AddLikeToCommentRelatedToPost(
 		requestEmotionToComment.IdCommentEmotion, requestEmotionToComment.IdUser)
 
 	if err != nil {

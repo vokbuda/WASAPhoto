@@ -4,7 +4,7 @@ package database
 func (db *appdbimpl) DeleteDislikePost(postid uint64, userid uint64) error {
 	// then in case of database u should implement
 
-	_, err := db.c.Exec(`delete from emotions_post where postid=? and userid=? and emotion=?`,
+	_, err := db.c.Exec(`delete from post_emotion where postid=? and userid=? and emotion=?`,
 		postid, userid, false)
 
 	if err != nil {

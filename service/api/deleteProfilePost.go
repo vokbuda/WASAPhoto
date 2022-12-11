@@ -33,6 +33,13 @@ func (rt *_router) deleteProfilePost(w http.ResponseWriter, r *http.Request, ps 
 
 	}
 
+	resuid, errorAuthor := rt.db.PostAuthUidCheck(idPostToDelete)
+	if errorAuthor != nil || resuid != uid {
+		ctx.Logger.WithError(errParsUserid).Error("Not authorized to modify posts of others")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
 	err = rt.db.DeleteProfilePost(uint64(idPostToDelete), uid)
 
 	if err != nil {

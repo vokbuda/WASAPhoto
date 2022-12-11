@@ -5,8 +5,9 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 
@@ -27,14 +28,30 @@ func (rt *_router) deleteCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 		return
 
 	}
-	var commentToDelete CommentToDelete
-	json.NewDecoder(r.Body).Decode(&commentToDelete)
 
 	// before u should check for data inside of yo
 
 	// then u should take commentid and postid
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var postQuery = splited[len(splited)-3]
+	var commentQuery = splited[len(splited)-1]
 
-	err = rt.db.DeleteCommentRelatedToPost(commentToDelete.PostId, commentToDelete.CommentId, uid)
+	postidQuery, errParsPost := strconv.ParseUint(postQuery, 10, 64)
+
+	if errParsPost != nil {
+		ctx.Logger.WithError(errParsPost).Error("postid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	commentidQuery, errParsComment := strconv.ParseUint(commentQuery, 10, 64)
+	if errParsComment != nil {
+		ctx.Logger.WithError(errParsComment).Error("commentid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	err = rt.db.DeleteCommentRelatedToPost(postidQuery, commentidQuery, uid)
 
 	if err != nil {
 

@@ -24,7 +24,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	var banning_user BanningUser
 	json.NewDecoder(r.Body).Decode(&banning_user)
 
-	if banning_user.BanningUser != uid {
+	if banning_user.BanningUserid != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusForbidden)
 		return
@@ -32,7 +32,7 @@ func (rt *_router) banUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 	var err error
 
-	err = rt.db.BanUser(banning_user.BanningUser, banning_user.BannedUser)
+	err = rt.db.BanUser(banning_user.BanningUserid, banning_user.BannedUserid)
 
 	if err != nil {
 		// In this case, we have an error on our side. Log the error (so we can be notified) and send a 500 to the user

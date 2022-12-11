@@ -26,11 +26,13 @@ func (rt *_router) createProfilePost(w http.ResponseWriter, r *http.Request,
 	bearerToken := r.Header.Get("Authorization")
 	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
+
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 
 	}
+
 	var postToCreate PostCreate
 	json.NewDecoder(r.Body).Decode(&postToCreate)
 	var path = r.URL.Path
@@ -38,6 +40,7 @@ func (rt *_router) createProfilePost(w http.ResponseWriter, r *http.Request,
 	var result = splited[len(splited)-2]
 
 	uidQuery, errParsUserid := strconv.ParseUint(result, 10, 64)
+
 	if errParsUserid != nil {
 		ctx.Logger.WithError(errParsUserid).Error("userid is not valid")
 		w.WriteHeader(http.StatusInternalServerError)

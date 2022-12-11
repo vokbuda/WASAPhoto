@@ -30,14 +30,14 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 
 	json.NewDecoder(r.Body).Decode(&banning_user)
 
-	if banning_user.BanningUser != uid {
+	if banning_user.BanningUserid != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusForbidden)
 		return
 
 	}
 
-	err = rt.db.UnbanUser(banning_user.BanningUser, banning_user.BannedUser)
+	err = rt.db.UnbanUser(banning_user.BanningUserid, banning_user.BannedUserid)
 
 	//here u should iterate over values inside of your component
 

@@ -7,6 +7,8 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"git.sapienzaapps.it/gamificationlab/wasa-fontanelle/service/api/reqcontext"
 
@@ -31,13 +33,32 @@ func (rt *_router) updateCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 
 	var commentToUpdate CommentToUpdate
 	json.NewDecoder(r.Body).Decode(&commentToUpdate)
+	var path = r.URL.Path
+	var splited = strings.Split(path, "/")
+	var postQuery = splited[len(splited)-3]
+	var commentQuery = splited[len(splited)-1]
+
+	postidQuery, errParsPost := strconv.ParseUint(postQuery, 10, 64)
+
+	if errParsPost != nil {
+		ctx.Logger.WithError(errParsPost).Error("postid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	commentidQuery, errParsComment := strconv.ParseUint(commentQuery, 10, 64)
+	if errParsComment != nil {
+		ctx.Logger.WithError(errParsComment).Error("commentid is not valid")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 
 	// then u should have some data related to comment:::::commentid and postid commenttext and add that data inside of current component
 	// commenttext authorid and postid
 	// comment id postid authorid and text
-	err = rt.db.UpdateCommentRelatedToPost(commentToUpdate.CommentId, commentToUpdate.PostId, uid, commentToUpdate.text)
-	var quantityLikes string
-	var quantityDislikes string
+
+	num_likes, num_dislikes, err := rt.db.UpdateCommentRelatedToPost(commentidQuery, postidQuery, uid, commentToUpdate.text)
+	var likesNum string = rt.adjustNumber(num_likes)
+	var dislikesNum string = rt.adjustNumber(num_dislikes)
 
 	if err != nil {
 
@@ -49,10 +70,10 @@ func (rt *_router) updateCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	w.Header().Set("Content-Type", "application/json")
 
 	var commentChanged CommentChanged
-	commentChanged.Commentid = commentToUpdate.CommentId
-	commentChanged.Postid = commentToUpdate.PostId
-	commentChanged.QuantityDislikes = quantityDislikes
-	commentChanged.QuantityLikes = quantityLikes
+	commentChanged.Commentid = commentidQuery
+	commentChanged.Postid = postidQuery
+	commentChanged.QuantityDislikes = dislikesNum
+	commentChanged.QuantityLikes = likesNum
 	_ = json.NewEncoder(w).Encode(commentChanged)
 
 }
