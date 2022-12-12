@@ -25,7 +25,13 @@ func (rt *_router) addDislikeToCommentRelatedToPost(w http.ResponseWriter, r *ht
 
 	}
 	var dislikeToComment RequestEmotionToComment
-	json.NewDecoder(r.Body).Decode(&dislikeToComment)
+	err_decode_dislike := json.NewDecoder(r.Body).Decode(&dislikeToComment)
+	if err_decode_dislike != nil {
+		ctx.Logger.WithError(err_decode_dislike).Error("Passed data is not correct")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
 
 	if dislikeToComment.IdUser != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

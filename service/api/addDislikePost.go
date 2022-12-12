@@ -24,7 +24,10 @@ func (rt *_router) addDislikePost(w http.ResponseWriter, r *http.Request, ps htt
 
 	}
 	var requestEmotionPost RequestEmotionToPost
-	json.NewDecoder(r.Body).Decode(&requestEmotionPost)
+	errRequestEmotionPost := json.NewDecoder(r.Body).Decode(&requestEmotionPost)
+	if errRequestEmotionPost != nil {
+
+	}
 
 	if requestEmotionPost.IdUser != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
