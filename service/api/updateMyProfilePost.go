@@ -42,7 +42,13 @@ func (rt *_router) updateProfilePost(w http.ResponseWriter, r *http.Request, ps 
 	}
 
 	var postToChange PostToChange
-	json.NewDecoder(r.Body).Decode(&postToChange)
+	errDecode := json.NewDecoder(r.Body).Decode(&postToChange)
+	if errDecode != nil {
+		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
 
 	// then u should have some data related to comment:::::commentid and postid commenttext and add that data inside of current component
 	// commenttext authorid and postid

@@ -21,7 +21,13 @@ func (rt *_router) addLikePost(w http.ResponseWriter, r *http.Request, ps httpro
 
 	}
 	var emotionToPost RequestEmotionToPost
-	json.NewDecoder(r.Body).Decode(&emotionToPost)
+	errDecode := json.NewDecoder(r.Body).Decode(&emotionToPost)
+	if errDecode != nil {
+		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
 
 	if emotionToPost.IdUser != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

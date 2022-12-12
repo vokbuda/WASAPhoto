@@ -25,7 +25,7 @@ func (rt *_router) addLikeToCommentRelatedToPost(w http.ResponseWriter, r *http.
 	errDecodeRequestEmotion := json.NewDecoder(r.Body).Decode(&requestEmotionToComment)
 	if errDecodeRequestEmotion != nil {
 		ctx.Logger.WithError(errDecodeRequestEmotion).Error("Can't decode current message")
-		w.WriteHeader(http.StatusForbidden)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 
 	}

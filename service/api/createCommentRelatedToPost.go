@@ -29,7 +29,13 @@ func (rt *_router) createCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 
 	}
 	var commentToCreate CommentToCreate
-	json.NewDecoder(r.Body).Decode(&commentToCreate)
+	errDecode := json.NewDecoder(r.Body).Decode(&commentToCreate)
+	if errDecode != nil {
+		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
 	// there should be split of data and then
 	var path = r.URL.Path
 	var splited = strings.Split(path, "/")

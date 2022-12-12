@@ -34,7 +34,13 @@ func (rt *_router) createProfilePost(w http.ResponseWriter, r *http.Request,
 	}
 
 	var postToCreate PostCreate
-	json.NewDecoder(r.Body).Decode(&postToCreate)
+	errDecode := json.NewDecoder(r.Body).Decode(&postToCreate)
+	if errDecode != nil {
+		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
 	var path = r.URL.Path
 	var splited = strings.Split(path, "/")
 	var result = splited[len(splited)-2]

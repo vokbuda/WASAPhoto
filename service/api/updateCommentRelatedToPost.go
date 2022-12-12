@@ -32,7 +32,13 @@ func (rt *_router) updateCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	}
 
 	var commentToUpdate CommentToUpdate
-	json.NewDecoder(r.Body).Decode(&commentToUpdate)
+	errDecode := json.NewDecoder(r.Body).Decode(&commentToUpdate)
+	if errDecode != nil {
+		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
 	var path = r.URL.Path
 	var splited = strings.Split(path, "/")
 	var postQuery = splited[len(splited)-3]

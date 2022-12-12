@@ -29,7 +29,13 @@ func (rt *_router) removeLikeFromCommentRelatedToPost(w http.ResponseWriter, r *
 
 	}
 
-	json.NewDecoder(r.Body).Decode(&requestEmotionToComment)
+	errDecode := json.NewDecoder(r.Body).Decode(&requestEmotionToComment)
+	if errDecode != nil {
+		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
 
 	if requestEmotionToComment.IdUser != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

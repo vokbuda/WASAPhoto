@@ -45,7 +45,13 @@ func (rt *_router) changePassword(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 	var data_account_update DataAccountUpdate
-	json.NewDecoder(r.Body).Decode(&data_account_update)
+	errDecode := json.NewDecoder(r.Body).Decode(&data_account_update)
+	if errDecode != nil {
+		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
 
 	if uidQuery != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

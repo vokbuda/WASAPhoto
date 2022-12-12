@@ -26,6 +26,9 @@ func (rt *_router) addDislikePost(w http.ResponseWriter, r *http.Request, ps htt
 	var requestEmotionPost RequestEmotionToPost
 	errRequestEmotionPost := json.NewDecoder(r.Body).Decode(&requestEmotionPost)
 	if errRequestEmotionPost != nil {
+		ctx.Logger.WithError(errAuth).Error("Passed data is not correct")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
 
 	}
 

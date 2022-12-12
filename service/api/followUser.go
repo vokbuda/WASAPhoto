@@ -26,7 +26,13 @@ func (rt *_router) followUser(w http.ResponseWriter, r *http.Request,
 
 	}
 	var subscription Subscription
-	json.NewDecoder(r.Body).Decode(&subscription)
+	errDecode := json.NewDecoder(r.Body).Decode(&subscription)
+	if errDecode != nil {
+		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
 
 	if subscription.FollowingUserId != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

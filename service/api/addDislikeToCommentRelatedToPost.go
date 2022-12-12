@@ -28,7 +28,7 @@ func (rt *_router) addDislikeToCommentRelatedToPost(w http.ResponseWriter, r *ht
 	err_decode_dislike := json.NewDecoder(r.Body).Decode(&dislikeToComment)
 	if err_decode_dislike != nil {
 		ctx.Logger.WithError(err_decode_dislike).Error("Passed data is not correct")
-		w.WriteHeader(http.StatusForbidden)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 
 	}
