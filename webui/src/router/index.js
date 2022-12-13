@@ -1,4 +1,4 @@
-import {createRouter, createWebHashHistory} from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import Welcome from '../views/Welcome.vue'
 import FeedView from '../views/FeedView.vue'
 import MyProfileView from '../views/MyProfileView.vue'
@@ -7,11 +7,11 @@ import Register from '../views/Register.vue'
 import Application from '../views/Application.vue'
 
 const router = createRouter({
-	history: createWebHashHistory(import.meta.env.BASE_URL),
+	history: createWebHistory(),
 	routes: [
 		
 		{
-			path: '/register', 
+			path: '/start', 
 			component:Register
 			
 	
@@ -20,14 +20,17 @@ const router = createRouter({
 	
 		},
 		{
-			path:'/application',
+			path:'/',
 			component: Application,
-			children:[
-				[{path: '/welcome', component: Welcome},
-				{path: '/posts', component: FeedView},
-				{path: '/profiles/:userid', component: MyProfileView},
-				{path: '/profiles', component: SearchProfileView}]
+			
+			children:
+				[
+				{path: 'welcome', component: Welcome},
+				{path: 'posts', component: FeedView},
+				{path: 'profiles/:userid', component: MyProfileView},
+				{path: 'profiles', component: SearchProfileView}
 			]
+			
 
 		}
 

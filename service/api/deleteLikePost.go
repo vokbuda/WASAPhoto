@@ -23,7 +23,13 @@ func (rt *_router) deleteLikePost(w http.ResponseWriter, r *http.Request, ps htt
 
 	}
 	var requestEmotionPost RequestEmotionToPost
-	json.NewDecoder(r.Body).Decode(&requestEmotionPost)
+	errDecode := json.NewDecoder(r.Body).Decode(&requestEmotionPost)
+	if errDecode != nil {
+		ctx.Logger.WithError(errAuth).Error("Decode Error")
+		w.WriteHeader(http.StatusForbidden)
+		return
+
+	}
 
 	if requestEmotionPost.IdUser != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")

@@ -19,6 +19,7 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 	defer db.c.Close()
 
 	err := row.Scan(&sessionData.Token, &sessionData.Lastlogin, &sessionData.Created, &sessionData.Userid)
+
 	if err == sql.ErrNoRows {
 
 		// if there is no rows inside of current component then u should insert some data inside of db

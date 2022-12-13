@@ -10,10 +10,17 @@ import (
 
 func (rt *_router) session(w http.ResponseWriter, r *http.Request,
 	ps httprouter.Params, ctx reqcontext.RequestContext) {
+
 	var err error
 
 	var sessionUser SessionUser
-	json.NewDecoder(r.Body).Decode(&sessionUser)
+	err_Decode := json.NewDecoder(r.Body).Decode(&sessionUser)
+	if err_Decode != nil {
+		ctx.Logger.WithError(err).Error("it is not possible to login with current data")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	// then u can implement that data inside of your component
 	// then u should have some data related to comment:::::commentid and postid commenttext and add that data inside of current component
 	// commenttext authorid and postid

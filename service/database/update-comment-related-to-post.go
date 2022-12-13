@@ -24,6 +24,9 @@ func (db *appdbimpl) UpdateCommentRelatedToPost(commentid uint64, postid uint64,
 	if check_scan != nil {
 		return 0, 0, check_scan
 	}
+	if resEmotions.Err() != nil {
+		return 0, 0, resEmotions.Err()
+	}
 
 	return numDislikes, numLikes, nil
 }

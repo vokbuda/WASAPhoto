@@ -154,6 +154,147 @@ func New(db *sql.DB) (AppDatabase, error) {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
 	}
+	var banusersTable string
+	errbanusers := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='banusers';`).Scan(&banusersTable)
+	if errors.Is(errbanusers, sql.ErrNoRows) {
+		banusers := `CREATE TABLE "banusers" (
+			"banninguserid"	INTEGER NOT NULL,
+			"banneduserid"	INTEGER NOT NULL,
+			FOREIGN KEY("banninguserid") REFERENCES "profiles"("userid") ON DELETE CASCADE,
+			FOREIGN KEY("banneduserid") REFERENCES "profiles"("userid") ON DELETE CASCADE,
+			PRIMARY KEY("banninguserid","banneduserid")
+		);`
+
+		_, err = db.Exec(banusers)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+	}
+	var comment_emotionTable string
+	err_comment_emotionTable := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='comment_emotion';`).Scan(&comment_emotionTable)
+	if errors.Is(err_comment_emotionTable, sql.ErrNoRows) {
+		comment_emotion := `CREATE TABLE "comment_emotion" (
+			"commentid"	INTEGER,
+			"userid"	INTEGER,
+			"emotion"	INTEGER,
+			FOREIGN KEY("userid") REFERENCES "profiles"("userid") ON DELETE CASCADE,
+			PRIMARY KEY("commentid","userid"),
+			FOREIGN KEY("commentid") REFERENCES "comments"("id") ON DELETE CASCADE
+		);`
+
+		_, err = db.Exec(comment_emotion)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+	}
+
+	var commentsTable string
+	err_commentsTable := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='comments';`).Scan(&commentsTable)
+	if errors.Is(err_commentsTable, sql.ErrNoRows) {
+		comments := `CREATE TABLE "comments" (
+			"id"	INTEGER NOT NULL,
+			"text"	TEXT,
+			"authorid"	INTEGER,
+			"postid"	INTEGER,
+			"lastupdate"	TEXT,
+			FOREIGN KEY("authorid") REFERENCES "profiles"("userid") ON DELETE CASCADE,
+			PRIMARY KEY("id" AUTOINCREMENT),
+			FOREIGN KEY("postid") REFERENCES "posts"("postid") ON DELETE CASCADE
+		);`
+
+		_, err = db.Exec(comments)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+	}
+	var postEmotionTable string
+	err_postEmotionTable := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='post_emotion';`).Scan(&postEmotionTable)
+	if errors.Is(err_postEmotionTable, sql.ErrNoRows) {
+		post_emotion := `CREATE TABLE "post_emotion" (
+			"postid"	INTEGER,
+			"userid"	INTEGER,
+			"emotion"	INTEGER,
+			FOREIGN KEY("userid") REFERENCES "profiles"("userid") ON DELETE CASCADE,
+			PRIMARY KEY("postid","userid"),
+			FOREIGN KEY("postid") REFERENCES "posts"("postid") ON DELETE CASCADE
+		);`
+		_, err = db.Exec(post_emotion)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+	}
+	var postsTable string
+	err_postsTable := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='posts';`).Scan(&postsTable)
+	if errors.Is(err_postsTable, sql.ErrNoRows) {
+		posts := `CREATE TABLE "posts" (
+			"postid"	INTEGER,
+			"text"	TEXT,
+			"image"	BLOB,
+			"authorid"	INTEGER,
+			"lastupdate"	TEXT,
+			PRIMARY KEY("postid" AUTOINCREMENT),
+			FOREIGN KEY("authorid") REFERENCES "profiles"("userid") ON DELETE CASCADE
+		);`
+		_, err = db.Exec(posts)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+	}
+
+	var profilesTable string
+	err_profilesTable := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='profiles';`).Scan(&profilesTable)
+	if errors.Is(err_profilesTable, sql.ErrNoRows) {
+		profiles := `CREATE TABLE "profiles" (
+			"userid"	INTEGER NOT NULL,
+			"username"	TEXT NOT NULL UNIQUE,
+			"password"	TEXT NOT NULL,
+			"avatar"	BLOB,
+			PRIMARY KEY("userid" AUTOINCREMENT)
+		);`
+		_, err = db.Exec(profiles)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+	}
+
+	var sessionTable string
+	err_sessionTable := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='session';`).Scan(&sessionTable)
+	if errors.Is(err_sessionTable, sql.ErrNoRows) {
+		session := `CREATE TABLE "session" (
+			"token"	TEXT UNIQUE,
+			"lastlogin"	TEXT,
+			"created"	TEXT,
+			"userid"	INTEGER,
+			PRIMARY KEY("token"),
+			FOREIGN KEY("userid") REFERENCES "profiles"("userid") ON DELETE CASCADE
+		);`
+		_, err = db.Exec(session)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+	}
+	var subscriptionTable string
+	err_subscriptionTable := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='session';`).Scan(&subscriptionTable)
+	if errors.Is(err_subscriptionTable, sql.ErrNoRows) {
+		subscription := `CREATE TABLE "subscriptions" (
+			"followeduserid"	INTEGER NOT NULL,
+			"followeruserid"	INTEGER NOT NULL,
+			FOREIGN KEY("followeruserid") REFERENCES "profiles"("userid") ON DELETE CASCADE,
+			FOREIGN KEY("followeduserid") REFERENCES "profiles"("userid") ON DELETE CASCADE,
+			PRIMARY KEY("followeduserid","followeruserid")
+		);`
+		_, err = db.Exec(subscription)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+	}
 
 	return &appdbimpl{
 		c: db,

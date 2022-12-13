@@ -32,23 +32,19 @@ export default {
 	<div>
 		<div
 			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-			<h1 class="h2">Home page</h1>
-			<div class="btn-toolbar mb-2 mb-md-0">
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="refresh">
-						Refresh
-					</button>
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="exportList">
-						Export
-					</button>
-				</div>
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-primary" @click="newItem">
-						New
-					</button>
-				</div>
-			</div>
+			<h1 class="h2">WASAPhoto is an application built for sharing emotions with world</h1>
+			
 		</div>
+		
+		<h4>At the moment there had been developed following unique functionalities:</h4>
+		<ul class="list-group">
+			<li class="list-group-item">Operations with account(change photo, delete account)</li>
+			<li class="list-group-item">Checks to avoid IDOR vulnerability,
+				injections(can't to modify post if you are not author)</li>
+			<li class="list-group-item">Dislikes on posts and comments</li>
+			<li class="list-group-item">Search users</li>
+		</ul>
+
 
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 	</div>
