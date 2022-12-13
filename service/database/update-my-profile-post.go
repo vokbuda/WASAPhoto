@@ -14,6 +14,7 @@ func (db *appdbimpl) UpdateProfilePost(postid uint64, text string, image string,
 	var numDislikes uint64
 	affected, errcheck := res.RowsAffected()
 	resEmotions, errEmotions := db.c.Query(`select sum(emotion=1), sum(emotion=-1) from(select * from post_emotion where postid=?)`, postid)
+	defer func() { _ = resEmotions.Close() }()
 	if errcheck != nil {
 		return 0, 0, errcheck
 	} else if errEmotions != nil {
