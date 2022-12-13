@@ -33,7 +33,7 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 
 		h := sha256.New()
 
-		h.Write([]byte(pass))
+		h.Write(pass)
 
 		hash_intermediate := h.Sum(nil)
 		hash := hex.EncodeToString(hash_intermediate)
@@ -74,7 +74,7 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 			return 0, "", err
 		}
 
-		return lastuid, string(token), err
+		return lastuid, token, err
 	} else if err == nil {
 		return 0, "", nil
 	} else {

@@ -28,7 +28,7 @@ func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprou
 
 	var foundUsers []database.Profile
 
-	var username = string(r.URL.Query().Get("username"))
+	var username = r.URL.Query().Get("username")
 
 	var offset, errParsOffset = strconv.ParseUint(r.URL.Query().Get("offset"), 10, 64)
 	if errParsOffset != nil {

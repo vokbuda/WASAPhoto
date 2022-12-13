@@ -40,7 +40,7 @@ func (rt *_router) deleteProfilePost(w http.ResponseWriter, r *http.Request, ps 
 		return
 	}
 
-	err = rt.db.DeleteProfilePost(uint64(idPostToDelete), uid)
+	err = rt.db.DeleteProfilePost(idPostToDelete, uid)
 
 	if err != nil {
 
