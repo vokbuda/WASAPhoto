@@ -1,9 +1,5 @@
 package database
 
-import (
-	"database/sql"
-)
-
 // then below u should also change data for your post
 func (db *appdbimpl) CommentAuthUidCheck(authUid uint64, commentid uint64, postid uint64) (uint64, error) {
 
@@ -17,18 +13,11 @@ func (db *appdbimpl) CommentAuthUidCheck(authUid uint64, commentid uint64, posti
 	// then u should also have a session data to inser inside your database
 	var uid uint64
 
-	switch err := res.Scan(&uid); err {
-
-	case sql.ErrNoRows:
-
+	err := res.Scan(&uid)
+	if err != nil {
 		return 0, err
-
-	case nil:
-
+	} else {
 		return uid, nil
-	default:
-
-		return 0, err
 	}
 
 }

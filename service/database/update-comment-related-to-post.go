@@ -19,7 +19,10 @@ func (db *appdbimpl) UpdateCommentRelatedToPost(commentid uint64, postid uint64,
 	} else if affected == 0 {
 		return 0, 0, ErrNotAuthorized
 	}
-	resEmotions.Scan(&numDislikes, &numLikes)
+	check_scan := resEmotions.Scan(&numDislikes, &numLikes)
+	if check_scan != nil {
+		return 0, 0, check_scan
+	}
 
 	return numDislikes, numLikes, nil
 }

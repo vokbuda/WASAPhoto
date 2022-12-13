@@ -17,17 +17,13 @@ func (db *appdbimpl) PostAuthUidCheck(postid uint64) (uint64, error) {
 	// then u should also have a session data to inser inside your database
 	var uid uint64
 
-	switch err := res.Scan(&uid); err {
+	err := res.Scan(&uid)
 
-	case sql.ErrNoRows:
-
+	if err == sql.ErrNoRows {
 		return 0, err
-
-	case nil:
-
+	} else if err == nil {
 		return uid, nil
-	default:
-
+	} else {
 		return 0, err
 	}
 

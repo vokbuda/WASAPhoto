@@ -1,7 +1,5 @@
 package database
 
-import "database/sql"
-
 /*
 these are components which must be in profile user in database::::
 avatar: "binary string",
@@ -25,15 +23,14 @@ func (db *appdbimpl) GetProfile(userid uint64) (uint64, uint64, Profile, error) 
 	var numberSubscribers uint64
 	var numberSubscriptions uint64
 
-	switch err := row.Scan(&myProfile.Userid, &myProfile.Username, &myProfile.Avatar,
-		&numberSubscribers, &numberSubscriptions); err {
-	case sql.ErrNoRows:
+	err := row.Scan(&myProfile.Userid, &myProfile.Username, &myProfile.Avatar,
+		&numberSubscribers, &numberSubscriptions)
+	if err != nil {
 		return 0, 0, Profile{}, err
-	case nil:
 
+	} else {
 		return numberSubscribers, numberSubscriptions, myProfile, nil
-	default:
-		panic(err)
+
 	}
 
 }
