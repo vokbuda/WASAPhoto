@@ -1,7 +1,3 @@
-//AddLikeToCommentRelatedToPost
-
-//check for component above and implement necessary data
-
 package database
 
 // then below u should also change data for your post

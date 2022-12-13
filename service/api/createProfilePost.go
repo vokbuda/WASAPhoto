@@ -18,8 +18,6 @@ type PostCreation struct {
 	Authorid uint64 `json:"authorid"`
 }
 
-//here u should implement your current profile with data inside and then also u should have some data inside another components
-
 func (rt *_router) createProfilePost(w http.ResponseWriter, r *http.Request,
 	ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var err error
