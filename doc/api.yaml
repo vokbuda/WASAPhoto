@@ -1079,6 +1079,10 @@ paths:
         "401": { $ref: "#/components/responses/UnauthorizedRequest" }
         "403": { $ref: "#/components/responses/ForbiddenRequest" }
         "500": { $ref: "#/components/responses/InternalServerError" }
+  /posts/{postid}/comments/{commentid}:
+    parameters:
+      - $ref: "#/components/parameters/postid" 
+      - $ref: "#/components/parameters/commentid"
     put:
       operationId: updateComment
       tags:
