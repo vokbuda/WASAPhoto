@@ -39,7 +39,7 @@ export default {
 			
 			
 			
-			this.$axios.put('http://localhost:3000/posts/'+post.postid+'/like/'+this.userid, postData,{
+			this.$axios.put('s/posts/'+post.postid+'/like/'+this.userid, postData,{
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
 				}
@@ -64,8 +64,9 @@ export default {
 			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
 			
 			console.log(sessionStorage.getItem('token'))
+			__API_URL__
 			
-			fetch('http://localhost:3000/posts/'+post.postid+'/like/'+this.userid,{
+			fetch(__API_URL__+'/posts/'+post.postid+'/like/'+this.userid,{
 				method:'DELETE',
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
@@ -93,7 +94,7 @@ export default {
 			
 			
 			
-			this.$axios.put('http://localhost:3000/posts/'+post.postid+'/dislike/'+this.userid, postData,{
+			this.$axios.put('/posts/'+post.postid+'/dislike/'+this.userid, postData,{
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
 				}
@@ -119,7 +120,7 @@ export default {
 			
 			
 			
-			fetch('http://localhost:3000/posts/'+post.postid+'/dislike/'+this.userid,{
+			fetch(__API_URL__+'/posts/'+post.postid+'/dislike/'+this.userid,{
 				method:'DELETE',
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
@@ -161,7 +162,7 @@ export default {
 			const postData = JSON.stringify({ "text": this.postText,"image":this.postImage });
 			
 			
-			this.$axios.post('http://localhost:3000/profiles/'+this.$route.params.userid+'/posts', postData,{
+			this.$axios.post('/profiles/'+this.$route.params.userid+'/posts', postData,{
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
 				}
@@ -209,7 +210,7 @@ export default {
 
 			
 		
-			await this.$axios.get('http://localhost:3000/profiles/'+this.$route.params.userid+'/posts?offset=0',{
+			await this.$axios.get('/profiles/'+this.$route.params.userid+'/posts?offset=0',{
 				headers:{
 					'Authorization':this.header,
 				
@@ -252,7 +253,7 @@ export default {
 
 			
 		
-			await this.$axios.get('http://localhost:3000/profiles/'+this.$route.params.userid,{
+			await this.$axios.get('/profiles/'+this.$route.params.userid,{
 				headers:{
 					'Authorization':this.header,
 				

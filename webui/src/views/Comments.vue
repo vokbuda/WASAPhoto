@@ -27,7 +27,7 @@ export default {
 			
 			
 			
-			this.$axios.put('http://localhost:3000/posts/'+this.$route.params.postid+'/comments/'+commentid
+			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+commentid
             +'/like/'+this.userid, postData,{
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
@@ -53,7 +53,7 @@ export default {
 			
 			
 			
-			this.$axios.put('http://localhost:3000/posts/'+this.$route.params.postid+'/comments/'+commentid
+			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+commentid
             +'/dislike/'+this.userid, postData,{
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
@@ -94,7 +94,7 @@ export default {
             const postData = JSON.stringify({ "text": this.commentText });
 			
 			
-			this.$axios.post('http://localhost:3000/posts/'+this.$route.params.postid+'/comments', postData,{
+			this.$axios.post('/posts/'+this.$route.params.postid+'/comments', postData,{
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
 				}
@@ -121,7 +121,7 @@ export default {
 
 			
 		
-			await this.$axios.get('http://localhost:3000/posts/'+this.$route.params.postid+'/comments?offset=0',{
+			await this.$axios.get('/posts/'+this.$route.params.postid+'/comments?offset=0',{
 				headers:{
 					'Authorization':this.header,
 				

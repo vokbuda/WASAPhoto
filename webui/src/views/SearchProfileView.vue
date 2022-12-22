@@ -26,7 +26,7 @@ export default {
 			this.header="Bearer "+sessionStorage.getItem("token")
 			
 			try {
-				await fetch('http://localhost:3000/profiles?username='+username+'&&offset=0',
+				await fetch(__API_URL__+'/profiles?username='+username+'&&offset=0',
 				{headers:{
 					'Authorization':this.header,
 				
@@ -61,6 +61,9 @@ export default {
 			// here u should have data inside of current compone
     },
   	},
+	mounted(){
+		// here u should have some additional data, check it inside of current component
+	}
 	
 }
 </script>
