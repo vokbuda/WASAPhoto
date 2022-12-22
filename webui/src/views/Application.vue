@@ -2,7 +2,20 @@
 import { RouterLink, RouterView } from 'vue-router'
 </script>
 <script>
-export default {}
+export default {
+	data: function() {
+		return {
+			userid:""
+		}
+	},
+	methods:{
+
+	},
+	mounted() {
+		this.userid=sessionStorage.getItem("userid")
+	}
+	
+}
 </script>
 
 <template>
@@ -35,7 +48,7 @@ export default {}
 							</RouterLink>
 						</li>
                         <li class="nav-item">
-							<RouterLink to="/profile/:userid" class="nav-link">
+							<RouterLink :to="'/profiles/'+this.userid" class="nav-link">
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#user"/></svg>
                                 ME
 							</RouterLink>

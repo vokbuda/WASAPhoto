@@ -7,17 +7,19 @@ import (
 )
 
 func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
-	offset uint64) ([]Comment, error) {
+	offset uint64, userid uint64) ([]Comment, error) {
 
 	const query = `
 	SELECT postid, id, text, authorid,authorid=?, 
 	(select sum(emotion=-1) from(select * from comment_emotion where commentid=id)), 
-	(select sum(emotion=1)  from(select * from comment_emotion where commentid=id))
+	(select sum(emotion=1)  from(select * from comment_emotion where commentid=id)),
+	(select avatar from profiles where userid=authorid), 
+	(select username from profiles where userid=authorid)
 	FROM comments
 	WHERE postid=? limit 10 offset ?`
 
 	var ret []Comment
-	rows, err := db.c.Query(query,
+	rows, err := db.c.Query(query, userid,
 		postid, offset*10)
 	if err != nil {
 		return nil, err
@@ -26,12 +28,23 @@ func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 
 	// Read all fountains in the resultset
 	for rows.Next() {
-		var com Comment
+		var com CommentDatabase
+		var commentToReturn Comment
 
-		err = rows.Scan(&com.Postid, &com.Commentid, &com.Text, &com.Me, &com.Authorid, &com.QuantityDislikes, &com.QuantityLikes)
+		err = rows.Scan(&com.Postid, &com.Commentid, &com.Text, &com.Authorid, &com.Me,
+			&com.QuantityDislikes, &com.QuantityLikes, &com.Avatar, &com.Username)
 		if err != nil {
 			return nil, err
 		}
+		commentToReturn.Authorid = com.Authorid
+
+		commentToReturn.Commentid = com.Commentid
+		commentToReturn.LastChange = com.LastChange
+		commentToReturn.Me = com.Me
+		commentToReturn.Postid = com.Postid
+
+		commentToReturn.Text = com.Text
+		commentToReturn.Username = com.Username
 		// Check if the result is inside the circle
 
 		if !com.QuantityLikes.Valid {
@@ -42,6 +55,11 @@ func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 			com.QuantityDislikes.String = "0"
 			com.QuantityDislikes.Valid = true
 		}
+		if !com.Avatar.Valid {
+			commentToReturn.Avatar = ""
+		} else {
+			commentToReturn.Avatar = com.Avatar.String
+		}
 		numlikes, errParsQuantityLikes := strconv.ParseUint(com.QuantityLikes.String, 10, 64)
 		if errParsQuantityLikes != nil {
 			return nil, errParsQuantityLikes
@@ -50,9 +68,10 @@ func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 		if errParsQuantityDislikes != nil {
 			return nil, errParsQuantityDislikes
 		}
-		com.QuantityLikes.String = adjustNumber(numlikes)
-		com.QuantityDislikes.String = adjustNumber(numdislikes)
-		ret = append(ret, com)
+		commentToReturn.QuantityDislikes = adjustNumber(numdislikes)
+		commentToReturn.QuantityLikes = adjustNumber(numlikes)
+
+		ret = append(ret, commentToReturn)
 
 	}
 	if rows.Err() != nil {

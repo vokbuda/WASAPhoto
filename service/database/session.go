@@ -16,7 +16,7 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 
 	var sessionData SessionData
 	row := db.c.QueryRow(`select * from session where token=?`, bearerToken)
-	defer db.c.Close()
+	//defer db.c.Close()
 
 	err := row.Scan(&sessionData.Token, &sessionData.Lastlogin, &sessionData.Created, &sessionData.Userid)
 

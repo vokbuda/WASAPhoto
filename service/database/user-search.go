@@ -1,12 +1,14 @@
 // below u should have some data for searching users inside of your database and return some result inside
 package database
 
-func (db *appdbimpl) UserSearch(searchedData string, offset uint64) ([]Profile, error) {
-	final_string := "select userid,username,avatar from profiles where username like '%" + searchedData + "%' limit 10 offset ?"
+import "strconv"
+
+func (db *appdbimpl) UserSearch(searchedData string, offset uint64) ([]ProfileClient, error) {
+	final_string := "select userid,username,avatar, (select count(*) from subscriptions where followeruserid=userid), (select count(*) from subscriptions where followeduserid=userid) from profiles where username like '%" + searchedData + "%' limit 10 offset ?"
 	rows, err := db.c.Query(final_string,
 		offset)
 
-	var ret []Profile
+	var ret []ProfileClient
 
 	if err != nil {
 		return nil, err
@@ -19,11 +21,32 @@ func (db *appdbimpl) UserSearch(searchedData string, offset uint64) ([]Profile, 
 
 		var userProfile Profile
 
-		err = rows.Scan(&userProfile.Userid, &userProfile.Username, &userProfile.Avatar)
+		err = rows.Scan(&userProfile.Userid, &userProfile.Username, &userProfile.Avatar,
+			&userProfile.QuantitySubscriptions, &userProfile.QuantitySubscribers)
 		if err != nil {
 			return nil, err
 		}
-		ret = append(ret, userProfile)
+
+		numSubscriptions, errParsQuantityLikes := strconv.ParseUint(userProfile.QuantitySubscriptions.String, 10, 64)
+		if errParsQuantityLikes != nil {
+			return nil, errParsQuantityLikes
+		}
+		numSubscribed, errParsQuantityDislikes := strconv.ParseUint(userProfile.QuantitySubscribers.String, 10, 64)
+		if errParsQuantityDislikes != nil {
+			return nil, errParsQuantityDislikes
+		}
+		var userClient ProfileClient
+		userClient.QuantitySubscribers = adjustNumber(numSubscribed)
+		userClient.QuantitySubscriptions = adjustNumber(numSubscriptions)
+		if userProfile.Avatar.Valid {
+			userClient.Avatar = userProfile.Avatar.String
+		} else {
+			userClient.Avatar = ""
+		}
+		userClient.Userid = userProfile.Userid
+		userClient.Username = userProfile.Username
+
+		ret = append(ret, userClient)
 
 		// Check if the result is inside the circle
 

@@ -27,15 +27,30 @@ type Fountain struct {
 }
 
 // adjust post component below and check for re
-type Post struct {
-	ID         uint64 `json:"postid"`
-	Text       string `json:"text"`
-	Image      string `json:"image"`
-	Authorid   uint64 `json:"authorid"`
-	LastChange string `json:"lastChange"`
-	Me         bool   `json:"me"`
+type PostDatabase struct {
+	ID               uint64         `json:"postid"`
+	Text             string         `json:"text"`
+	Image            string         `json:"image"`
+	Authorid         uint64         `json:"authorid"`
+	LastChange       string         `json:"lastChange"`
+	Me               bool           `json:"me"`
+	QuantityLikes    sql.NullString `json:"quantityLikes"`
+	QuantityDislikes sql.NullString `json:"quantityDislikes"`
+	CurrentEmotion   sql.NullInt64  `json:"currentemotion"`
 }
-type Comment struct {
+type Post struct {
+	ID               uint64 `json:"postid"`
+	Text             string `json:"text"`
+	Image            string `json:"image"`
+	Authorid         uint64 `json:"authorid"`
+	LastChange       string `json:"lastChange"`
+	Me               bool   `json:"me"`
+	QuantityLikes    string `json:"quantityLikes"`
+	QuantityDislikes string `json:"quantityDislikes"`
+	CurrentEmotion   int64  `json:"currentemotion"`
+}
+
+type CommentDatabase struct {
 	Postid           uint64         `json:"postid"`
 	Commentid        uint64         `json:"commentid"`
 	Text             string         `json:"text"`
@@ -44,6 +59,20 @@ type Comment struct {
 	LastChange       string         `json:"lastChange"`
 	Authorid         string         `json:"authorid"`
 	Me               bool           `json:"me"`
+	Avatar           sql.NullString `json:"avatar"`
+	Username         string         `json:"username"`
+}
+type Comment struct {
+	Postid           uint64 `json:"postid"`
+	Commentid        uint64 `json:"commentid"`
+	Text             string `json:"text"`
+	QuantityLikes    string `json:"quantityLikes"`
+	QuantityDislikes string `json:"quantityDislikes"`
+	LastChange       string `json:"lastChange"`
+	Authorid         string `json:"authorid"`
+	Me               bool   `json:"me"`
+	Avatar           string `json:"avatar"`
+	Username         string `json:"username"`
 }
 type BannedUser struct {
 	Userid   uint64         `json:"userid"`
@@ -54,9 +83,17 @@ type Profile struct {
 	Userid                uint64         `json:"userid"`
 	Username              string         `json:"username"`
 	Avatar                sql.NullString `json:"avatar"`
-	QuantitySubscribers   string         `json:"quantitySubscribers"`
-	QuantitySubscriptions string         `json:"quantitySubscriptions"`
+	QuantitySubscribers   sql.NullString `json:"quantitySubscribers"`
+	QuantitySubscriptions sql.NullString `json:"quantitySubscriptions"`
 	Me                    bool           `json:"me"`
+}
+type ProfileClient struct {
+	Userid                uint64 `json:"userid"`
+	Username              string `json:"username"`
+	Avatar                string `json:"avatar"`
+	QuantitySubscribers   string `json:"quantitySubscribers"`
+	QuantitySubscriptions string `json:"quantitySubscriptions"`
+	Me                    bool   `json:"me"`
 }
 type SessionData struct {
 	Token     string `json:"token"`
@@ -71,7 +108,7 @@ type AppDatabase interface {
 	GetBannedUsers(userid uint64, offset uint64) ([]BannedUser, error)
 	BanUser(banninguserid uint64, banneduserid uint64) error
 	UnbanUser(banninguserid uint64, banneduserid uint64) error
-	UserSearch(searchedData string, offset uint64) ([]Profile, error)
+	UserSearch(searchedData string, offset uint64) ([]ProfileClient, error)
 	GetMyStream(userid uint64, offset uint64) ([]Post, error)
 	// then implement data for getting current stream inside
 	GetProfile(userid uint64) (uint64, uint64, Profile, error)
@@ -86,7 +123,7 @@ type AppDatabase interface {
 	DeleteDislikePost(idPostDisliked uint64, idUserDislike uint64) error
 	FollowUser(idFolloweduser uint64, idFollowingUser uint64) error
 	UnfollowUser(idFolloweduser uint64, idFollowingUser uint64) error
-	GetCommentsRelatedToPost(postid uint64, offset uint64) ([]Comment, error)
+	GetCommentsRelatedToPost(postid uint64, offset uint64, userid uint64) ([]Comment, error)
 	CreateCommentRelatedToPost(commentText string, authorid uint64, postid uint64) (uint64, error)
 	UpdateCommentRelatedToPost(commentid uint64, postid uint64, authorid uint64, text string) (uint64, uint64, error)
 	DeleteCommentRelatedToPost(idForPost uint64, idForComment uint64, authorid uint64) error
@@ -280,7 +317,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 	}
 	var subscriptionTable string
-	err_subscriptionTable := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='session';`).Scan(&subscriptionTable)
+	err_subscriptionTable := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='subscriptions';`).Scan(&subscriptionTable)
 	if errors.Is(err_subscriptionTable, sql.ErrNoRows) {
 		subscription := `CREATE TABLE "subscriptions" (
 			"followeduserid"	INTEGER NOT NULL,

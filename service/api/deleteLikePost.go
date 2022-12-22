@@ -15,17 +15,21 @@ func (rt *_router) deleteLikePost(w http.ResponseWriter, r *http.Request, ps htt
 	var err error
 
 	bearerToken := r.Header.Get("Authorization")
+
 	uid, errAuth := rt.db.AuthUid(bearerToken)
+
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 
 	}
+
 	var requestEmotionPost RequestEmotionToPost
+
 	errDecode := json.NewDecoder(r.Body).Decode(&requestEmotionPost)
 	if errDecode != nil {
-		ctx.Logger.WithError(errAuth).Error("Decode Error")
+		ctx.Logger.WithError(errDecode).Error("Decode Error")
 		w.WriteHeader(http.StatusForbidden)
 		return
 

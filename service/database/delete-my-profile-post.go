@@ -3,7 +3,7 @@ package database
 
 // then below u should also change data for your post
 func (db *appdbimpl) DeleteProfilePost(postid uint64, authorid uint64) error {
-	res, errcheck := db.c.Exec(`delete from posts where id=? and authorid=?`,
+	res, errcheck := db.c.Exec(`delete from posts where postid=? and authorid=?`,
 		postid, authorid)
 	if errcheck != nil {
 		return errcheck

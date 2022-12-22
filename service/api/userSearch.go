@@ -16,6 +16,7 @@ import (
 
 func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	bearerToken := r.Header.Get("Authorization")
+
 	errAuth := rt.db.Auth(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
@@ -26,7 +27,7 @@ func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprou
 
 	var err error
 
-	var foundUsers []database.Profile
+	var foundUsers []database.ProfileClient
 
 	var username = r.URL.Query().Get("username")
 
@@ -40,7 +41,7 @@ func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprou
 	foundUsers, findUsersErr := rt.db.UserSearch(username, offset)
 
 	if findUsersErr != nil {
-		ctx.Logger.WithError(err).Error("can't list your posts")
+		ctx.Logger.WithError(findUsersErr).Error("This is an errors inside of findusers")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}

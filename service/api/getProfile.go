@@ -25,6 +25,7 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 
 	var err error
 	var profile database.Profile
+	var clientProfile database.ProfileClient
 	var path = r.URL.Path
 	var splited = strings.Split(path, "/")
 	var result = splited[len(splited)-1]
@@ -43,20 +44,23 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 	subscribers, subscriptions, profile, err := rt.db.GetProfile(uidQuery)
 
-	profile.QuantitySubscribers = rt.adjustNumber(subscribers)
-	profile.QuantitySubscriptions = rt.adjustNumber(subscriptions)
+	clientProfile.QuantitySubscribers = rt.adjustNumber(subscribers)
+	clientProfile.QuantitySubscriptions = rt.adjustNumber(subscriptions)
 
+	clientProfile.Userid = profile.Userid
+	clientProfile.Username = profile.Username
+	clientProfile.Avatar = profile.Avatar.String
 	if err != nil {
 		ctx.Logger.WithError(err).Error("it is impossible to get profile from database")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	if uidQuery == uid {
-		profile.Me = true
+		clientProfile.Me = true
 	} else {
-		profile.Me = false
+		clientProfile.Me = false
 	}
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewEncoder(w).Encode(profile)
+	_ = json.NewEncoder(w).Encode(clientProfile)
 
 }

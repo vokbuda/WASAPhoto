@@ -9,7 +9,13 @@ func (db *appdbimpl) AddDislikePost(postid uint64, userid uint64) error {
 	// then u should implement all needed data in your component and check for the result inside
 
 	if err != nil {
-		return err
+		_, second_err := db.c.Exec(`update post_emotion set emotion=? where postid=? and userid=?`,
+			-1, postid, userid)
+		if second_err != nil {
+			return second_err
+		}
+
+		return nil
 	}
 
 	return nil

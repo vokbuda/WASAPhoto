@@ -23,6 +23,9 @@ export default {
 		},
 	},
 	mounted() {
+		var something=sessionStorage.getItem("userid")
+		console.log("Below u see data of your application")
+		console.log(something)
 		this.refresh()
 	}
 }

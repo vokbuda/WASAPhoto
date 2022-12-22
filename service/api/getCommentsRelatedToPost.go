@@ -25,7 +25,7 @@ func (rt *_router) getCommentsRelatedToPost(w http.ResponseWriter, r *http.Reque
 
 	idPostAssociated, errParsUserid := strconv.ParseUint(postid, 10, 64)
 	bearerToken := r.Header.Get("Authorization")
-	errAuth := rt.db.Auth(bearerToken)
+	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -47,7 +47,7 @@ func (rt *_router) getCommentsRelatedToPost(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	commentsRelatedToPost, err = rt.db.GetCommentsRelatedToPost(idPostAssociated, offset)
+	commentsRelatedToPost, err = rt.db.GetCommentsRelatedToPost(idPostAssociated, offset, uid)
 
 	if err != nil {
 		ctx.Logger.WithError(err).Error("can't list your posts")

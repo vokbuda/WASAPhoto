@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
+import router from '../router'
 
 </script>
 <script>
@@ -12,13 +13,33 @@ export default {
 	},
 	
 	methods: {
-		session(username, password) {
+		async session(username, password) {
 			console.log(username,password)
 			const sessionData = JSON.stringify({ "username": username,"password":password,"token":"" });
 			this.$axios.post('http://192.168.126.129:3000/session', sessionData
 			)
 			.then(function (response) {
-				console.log(response);
+				if (response.status==200){
+					
+					sessionStorage.setItem("token",response.data.session)
+					sessionStorage.setItem("userid",response.data.uid)
+					
+					
+
+					
+					router.push('/welcome')
+
+					
+					/*
+					localStorage.token=data.token
+					router.push({path:'/'})
+					*/
+					
+					// below u set some token inside of session
+					
+
+
+				}
 			})
 			.catch(function (error) {
 				console.log(error);

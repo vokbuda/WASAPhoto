@@ -6,6 +6,7 @@ import (
 
 // Handler returns an instance of httprouter.Router that handle APIs registered here
 func (rt *_router) Handler() http.Handler {
+
 	rt.router.PUT("/profiles/:userid/subscribe/:userid", rt.wrap(rt.followUser))
 
 	rt.router.GET("/profiles", rt.wrap(rt.userSearch))

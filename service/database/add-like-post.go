@@ -7,7 +7,12 @@ func (db *appdbimpl) AddLikePost(postid uint64, userid uint64) error {
 		postid, userid, 1)
 
 	if err != nil {
-		return err
+		_, second_err := db.c.Exec(`update post_emotion set emotion=? where postid=? and userid=?`,
+			1, postid, userid)
+		if second_err != nil {
+			return second_err
+		}
+		return nil
 	}
 
 	return nil

@@ -7,7 +7,7 @@ import (
 // then below u should also change data for your post
 func (db *appdbimpl) PostAuthUidCheck(postid uint64) (uint64, error) {
 
-	res := db.c.QueryRow(`select authorid from posts where id=?`,
+	res := db.c.QueryRow(`select authorid from posts where postid=?`,
 		postid)
 
 	// and then u should check data from database
