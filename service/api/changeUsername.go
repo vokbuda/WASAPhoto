@@ -23,10 +23,18 @@ func (rt *_router) changeUsername(w http.ResponseWriter, r *http.Request, ps htt
 		return
 
 	}
+
 	var data_account_update DataAccountUpdate
 	errDecode := json.NewDecoder(r.Body).Decode(&data_account_update)
 	if errDecode != nil {
 		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
+	errAuthPassword := rt.db.AuthWithPassword(uid, data_account_update.Password)
+	if errAuthPassword != nil {
+		ctx.Logger.WithError(errAuthPassword).Error("Password is not correct")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 

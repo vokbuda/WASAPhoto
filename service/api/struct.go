@@ -23,6 +23,7 @@ type PostCreate struct {
 
 type DataAccountUpdate struct {
 	NewValue string `json:"newValue"`
+	Password string `json:"password"`
 }
 type DataAccountUpdated struct {
 	Entity string `json:"entity"`

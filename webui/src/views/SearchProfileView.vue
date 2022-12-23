@@ -35,6 +35,7 @@ export default {
 					return response.json();
 					}).then((data)=>{
 						this.usersArray=data
+						console.log(this.usersArray)
 					})
 
 				
@@ -182,7 +183,7 @@ export default {
 				<div class="col-md-4 py-2" v-for="(person, index) in usersArray" :key="index">
 					
 					<div  class="profile-card-4 text-center">
-						<div @click="this.gotoProfile(person.userid)" v-if="person.avatar"><img :src="person.avatar" class="img img-responsive"></div>
+						<div @click="this.gotoProfile(person.userid)" v-if="person.avatar"><img :src="'data:image/jpeg;base64,'+person.avatar" class="img img-responsive"></div>
 						<div @click="this.gotoProfile(person.userid)" v-else><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images" class="img img-responsive"></div>
 						<div class="profile-content">
 							<div class="profile-name" @click="this.gotoProfile(person.userid)">{{person.username}}</div>

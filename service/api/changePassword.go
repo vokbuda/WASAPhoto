@@ -53,13 +53,21 @@ func (rt *_router) changePassword(w http.ResponseWriter, r *http.Request, ps htt
 
 	}
 
+	errAuthPassword := rt.db.AuthWithPassword(uid, data_account_update.Password)
+	if errAuthPassword != nil {
+		ctx.Logger.WithError(errAuthPassword).Error("Password is not correct")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
+
 	if uidQuery != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
 
-	err = rt.db.ChangePassword(uidQuery, data_account_update.NewValue)
+	err = rt.db.ChangePassword(uid, data_account_update.NewValue)
 
 	if err != nil {
 		// In this case, we have an error on our side. Log the error (so we can be notified) and send a 500 to the user

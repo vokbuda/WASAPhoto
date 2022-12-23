@@ -17,7 +17,10 @@ export default {
 			postImage:"",
 			postText:"",
 			postCreation:true,
-			postsProfile:[]
+			postsProfile:[],
+			Password:"",
+			newPassword:"",
+			newAvatar:""
 		}
 	},
 	methods: {
@@ -27,10 +30,17 @@ export default {
 
 			
 		},
+		handleImageAvatar(e){
+			const selected_image=e.target.files[0]
+			this.createBase64ImageAvatar(selected_image)
+
+		},
+
 		handleImage(e){
 			
 			const selected_image=e.target.files[0]
 			this.createBase64Image(selected_image)
+
 
 		},
 		likePost(post){
@@ -142,19 +152,23 @@ export default {
 			});
 
 		},
-		createdPost(){
+		
+		notification(data,id_element){
+			document.getElementById(id_element).click()
+			this.notificationText=data
 			document.getElementById("liveToast").style.display="block";
 			//setTimeout(1500)
 			const delay = ms => new Promise(res => setTimeout(res, ms));
 
 
 			const yourFunction = async () => {
-				await delay(1500);
+				await delay(2000);
 				document.getElementById("liveToast").style.display="none";
+				this.notificationText=""
 			};
 			yourFunction()
-						
-			
+
+
 
 		},
 		createPost(){
@@ -175,8 +189,8 @@ export default {
 					'0','0',true,this.postImage,'',0)
 					this.postsProfile.unshift(post)
 					
-					document.getElementById("closeModalPostCreate").click()
-					this.createdPost()
+					
+					this.notification("Post had been created","closeModalPostCreate")
 				}
 			})
 			.catch(function (error) {
@@ -200,6 +214,20 @@ export default {
 		
 
 		},
+		createBase64ImageAvatar(fileObject){
+			const reader=new FileReader()
+			reader.onloadend=()=>{
+				this.newAvatar=reader.result
+				
+				this.newAvatar = this.newAvatar.replace(/^data:image\/[a-z]+;base64,/, "");
+				
+				
+				
+			}
+			reader.readAsDataURL(fileObject)
+
+		},
+	
 		async getMyPosts(){
 			
 			this.header="Bearer "+sessionStorage.getItem("token")
@@ -222,9 +250,14 @@ export default {
 			})
 				.then(response => {
 					// Handle response
+					if (response.data!=null){
+						this.postsProfile=response.data
+
+					}else{
+						this.postsProfile=[]
+					}
 					
-					this.postsProfile=response.data
-					console.log(this.postsProfile)
+					
 				})
 				.catch(err => {
 					// Handle errors
@@ -242,13 +275,101 @@ export default {
 			
 
 		},
+		async updateUsername(){
+			this.header="Bearer "+sessionStorage.getItem("token")
+			const postData = JSON.stringify({ "newValue": this.newUsername,"password":this.Password });
+			
+			
+			await this.$axios.patch('/profiles/'+this.$route.params.userid+'/changeUsername',postData,{
+				headers:{
+					'Authorization':this.header,
+				
+				}
+
+
+
+
+			})
+				.then(response => {
+					if(response.status=='200'){
+						this.notification("Username had been updated","closeModalUsernameUpdate")
+						this.profile.username=this.newUsername
+
+					}
+				})
+				.catch(err => {
+					// Handle errors
+					console.error(err);
+				
+				});
+
+		},
+		async updateAvatar(){
+			this.header="Bearer "+sessionStorage.getItem("token")
+			const postData = JSON.stringify({ "newValue": this.newAvatar,"password":this.Password });
+			
+			
+			await this.$axios.patch('/profiles/'+this.$route.params.userid+'/changeAvatar',postData,{
+				headers:{
+					'Authorization':this.header,
+				
+				}
+
+
+
+
+			})
+				.then(response => {
+					if(response.status=='200'){
+						this.notification("Avatar had been updated","closeModalAvatarUpdate")
+						this.profile.avatar=this.newAvatar
+
+					}
+				})
+				.catch(err => {
+					// Handle errors
+					console.error(err);
+				
+				});
+
+		},
+		async updatePassword(){
+			this.header="Bearer "+sessionStorage.getItem("token")
+			const postData = JSON.stringify({ "newValue": this.newPassword,"password":this.Password });
+			
+			
+			await this.$axios.patch('/profiles/'+this.$route.params.userid+'/changePassword',postData,{
+				headers:{
+					'Authorization':this.header,
+				
+				}
+
+
+
+
+			})
+				.then(response => {
+					console.log(response)
+					if(response.status=='200'){
+						this.notification("Password had been updated","closeModalUpdatePassword")
+						
+
+					}
+				})
+				.catch(err => {
+					// Handle errors
+					console.error(err);
+				
+				});
+
+		},
 		async getMyProfile(){
 		
 		
 			this.header="Bearer "+sessionStorage.getItem("token")
 		
 		
-			//this.userid=sessionStorage.getItem("userid")
+			
 
 
 			
@@ -273,7 +394,8 @@ export default {
 					console.error(err);
 				
 				});
-					}
+					},
+		
 	},
 	mounted() {
 		this.postCreation=true
@@ -321,11 +443,10 @@ body{
 }
 .image{
     
-    border:3px solid white;
+    
     
     height:80px;
-    width:100px;
-    border-radius:10px;
+    
     
 }
 .name{
@@ -401,7 +522,7 @@ img{
 .in_a_row{
 	display:flex;
 	justify-content:space-between;
-	align-items: center
+	
 }
 .avatar {
   width: 30px;
@@ -429,6 +550,10 @@ a:hover{
     height: 15vw;
     object-fit: cover;
 }
+.img-profile{
+	width:30px
+}
+
 .fab-container {
   
   position: fixed;
@@ -452,7 +577,7 @@ a:hover{
       
     </div>
     <div class="toast-body">
-      Post had been created
+      {{this.notificationText}}
     </div>
   </div>
 </div>
@@ -462,14 +587,12 @@ a:hover{
 			<div class="absolution">
 			<div id="element1">
 			
-			<div class="image" v-if="this.profile.avatar"><img :src="person.avatar"></div>
-			<div class="image" v-else><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images"></div>
+			<div data-bs-toggle="modal" data-bs-target="#imageModal" v-if="this.profile.avatar"><img class="image" v-bind:src="'data:image/jpeg;base64,'+this.profile.avatar"></div>
+			<div data-bs-toggle="modal" data-bs-target="#imageModal" v-else><img class="image" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images"></div>
 			<!--<img src="https://a4-images.myspacecdn.com/images03/2/85a286a4bbe84b56a6d57b1e5bd03ef4/300x300.jpg" alt="" />-->
 			
 			</div>
-			<div id="element2">
-			<btn data-bs-toggle="modal" data-bs-target="#imageModal"><i class="bi bi-upload"></i></btn>
-			</div>
+			
 			</div>
 			<div class="name">
 			{{this.profile.username}}
@@ -487,17 +610,17 @@ a:hover{
 					<form>
 					<div class="mb-3">
 						<label for="recipient-name" class="col-form-label">Current password:</label>
-						<input type="text" class="form-control" id="recipient-name">
+						<input v-model="this.Password" type="password" class="form-control" id="recipient-name">
 					</div>
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">New username:</label>
-						<input type="text" class="form-control" id="message-text">
+						<input v-model="newUsername" type="text" class="form-control" id="message-text">
 					</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Save updates</button>
+					<button id="closeModalUsernameUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button @click="this.updateUsername()" type="button" class="btn btn-primary">Save updates</button>
 				</div>
 				</div>
 			</div>
@@ -541,17 +664,17 @@ a:hover{
 					<form>
 					<div class="mb-3">
 						<label for="oldpassword" class="col-form-label">Current password:</label>
-						<input type="password" class="form-control" id="oldpassword">
+						<input v-model="this.Password" type="password" class="form-control" id="oldpassword">
 					</div>
 					<div class="mb-3">
 						<label for="newpassword" class="col-form-label">New password:</label>
-						<input type="password" class="form-control" id="newpassword">
+						<input v-model="this.newPassword" type="password" class="form-control" id="newpassword">
 					</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Save updates</button>
+					<button id="closeModalUpdatePassword" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button @click="this.updatePassword()" type="button" class="btn btn-primary">Save updates</button>
 				</div>
 				</div>
 			</div>
@@ -567,17 +690,17 @@ a:hover{
 					<form>
 					<div class="mb-3">
 						<label for="oldpassword" class="col-form-label">Current password:</label>
-						<input type="password" class="form-control" id="oldpassword">
+						<input v-model="this.Password" type="password" class="form-control" id="oldpassword">
 					</div>
 						<div class="input-group mb-3">
-						<input type="file" class="form-control" id="inputGroupFile02">
+						<input type="file" @change="this.handleImageAvatar" accept="image/*" class="form-control" id="inputGroupFile02">
 						
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" class="btn btn-primary">Save updates</button>
+					<button id="closeModalAvatarUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button @click="this.updateAvatar()" type="button" class="btn btn-primary">Save updates</button>
 				</div>
 				</div>
 			</div>
@@ -635,9 +758,15 @@ a:hover{
 		<div class="card">
 			<img v-bind:src="'data:image/jpeg;base64,'+post.image" alt="" class="card-img-top">
 			<div class="card-body">
+				<div class="in_a_row">
+				<div>
 				<img class="card-user avatar avatar-large" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images">
-
+				
 				<h5 class="card-title">{{this.profile.username}}</h5>
+				</div>
+				<btn style="margin-right:2px"><i style="font-size:2em;" class="bi bi-pencil-fill"></i></btn>
+				<btn><i style="font-size:2em;" class="bi bi-trash-fill"></i></btn>
+				</div>
 				<p class="card-text">{{post.text}}</p>
 				<div class="in_a_row">
 				<btn @click="this.sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
@@ -666,7 +795,7 @@ a:hover{
 		<div
 			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2">MyProfile</h1>
-			<div class="btn-toolbar mb-2 mb-md-0">
+			<div class="btn-toolbar mb-2 mb-md-0"
 				<div class="btn-group me-2">
 					<button type="button" class="btn btn-sm btn-outline-secondary" @click="refresh">
 						Refresh
