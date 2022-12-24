@@ -20,7 +20,8 @@ export default {
 			postsProfile:[],
 			Password:"",
 			newPassword:"",
-			newAvatar:""
+			newAvatar:"",
+			choosenPost:{}
 		}
 	},
 	methods: {
@@ -74,7 +75,7 @@ export default {
 			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
 			
 			console.log(sessionStorage.getItem('token'))
-			__API_URL__
+			
 			
 			fetch(__API_URL__+'/posts/'+post.postid+'/like/'+this.userid,{
 				method:'DELETE',
@@ -198,6 +199,31 @@ export default {
 			});
 
 		},
+		updatePost(){
+			
+			const postData = JSON.stringify({ "text": this.postText,"image":this.postImage });
+
+			
+			
+			this.$axios.put('/profiles/'+this.$route.params.userid+'/posts/'+this.choosenPost.postid, postData,{
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				}
+			}
+			)
+			.then((response)=> {
+				if (response.status==200){
+					this.choosenPost.image=this.postImage
+					this.choosenPost.text=this.postText
+										
+					this.notification("Post had been updated","closeModalPostUpdate")
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		},
 		createBase64Image(fileObject){
 			const reader=new FileReader()
 			reader.onloadend=()=>{
@@ -273,6 +299,35 @@ export default {
 		sendToComments(postid){
 			router.push('/posts/'+postid+'/comments')
 			
+
+		},
+		async deleteAccount(){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "password": this.Password });
+			
+			console.log(sessionStorage.getItem('token'))
+			
+			
+			fetch(__API_URL__+'/profiles/'+this.userid+'/deleteAccount',{
+				method:'DELETE',
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					this.notification("Your account had been removed","closeModalDeleteAccount")
+					sessionStorage.clear()
+					router.push('/dologin')
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
 
 		},
 		async updateUsername(){
@@ -361,6 +416,43 @@ export default {
 					console.error(err);
 				
 				});
+
+		},
+		async deletePost(){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "password": this.Password });
+			
+			console.log(sessionStorage.getItem('token'))
+			
+			
+			fetch(__API_URL__+'/profiles/'+this.userid+'/posts/'+this.choosenPost.postid,{
+				method:'DELETE',
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					console.log("current component had been deleted check data inside")
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+			
+
+		},
+		choosePost(post){
+			this.choosenPost=post
+			this.postText=this.choosenPost.text
+			this.postImage=this.choosenPost.image
+			
+			
+			
 
 		},
 		async getMyProfile(){
@@ -592,6 +684,9 @@ a:hover{
 			<!--<img src="https://a4-images.myspacecdn.com/images03/2/85a286a4bbe84b56a6d57b1e5bd03ef4/300x300.jpg" alt="" />-->
 			
 			</div>
+			<div id="element2">
+				<btn data-bs-toggle="modal" data-bs-target="#deleteAccountModal"><i style="font-size:2em;" class="bi bi-trash3-fill"></i></btn>
+			</div>
 			
 			</div>
 			<div class="name">
@@ -620,7 +715,7 @@ a:hover{
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalUsernameUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button @click="this.updateUsername()" type="button" class="btn btn-primary">Save updates</button>
+					<button @click="this.updateUsername()" type="button" class="btn btn-warning">Save updates</button>
 				</div>
 				</div>
 			</div>
@@ -634,11 +729,17 @@ a:hover{
 				</div>
 				<div class="modal-body">
 					<form>
+					
 					<div class="mb-3">
 						<div class="input-group mb-3">
 						<input type="file" @change="this.handleImage" accept="image/*" class="form-control" id="inputGroupFile02">
 						
 						</div>
+					</div>
+					<div>
+						<img v-if="this.postImage" class="image" v-bind:src="'data:image/jpeg;base64,'+this.postImage">
+						<img v-else class="image" src="../images/nophoto.jpg">
+
 					</div>
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">Text:</label>
@@ -649,6 +750,38 @@ a:hover{
 				<div class="modal-footer">
 					<button id="closeModalPostCreate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 					<button type="button" @click="this.createPost()" class="btn btn-primary">Create</button>
+				</div>
+				</div>
+			</div>
+			</div>
+			<div v-if="this.postCreation" class="modal fade" id="updatePostModal" tabindex="-1" aria-labelledby="exampleModalLabel" >
+			<div class="modal-dialog">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Update Post</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form>
+					
+					<div class="mb-3">
+						<div class="input-group mb-3">
+						<input type="file" @change="this.handleImage" accept="image/*" class="form-control" id="inputGroupFile02">
+						
+						</div>
+					</div>
+					<div>
+						<img class="image" v-bind:src="'data:image/jpeg;base64,'+this.postImage">
+					</div>
+					<div class="mb-3">
+						<label for="message-text" class="col-form-label">Text:</label>
+						<input v-model="this.postText" type="text" class="form-control" id="message-text">
+					</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="closeModalPostUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" @click="this.updatePost()" class="btn btn-primary">Update</button>
 				</div>
 				</div>
 			</div>
@@ -674,11 +807,51 @@ a:hover{
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalUpdatePassword" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button @click="this.updatePassword()" type="button" class="btn btn-primary">Save updates</button>
+					<button @click="this.updatePassword()" type="button" class="btn btn-warning">Save updates</button>
 				</div>
 				</div>
 			</div>
 			</div>
+			<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Delete Account</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form>
+					<div class="mb-3">
+						<label for="oldpassword" class="col-form-label">Current password:</label>
+						<input v-model="this.Password" type="password" class="form-control" id="oldpassword">
+					</div>
+					
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="closeModalDeleteAccount" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button @click="this.deleteAccount()" type="button" class="btn btn-danger">Delete Account</button>
+				</div>
+				</div>
+			</div>
+			</div>
+			<div class="modal fade" id="deletePostModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Delete Post?</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				
+				<div class="modal-footer">
+					<button id="closeModalDeleteAccount" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button @click="this.deletePost()" type="button" class="btn btn-danger">Delete Post</button>
+				</div>
+				</div>
+			</div>
+			</div>
+
+			
 			<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -700,29 +873,19 @@ a:hover{
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalAvatarUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button @click="this.updateAvatar()" type="button" class="btn btn-primary">Save updates</button>
+					<button @click="this.updateAvatar()" type="button" class="btn btn-warning">Save updates</button>
 				</div>
 				</div>
 			</div>
 			</div>
-			<!--<div class="input-group mb-3">
-  <input type="file" class="form-control" id="inputGroupFile02">
-  <label class="input-group-text" for="inputGroupFile02">Upload</label>
-</div>-->
+			
 
 
 
 			</div>
 			
 			
-			<!--
-			<div class="nickname">
-			@daftpunk
-			</div>
-			<div class="location">
-			<i class="material-icons">place</i>Europe
-			</div>
-			-->
+			
 			<div class="bottom">
 			<span class="following">
 			<span class="count">{{this.profile.quantitySubscriptions}}</span>
@@ -757,6 +920,7 @@ a:hover{
 			<div class="col-lg-4 mb-4" v-for="(post, index) in postsProfile" :key="index">
 		<div class="card">
 			<img v-bind:src="'data:image/jpeg;base64,'+post.image" alt="" class="card-img-top">
+			
 			<div class="card-body">
 				<div class="in_a_row">
 				<div>
@@ -764,8 +928,8 @@ a:hover{
 				
 				<h5 class="card-title">{{this.profile.username}}</h5>
 				</div>
-				<btn style="margin-right:2px"><i style="font-size:2em;" class="bi bi-pencil-fill"></i></btn>
-				<btn><i style="font-size:2em;" class="bi bi-trash-fill"></i></btn>
+				<btn @click="this.choosePost(post)" data-bs-toggle="modal" data-bs-target="#updatePostModal" style="margin-right:2px"><i style="font-size:2em;" class="bi bi-pencil-fill"></i></btn>
+				<btn @click="this.choosePost(post)" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i style="font-size:2em;" class="bi bi-trash-fill"></i></btn>
 				</div>
 				<p class="card-text">{{post.text}}</p>
 				<div class="in_a_row">

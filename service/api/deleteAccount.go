@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -26,6 +27,21 @@ func (rt *_router) deleteAccount(w http.ResponseWriter, r *http.Request, ps http
 	var path = r.URL.Path
 	var splited = strings.Split(path, "/")
 	var result = splited[len(splited)-2]
+	var data_account_delete DataAccountDelete
+	errDecode := json.NewDecoder(r.Body).Decode(&data_account_delete)
+	if errDecode != nil {
+		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
+	errAuthPassword := rt.db.AuthWithPassword(uid, data_account_delete.Password)
+	if errAuthPassword != nil {
+		ctx.Logger.WithError(errAuthPassword).Error("Password is not correct")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+
+	}
 
 	uidQuery, errParsUserid := strconv.ParseUint(result, 10, 64)
 	if errParsUserid != nil {

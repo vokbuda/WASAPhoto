@@ -20,7 +20,9 @@ type PostCreate struct {
 	Text  string `json:"text"`
 	Image string `json:"image"`
 }
-
+type DataAccountDelete struct {
+	Password string `json:"password"`
+}
 type DataAccountUpdate struct {
 	NewValue string `json:"newValue"`
 	Password string `json:"password"`

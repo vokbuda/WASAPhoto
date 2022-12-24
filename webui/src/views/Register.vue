@@ -24,6 +24,7 @@ export default {
 					
 					sessionStorage.setItem("token",response.data.session)
 					sessionStorage.setItem("userid",response.data.uid)
+					sessionStorage.setItem("username",username)
 					
 					
 

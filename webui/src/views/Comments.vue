@@ -3,6 +3,7 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import router from '../router'
+import Comment from '../entities/Comment'
 
 
 </script>
@@ -102,6 +103,11 @@ export default {
 			)
 			.then((response)=> {
 				if (response.status==200){
+                  
+                    var username=sessionStorage.getItem("username")
+                    const comment=new Comment(this.$route.params.userid,this.$route.params.postid,response.data.commentid,username,this.commentText,
+					'0','0',true,'',0)
+					this.commentsToPost.unshift(comment)
                     
 					
 					document.getElementById("closeModalCommentCreate").click()
@@ -146,6 +152,7 @@ export default {
         
         }
 	},
+    
     
     mounted() {
 		
