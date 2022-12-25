@@ -2,10 +2,6 @@
 // then check for data inside of your component
 package database
 
-import (
-	"strconv"
-)
-
 func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 	offset uint64, userid uint64) ([]Comment, error) {
 
@@ -14,12 +10,13 @@ func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 	(select sum(emotion=-1) from(select * from comment_emotion where commentid=id)), 
 	(select sum(emotion=1)  from(select * from comment_emotion where commentid=id)),
 	(select avatar from profiles where userid=authorid), 
-	(select username from profiles where userid=authorid)
+	(select username from profiles where userid=authorid),
+	(select emotion from comment_emotion where commentid=comments.id and userid=?)
 	FROM comments
 	WHERE postid=? limit 10 offset ?`
 
 	var ret []Comment
-	rows, err := db.c.Query(query, userid,
+	rows, err := db.c.Query(query, userid, userid,
 		postid, offset*10)
 	if err != nil {
 		return nil, err
@@ -32,7 +29,7 @@ func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 		var commentToReturn Comment
 
 		err = rows.Scan(&com.Postid, &com.Commentid, &com.Text, &com.Authorid, &com.Me,
-			&com.QuantityDislikes, &com.QuantityLikes, &com.Avatar, &com.Username)
+			&com.QuantityDislikes, &com.QuantityLikes, &com.Avatar, &com.Username, &com.CurrentEmotion)
 		if err != nil {
 			return nil, err
 		}
@@ -42,17 +39,22 @@ func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 		commentToReturn.LastChange = com.LastChange
 		commentToReturn.Me = com.Me
 		commentToReturn.Postid = com.Postid
+		if !com.CurrentEmotion.Valid {
+			commentToReturn.CurrentEmotion = 0
+		} else {
+			commentToReturn.CurrentEmotion = com.CurrentEmotion.Int64
+		}
 
 		commentToReturn.Text = com.Text
 		commentToReturn.Username = com.Username
 		// Check if the result is inside the circle
 
 		if !com.QuantityLikes.Valid {
-			com.QuantityLikes.String = "0"
+			com.QuantityLikes.Int64 = 0
 			com.QuantityLikes.Valid = true
 		}
 		if !com.QuantityDislikes.Valid {
-			com.QuantityDislikes.String = "0"
+			com.QuantityDislikes.Int64 = 0
 			com.QuantityDislikes.Valid = true
 		}
 		if !com.Avatar.Valid {
@@ -60,16 +62,9 @@ func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 		} else {
 			commentToReturn.Avatar = com.Avatar.String
 		}
-		numlikes, errParsQuantityLikes := strconv.ParseUint(com.QuantityLikes.String, 10, 64)
-		if errParsQuantityLikes != nil {
-			return nil, errParsQuantityLikes
-		}
-		numdislikes, errParsQuantityDislikes := strconv.ParseUint(com.QuantityDislikes.String, 10, 64)
-		if errParsQuantityDislikes != nil {
-			return nil, errParsQuantityDislikes
-		}
-		commentToReturn.QuantityDislikes = adjustNumber(numdislikes)
-		commentToReturn.QuantityLikes = adjustNumber(numlikes)
+
+		commentToReturn.QuantityDislikes = com.QuantityDislikes.Int64
+		commentToReturn.QuantityLikes = com.QuantityLikes.Int64
 
 		ret = append(ret, commentToReturn)
 

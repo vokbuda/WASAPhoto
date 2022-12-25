@@ -4,6 +4,8 @@
 import { RouterLink, RouterView } from 'vue-router'
 import router from '../router'
 import Comment from '../entities/Comment'
+import {adjustNumber} from '../helpers/adjustNumber.js'
+import { convertToString } from '../helpers/convertToString'
 
 
 </script>
@@ -15,20 +17,25 @@ export default {
 	data: function() {
 		return {
 			commentText:"",
-            commentsToPost:[]
+            commentsToPost:[],
+            tempComment:{},
+            notificationText:""
 		}
 	},
 	
 	methods: {
-		commentLike(commentid){
+        adjustNumber(data){
+            adjustNumber(data)
+        },
+		commentLike(comment){
             this.userid=sessionStorage.getItem("userid")
             console.log(this.$route.params.postid)
 			const postData = JSON.stringify({ "idPostEmotion": parseInt(this.$route.params.postid),"idUser":parseInt(this.userid),
-            "idCommentEmotion":commentid });
+            "idCommentEmotion":comment.commentid });
 			
 			
 			
-			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+commentid
+			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
             +'/like/'+this.userid, postData,{
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
@@ -36,25 +43,91 @@ export default {
 			}
 			)
 			.then((response)=> {
-				if (response.status==200){
-					console.log(response.data)
+                
+				if (response.status==204){
+                    if(comment.currentemotion==-1){
+                        comment.quantityDislikes=convertToString(comment.quantityDislikes,-1)
+                        
+
+                    }
+                    comment.quantityLikes=convertToString(comment.quantityLikes,1)
+
+					comment.currentemotion=1
+                    
 				}
 			})
 			.catch(function (error) {
 				console.log(error);
 			});
         },
-        deleteCommentLike(commentid){
+        deleteCommentLike(comment){
+            this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "idPost": parseInt(this.$route.params.postid),"idUser":parseInt(this.userid), "idCommentEmotion":parseInt(comment.commentid) });
+			
+			
+			
+			
+			fetch(__API_URL__+'/posts/'+this.$route.params.postid+'/comments/'+comment.commentid+'/like/'+this.userid,{
+				method:'DELETE',
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					comment.currentemotion=0
+                    comment.quantityLikes-=1
+					
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
 
         },
-        commentDislike(commentid){
+        deleteCommentDislike(comment){
+            this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "idPost": parseInt(this.$route.params.postid),"idUser":parseInt(this.userid), "idCommentEmotion":parseInt(comment.commentid) });
+			
+			
+			
+			
+			fetch(__API_URL__+'/posts/'+this.$route.params.postid+'/comments/'+comment.commentid+'/dislike/'+this.userid,{
+				method:'DELETE',
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					comment.currentemotion=0
+                    comment.quantityDislikes-=1
+                    
+					
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+        },
+        commentDislike(comment){
             this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "idPostEmotion": parseInt(this.$route.params.postid),"idUser":parseInt(this.userid),
-            "idCommentEmotion":commentid });
+            "idCommentEmotion":comment.commentid });
 			
 			
 			
-			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+commentid
+			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
             +'/dislike/'+this.userid, postData,{
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
@@ -62,8 +135,16 @@ export default {
 			}
 			)
 			.then((response)=> {
-				if (response.status==200){
-					console.log(response.data)
+				if (response.status==204){
+					
+                    if(comment.currentemotion==1){
+                        comment.quantityLikes=convertToString(comment.quantityLikes,-1)
+                        
+
+                    }
+                    comment.quantityDislikes=convertToString(comment.quantityDislikes,1)
+
+					comment.currentemotion=-1
 				}
 			})
 			.catch(function (error) {
@@ -71,21 +152,8 @@ export default {
 			});
 
         },
-        deleteCommentDislike(commentid){
-
-        },
-        createdComment(){
-            document.getElementById("liveToast").style.display="block";
-			//setTimeout(1500)
-			const delay = ms => new Promise(res => setTimeout(res, ms));
-
-
-			const yourFunction = async () => {
-				await delay(1500);
-				document.getElementById("liveToast").style.display="none";
-			};
-			yourFunction()
-        },
+        
+        
         goAnotherProfile(userid){
             
             router.push("/profiles/"+userid)
@@ -109,14 +177,93 @@ export default {
 					'0','0',true,'',0)
 					this.commentsToPost.unshift(comment)
                     
+					this.notification("closeModalCommentCreate","Comment was created")
 					
-					document.getElementById("closeModalCommentCreate").click()
-					this.createdComment()
 				}
 			})
 			.catch(function (error) {
 				console.log(error);
 			});
+        },
+        notification(id_element,textNotification){
+            document.getElementById(id_element).click()
+            
+            this.notificationText=textNotification
+                        
+            document.getElementById("liveToast").style.display="block";
+			//setTimeout(1500)
+			const delay = ms => new Promise(res => setTimeout(res, ms));
+
+
+			const yourFunction = async () => {
+				await delay(1500);
+				document.getElementById("liveToast").style.display="none";
+                this.notificationText=""
+			};
+			yourFunction()
+
+
+
+        },
+        chooseComment(comment){
+            this.tempComment=comment
+            this.commentText=comment.text
+
+        },
+        deleteComment(){
+            this.userid=sessionStorage.getItem("userid")
+			
+			
+			var choosenId=this.tempComment.commentid
+			fetch(__API_URL__+'/posts/'+this.$route.params.postid+'/comments/'+choosenId,{
+				method:'DELETE',
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				},
+				
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					
+					this.commentsToPost = this.commentsToPost.filter(function(el) { return el.commentid != choosenId; });
+                    
+                    this.notification('closeModalCommentDelete','Comment was deleted')
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+            
+        },
+        async updateComment(){
+            
+            const postData = JSON.stringify({ "text":this.commentText, });
+            
+			
+			
+			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+this.tempComment.commentid,postData,{
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				},
+                
+			}
+			)
+			.then((response)=> {
+				if (response.status==200){
+                    this.tempComment.text=this.commentText
+                    this.notification("closeModalCommentUpdate","Comment was updated")
+                    
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+
         },
         async getCommentsRelatedToPost(){
             this.header="Bearer "+sessionStorage.getItem("token")
@@ -139,9 +286,18 @@ export default {
 			})
 				.then(response => {
 					// Handle response
+					if(response.data!==null){
+                        this.commentsToPost=response.data
+                        this.commentsToPost.forEach((element, index) => {
+							element.quantityLikes=adjustNumber(element.quantityLikes)
+							element.quantityDislikes=adjustNumber(element.quantityDislikes)
+					    });
+                        
+                    }else{
+                        this.commentsToPost=[]
+                    }
 					
-					this.commentsToPost=response.data
-					console.log(this.commentsToPost)
+					
 				})
 				.catch(err => {
 					// Handle errors
@@ -1036,7 +1192,8 @@ h6, .h6 {
         
         </div>
         <div class="toast-body">
-        Comment had been created
+            {{this.notificationText}}
+        
         </div>
     </div>
     </div>
@@ -1060,12 +1217,16 @@ h6, .h6 {
                                             </div>
                                         </a>
                                     </div>
-                                    <div class="stats"> <btn @click="this.commentLike(comment.commentid)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
-                                    <btn @click="this.deleteCommentLike(comment.commentid)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
-				{{comment.quantityLikes}}
+                                    <div class="stats"> 
+                                    <btn @click="this.chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#updateCommentModal"><i style="font-size:1em;" class="bi bi-pencil-fill"></i></btn>
+                                    <btn @click="this.chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#deleteCommentModal"><i style="font-size:1em;" class="bi bi-trash-fill"></i></btn>
+                                    <div v-if="comment.currentemotion!==1"><btn @click="this.commentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn></div>
+                                    <div v-else><btn @click="this.deleteCommentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn></div>
+				{{adjustNumber(comment.quantityLikes)}}
 
-				<btn @click="this.commentDislike(comment.commentid)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
-				{{comment.quantityDislikes}}</div>
+				<div v-if="comment.currentemotion!=-1"><btn @click="this.commentDislike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn></div>
+                <div v-else><btn @click="this.deleteCommentDislike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn></div>
+				{{adjustNumber(comment.quantityDislikes)}}</div>
                                     
                                 </div>
                             </div>
@@ -1098,6 +1259,43 @@ h6, .h6 {
 				<div class="modal-footer">
 					<button id="closeModalCommentCreate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 					<button type="button" @click="this.createComment()" class="btn btn-primary">Create</button>
+				</div>
+				</div>
+			</div>
+			</div>
+            <div class="modal fade" id="updateCommentModal" tabindex="-1" aria-labelledby="exampleModalLabel" >
+			<div class="modal-dialog">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Update comment</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form>
+					
+					<div class="mb-3">
+						<label for="message-text" class="col-form-label">Text:</label>
+						<input v-model="this.commentText" type="text" class="form-control" id="message-text">
+					</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button id="closeModalCommentUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" @click="this.updateComment()" class="btn btn-warning">Update</button>
+				</div>
+				</div>
+			</div>
+			</div>
+            <div class="modal fade" id="deleteCommentModal" tabindex="-1" aria-labelledby="exampleModalLabel" >
+			<div class="modal-dialog">
+				<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabel">Delete comment?</h5>
+					<button id="closeModalDelete" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-footer">
+					<button id="closeModalCommentDelete" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button type="button" @click="this.deleteComment()" class="btn btn-danger">Delete</button>
 				</div>
 				</div>
 			</div>

@@ -42,14 +42,16 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 
 	}
-	subscribers, subscriptions, profile, err := rt.db.GetProfile(uidQuery)
+	subscribers, subscriptions, profile, err := rt.db.GetProfile(uidQuery, uid)
 
-	clientProfile.QuantitySubscribers = rt.adjustNumber(subscribers)
-	clientProfile.QuantitySubscriptions = rt.adjustNumber(subscriptions)
+	clientProfile.QuantitySubscribers = int64(subscribers)
+	clientProfile.QuantitySubscriptions = int64(subscriptions)
 
 	clientProfile.Userid = profile.Userid
 	clientProfile.Username = profile.Username
 	clientProfile.Avatar = profile.Avatar.String
+	clientProfile.CurrentBanned = profile.CurrentBanned
+	clientProfile.CurrentSubscribed = profile.CurrentSubscribed
 	if err != nil {
 		ctx.Logger.WithError(err).Error("it is impossible to get profile from database")
 		w.WriteHeader(http.StatusInternalServerError)

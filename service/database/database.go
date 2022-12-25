@@ -28,15 +28,15 @@ type Fountain struct {
 
 // adjust post component below and check for re
 type PostDatabase struct {
-	ID               uint64         `json:"postid"`
-	Text             string         `json:"text"`
-	Image            string         `json:"image"`
-	Authorid         uint64         `json:"authorid"`
-	LastChange       string         `json:"lastChange"`
-	Me               bool           `json:"me"`
-	QuantityLikes    sql.NullString `json:"quantityLikes"`
-	QuantityDislikes sql.NullString `json:"quantityDislikes"`
-	CurrentEmotion   sql.NullInt64  `json:"currentemotion"`
+	ID               uint64        `json:"postid"`
+	Text             string        `json:"text"`
+	Image            string        `json:"image"`
+	Authorid         uint64        `json:"authorid"`
+	LastChange       string        `json:"lastChange"`
+	Me               bool          `json:"me"`
+	QuantityLikes    sql.NullInt64 `json:"quantityLikes"`
+	QuantityDislikes sql.NullInt64 `json:"quantityDislikes"`
+	CurrentEmotion   sql.NullInt64 `json:"currentemotion"`
 }
 type Post struct {
 	ID               uint64 `json:"postid"`
@@ -45,8 +45,8 @@ type Post struct {
 	Authorid         uint64 `json:"authorid"`
 	LastChange       string `json:"lastChange"`
 	Me               bool   `json:"me"`
-	QuantityLikes    string `json:"quantityLikes"`
-	QuantityDislikes string `json:"quantityDislikes"`
+	QuantityLikes    int64  `json:"quantityLikes"`
+	QuantityDislikes int64  `json:"quantityDislikes"`
 	CurrentEmotion   int64  `json:"currentemotion"`
 }
 
@@ -54,25 +54,27 @@ type CommentDatabase struct {
 	Postid           uint64         `json:"postid"`
 	Commentid        uint64         `json:"commentid"`
 	Text             string         `json:"text"`
-	QuantityLikes    sql.NullString `json:"quantityLikes"`
-	QuantityDislikes sql.NullString `json:"quantityDislikes"`
+	QuantityLikes    sql.NullInt64  `json:"quantityLikes"`
+	QuantityDislikes sql.NullInt64  `json:"quantityDislikes"`
 	LastChange       string         `json:"lastChange"`
 	Authorid         string         `json:"authorid"`
 	Me               bool           `json:"me"`
 	Avatar           sql.NullString `json:"avatar"`
 	Username         string         `json:"username"`
+	CurrentEmotion   sql.NullInt64  `json:"currentemotion"`
 }
 type Comment struct {
 	Postid           uint64 `json:"postid"`
 	Commentid        uint64 `json:"commentid"`
 	Text             string `json:"text"`
-	QuantityLikes    string `json:"quantityLikes"`
-	QuantityDislikes string `json:"quantityDislikes"`
+	QuantityLikes    int64  `json:"quantityLikes"`
+	QuantityDislikes int64  `json:"quantityDislikes"`
 	LastChange       string `json:"lastChange"`
 	Authorid         string `json:"authorid"`
 	Me               bool   `json:"me"`
 	Avatar           string `json:"avatar"`
 	Username         string `json:"username"`
+	CurrentEmotion   int64  `json:"currentemotion"`
 }
 type BannedUser struct {
 	Userid   uint64         `json:"userid"`
@@ -83,17 +85,21 @@ type Profile struct {
 	Userid                uint64         `json:"userid"`
 	Username              string         `json:"username"`
 	Avatar                sql.NullString `json:"avatar"`
-	QuantitySubscribers   sql.NullString `json:"quantitySubscribers"`
-	QuantitySubscriptions sql.NullString `json:"quantitySubscriptions"`
+	QuantitySubscribers   sql.NullInt64  `json:"quantitySubscribers"`
+	QuantitySubscriptions sql.NullInt64  `json:"quantitySubscriptions"`
 	Me                    bool           `json:"me"`
+	CurrentSubscribed     bool           `json:"currentFollow"`
+	CurrentBanned         bool           `json:"currentBan"`
 }
 type ProfileClient struct {
 	Userid                uint64 `json:"userid"`
 	Username              string `json:"username"`
 	Avatar                string `json:"avatar"`
-	QuantitySubscribers   string `json:"quantitySubscribers"`
-	QuantitySubscriptions string `json:"quantitySubscriptions"`
+	QuantitySubscribers   int64  `json:"quantitySubscribers"`
+	QuantitySubscriptions int64  `json:"quantitySubscriptions"`
 	Me                    bool   `json:"me"`
+	CurrentSubscribed     bool   `json:"currentFollow"`
+	CurrentBanned         bool   `json:"currentBan"`
 }
 type SessionData struct {
 	Token     string `json:"token"`
@@ -111,11 +117,11 @@ type AppDatabase interface {
 	UserSearch(searchedData string, offset uint64) ([]ProfileClient, error)
 	GetMyStream(userid uint64, offset uint64) ([]Post, error)
 	// then implement data for getting current stream inside
-	GetProfile(userid uint64) (uint64, uint64, Profile, error)
+	GetProfile(userid uint64, caller uint64) (uint64, uint64, Profile, error)
 	GetProfilePosts(userid uint64, caller uint64, offset uint64) ([]Post, error)
 
 	CreateProfilePost(text string, image string, authorid uint64) (uint64, error)
-	UpdateProfilePost(postid uint64, text string, image string, uid uint64) (uint64, uint64, error)
+	UpdateProfilePost(postid uint64, text string, image string, uid uint64) (int64, int64, error)
 	DeleteProfilePost(postid uint64, authorid uint64) error
 	AddLikePost(idPostLiked uint64, idUserLiked uint64) error
 	DeleteLikePost(idPostLiked uint64, idUserLiked uint64) error
@@ -125,7 +131,7 @@ type AppDatabase interface {
 	UnfollowUser(idFolloweduser uint64, idFollowingUser uint64) error
 	GetCommentsRelatedToPost(postid uint64, offset uint64, userid uint64) ([]Comment, error)
 	CreateCommentRelatedToPost(commentText string, authorid uint64, postid uint64) (uint64, error)
-	UpdateCommentRelatedToPost(commentid uint64, postid uint64, authorid uint64, text string) (uint64, uint64, error)
+	UpdateCommentRelatedToPost(commentid uint64, postid uint64, authorid uint64, text string) (int64, int64, error)
 	DeleteCommentRelatedToPost(idForPost uint64, idForComment uint64, authorid uint64) error
 
 	// u should implement methods below written inside of your database activity

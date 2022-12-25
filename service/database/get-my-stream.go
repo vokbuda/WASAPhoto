@@ -1,8 +1,6 @@
 // then check for data inside of your component
 package database
 
-import "strconv"
-
 func (db *appdbimpl) GetMyStream(userid uint64,
 	offset uint64) ([]Post, error) {
 
@@ -33,23 +31,16 @@ func (db *appdbimpl) GetMyStream(userid uint64,
 		post.Me = f.Me
 		post.Text = f.Text
 		if !f.QuantityLikes.Valid {
-			f.QuantityLikes.String = "0"
+			f.QuantityLikes.Int64 = 0
 			f.QuantityLikes.Valid = true
 		}
 		if !f.QuantityDislikes.Valid {
-			f.QuantityDislikes.String = "0"
+			f.QuantityDislikes.Int64 = 0
 			f.QuantityDislikes.Valid = true
 		}
-		numlikes, errParsQuantityLikes := strconv.ParseUint(f.QuantityLikes.String, 10, 64)
-		if errParsQuantityLikes != nil {
-			return nil, errParsQuantityLikes
-		}
-		numdislikes, errParsQuantityDislikes := strconv.ParseUint(f.QuantityDislikes.String, 10, 64)
-		if errParsQuantityDislikes != nil {
-			return nil, errParsQuantityDislikes
-		}
-		post.QuantityLikes = adjustNumber(numlikes)
-		post.QuantityDislikes = adjustNumber(numdislikes)
+
+		post.QuantityLikes = f.QuantityLikes.Int64
+		post.QuantityDislikes = f.QuantityDislikes.Int64
 
 		if err != nil {
 			return nil, err

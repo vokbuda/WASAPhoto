@@ -1,8 +1,6 @@
 // below u should have some data for searching users inside of your database and return some result inside
 package database
 
-import "strconv"
-
 func (db *appdbimpl) UserSearch(searchedData string, offset uint64) ([]ProfileClient, error) {
 	final_string := "select userid,username,avatar, (select count(*) from subscriptions where followeruserid=userid), (select count(*) from subscriptions where followeduserid=userid) from profiles where username like '%" + searchedData + "%' limit 10 offset ?"
 	rows, err := db.c.Query(final_string,
@@ -26,18 +24,18 @@ func (db *appdbimpl) UserSearch(searchedData string, offset uint64) ([]ProfileCl
 		if err != nil {
 			return nil, err
 		}
+		if !userProfile.QuantitySubscribers.Valid {
+			userProfile.QuantitySubscribers.Int64 = 0
+			userProfile.QuantitySubscribers.Valid = true
+		}
+		if !userProfile.QuantitySubscriptions.Valid {
+			userProfile.QuantitySubscriptions.Int64 = 0
+			userProfile.QuantitySubscriptions.Valid = true
+		}
 
-		numSubscriptions, errParsQuantityLikes := strconv.ParseUint(userProfile.QuantitySubscriptions.String, 10, 64)
-		if errParsQuantityLikes != nil {
-			return nil, errParsQuantityLikes
-		}
-		numSubscribed, errParsQuantityDislikes := strconv.ParseUint(userProfile.QuantitySubscribers.String, 10, 64)
-		if errParsQuantityDislikes != nil {
-			return nil, errParsQuantityDislikes
-		}
 		var userClient ProfileClient
-		userClient.QuantitySubscribers = adjustNumber(numSubscribed)
-		userClient.QuantitySubscriptions = adjustNumber(numSubscriptions)
+		userClient.QuantitySubscribers = userProfile.QuantitySubscribers.Int64
+		userClient.QuantitySubscriptions = userProfile.QuantitySubscriptions.Int64
 		if userProfile.Avatar.Valid {
 			userClient.Avatar = userProfile.Avatar.String
 		} else {

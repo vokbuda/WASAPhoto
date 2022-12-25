@@ -82,19 +82,19 @@ type RequestEmotionToComment struct {
 	IdUser           uint64 `json:"idUser"`
 }
 type CommentToUpdate struct {
-	text string `text:"text"`
+	Text string `json:"text"`
 }
 
 type CommentChanged struct {
 	Postid           uint64 `json:"postid"`
 	Commentid        uint64 `json:"commentid"`
-	QuantityLikes    string `json:"quantityLikes"`
-	QuantityDislikes string `json:"quantityDislikes"`
+	QuantityLikes    int64  `json:"quantityLikes"`
+	QuantityDislikes int64  `json:"quantityDislikes"`
 }
 type PostChanged struct {
 	Postid           uint64 `json:"postid"`
-	QuantityLikes    string `json:"quantityLikes"`
-	QuantityDislikes string `json:"quantityDislikes"`
+	QuantityLikes    int64  `json:"quantityLikes"`
+	QuantityDislikes int64  `json:"quantityDislikes"`
 }
 type PostCreated struct {
 	Postid uint64 `json:"postid"`

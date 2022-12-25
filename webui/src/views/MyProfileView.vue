@@ -1,6 +1,8 @@
 <script>
 import router from '../router'
 import Post from '../entities/Post'
+import {adjustNumber} from '../helpers/adjustNumber.js'
+import {convertToString} from '../helpers/convertToString.js'
 export default {
 	data: function() {
 		return {
@@ -21,10 +23,131 @@ export default {
 			Password:"",
 			newPassword:"",
 			newAvatar:"",
-			choosenPost:{}
+			choosenPost:{},
+			loaded:false
 		}
 	},
+	
 	methods: {
+		ban(){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "banningUserid": parseInt(this.userid),"bannedUserid":parseInt(this.$route.params.userid) });
+			
+			
+			
+			this.$axios.put('/profiles/'+this.$route.params.userid+'/banuser/'+this.userid, postData,{
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				}
+			}
+			)
+			.then((response)=> {
+				if(response.status==204){
+					this.profile.currentBan=true
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+			
+
+		},
+		unban(){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "banningUserid": parseInt(this.userid),"bannedUserid":parseInt(this.$route.params.userid) });
+			fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/banuser/'+this.userid,{
+				method:'DELETE',
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					this.profile.currentBan=false
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+			
+
+		},
+		subscribe(){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "followingUserid": parseInt(this.userid),"followedUserid":parseInt(this.$route.params.userid) });
+			
+			
+			
+			this.$axios.put('/profiles/'+this.$route.params.userid+'/subscribe/'+this.userid, postData,{
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				}
+			}
+			)
+			.then((response)=> {
+				if(response.status==204){
+					this.profile.currentFollow=true
+					console.log(this.profile.quantitySubscribers)
+					this.profile.quantitySubscribers=convertToString(this.profile.quantitySubscribers,1)
+					console.log(this.profile.quantitySubscribers)
+
+
+
+				}
+				
+				
+				
+				
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		},
+		unsubscribe(){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "followingUserid": parseInt(this.userid),"followedUserid":parseInt(this.$route.params.userid) });
+			
+			
+			
+			
+			fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/subscribe/'+this.userid,{
+				method:'DELETE',
+				headers:{
+					"Authorization":'Bearer '+sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					this.profile.currentFollow=false
+					this.profile.quantitySubscribers=convertToString(this.profile.quantitySubscribers,-1)
+					
+					
+					
+					//document.getElementById("closeModalPostCreate").click()
+					//this.createdPost()
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		},
+		convertToString(data,changed){
+			return convertToString(data,changed)
+		},
+		adjustNumber(data){	
+			return adjustNumber(data)
+		},
+		
+		
 		async refresh() {
 			this.loading = true;
 			this.errormsg = null;
@@ -50,7 +173,7 @@ export default {
 			
 			
 			
-			this.$axios.put('s/posts/'+post.postid+'/like/'+this.userid, postData,{
+			this.$axios.put('/posts/'+post.postid+'/like/'+this.userid, postData,{
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
 				}
@@ -62,6 +185,14 @@ export default {
 					
 					//document.getElementById("closeModalPostCreate").click()
 					//this.createdPost()
+					
+					if(post.currentemotion==-1){
+						post.quantityDislikes=convertToString(post.quantityDislikes,-1)
+						
+					}
+					post.quantityLikes=convertToString(post.quantityLikes,1)
+					
+
 					post.currentemotion=1
 				}
 			})
@@ -89,6 +220,9 @@ export default {
 				
 				if (response.status==204){
 					post.currentemotion=0
+					
+					post.quantityLikes=convertToString(post.quantityLikes,-1)
+					
 					//document.getElementById("closeModalPostCreate").click()
 					//this.createdPost()
 					
@@ -112,11 +246,19 @@ export default {
 			}
 			)
 			.then((response)=> {
-				if (response.status==200){
+				if (response.status==204){
+					if(post.currentemotion==1){
+						post.quantityLikes=convertToString(post.quantityLikes,-1)
+						
+					}
+					post.quantityDislikes=convertToString(post.quantityDislikes,1)
+					post.currentemotion=-1
+
+					
 					
 					//document.getElementById("closeModalPostCreate").click()
 					//this.createdPost()
-					console.log("success response from database")
+					
 				}
 			})
 			.catch(function (error) {
@@ -143,6 +285,7 @@ export default {
 				
 				if (response.status==204){
 					post.currentemotion=0
+					post.quantityDislikes=convertToString(post.quantityDislikes,-1)
 					//document.getElementById("closeModalPostCreate").click()
 					//this.createdPost()
 					
@@ -278,6 +421,11 @@ export default {
 					// Handle response
 					if (response.data!=null){
 						this.postsProfile=response.data
+						this.postsProfile.forEach((element, index) => {
+							element.quantityLikes=adjustNumber(element.quantityLikes)
+							element.quantityDislikes=adjustNumber(element.quantityDislikes)
+						});
+						console.log(this.postsProfile)
 
 					}else{
 						this.postsProfile=[]
@@ -423,9 +571,10 @@ export default {
 			const postData = JSON.stringify({ "password": this.Password });
 			
 			console.log(sessionStorage.getItem('token'))
+			console.log(this.choosenPost.postid)
+			var choosenId=this.choosenPost.postid
 			
-			
-			fetch(__API_URL__+'/profiles/'+this.userid+'/posts/'+this.choosenPost.postid,{
+			fetch(__API_URL__+'/profiles/'+this.userid+'/posts/'+choosenId,{
 				method:'DELETE',
 				headers:{
 					"Authorization":'Bearer '+sessionStorage.getItem("token")
@@ -436,7 +585,11 @@ export default {
 			.then((response)=> {
 				
 				if (response.status==204){
-					console.log("current component had been deleted check data inside")
+					// closeModalDeleteAccount
+					this.postsProfile = this.postsProfile.filter(function(el) { return el.postid != choosenId; });
+					this.notification("Post had been removed","closeModalDeletePost")
+					
+					
 					
 				}
 			})
@@ -480,6 +633,12 @@ export default {
 					// Handle response
 					
 					this.profile=response.data
+					
+					this.profile.quantitySubscriptions=this.adjustNumber(this.profile.quantitySubscriptions)
+					this.profile.quantitySubscribers=this.adjustNumber(this.profile.quantitySubscribers)
+					console.log(this.profile)
+					
+					
 				})
 				.catch(err => {
 					// Handle errors
@@ -489,10 +648,14 @@ export default {
 					},
 		
 	},
-	mounted() {
+	
+	
+	created() {
+		
 		this.postCreation=true
 		this.getMyProfile()
 		this.getMyPosts()
+		
 		
 	}
 }
@@ -844,7 +1007,7 @@ a:hover{
 				</div>
 				
 				<div class="modal-footer">
-					<button id="closeModalDeleteAccount" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<button id="closeModalDeletePost" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 					<button @click="this.deletePost()" type="button" class="btn btn-danger">Delete Post</button>
 				</div>
 				</div>
@@ -905,8 +1068,10 @@ a:hover{
 			
 			</div>
 			<div v-if="!this.profile.me">
-			<button v-if="this.switcherSubscription" style="margin-top:5px" type="button" class="btn btn-warning">{{this.subscriptionText}}</button>
-			<button v-if="this.switcherBan" style="margin-top:5px; margin-left:10px" type="button" class="btn btn-danger">{{this.banText}}</button>
+			<button @click="this.subscribe" v-if="!this.profile.currentFollow" style="margin-top:5px" type="button" class="btn btn-warning">follow</button>
+			<button @click="this.unsubscribe" v-else style="margin-top:5px" type="button" class="btn btn-warning">unfollow</button>
+			<button @click="this.ban" v-if="!this.profile.currentBan" style="margin-top:5px; margin-left:10px" type="button" class="btn btn-danger">ban</button>
+			<button @click="this.unban" v-else style="margin-top:5px; margin-left:10px" type="button" class="btn btn-danger">unban</button>
 			</div>
 			
 		</div>

@@ -20,6 +20,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	var banning_user BanningUser
 
 	bearerToken := r.Header.Get("Authorization")
+
 	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
@@ -29,6 +30,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 	}
 
 	errDecode := json.NewDecoder(r.Body).Decode(&banning_user)
+
 	if errDecode != nil {
 		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
 		w.WriteHeader(http.StatusInternalServerError)

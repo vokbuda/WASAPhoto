@@ -57,8 +57,6 @@ func (rt *_router) updateProfilePost(w http.ResponseWriter, r *http.Request, ps 
 	// then it is possible to update post inside of your current component
 
 	num_likes, num_dislikes, err := rt.db.UpdateProfilePost(postuidQuery, postToChange.Text, postToChange.Image, uid)
-	var likesNum string = rt.adjustNumber(num_likes)
-	var dislikesNum string = rt.adjustNumber(num_dislikes)
 
 	if err != nil {
 
@@ -70,8 +68,8 @@ func (rt *_router) updateProfilePost(w http.ResponseWriter, r *http.Request, ps 
 	w.Header().Set("Content-Type", "application/json")
 	var updatedPost PostChanged
 	updatedPost.Postid = postuidQuery
-	updatedPost.QuantityDislikes = likesNum
-	updatedPost.QuantityLikes = dislikesNum
+	updatedPost.QuantityDislikes = num_dislikes
+	updatedPost.QuantityLikes = num_likes
 	_ = json.NewEncoder(w).Encode(updatedPost)
 
 }

@@ -6,7 +6,13 @@ func (db *appdbimpl) AddDislikeToCommentRelatedToPost(commentid uint64, userid u
 		commentid, userid, -1)
 
 	if err != nil {
-		return err
+		_, second_err := db.c.Exec(`update comment_emotion set emotion=? where commentid=? and userid=?`,
+			-1, commentid, userid)
+		if second_err != nil {
+			return second_err
+		}
+		return nil
+
 	}
 
 	return nil

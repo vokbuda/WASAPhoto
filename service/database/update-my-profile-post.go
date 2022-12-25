@@ -3,7 +3,7 @@ package database
 import "database/sql"
 
 // then below u should also change data for your post
-func (db *appdbimpl) UpdateProfilePost(postid uint64, text string, image string, uid uint64) (uint64, uint64, error) {
+func (db *appdbimpl) UpdateProfilePost(postid uint64, text string, image string, uid uint64) (int64, int64, error) {
 
 	res, err := db.c.Exec(`UPDATE posts set text=?, image=? where postid=? and authorid=?`,
 		text, image, postid, uid)
@@ -34,17 +34,17 @@ func (db *appdbimpl) UpdateProfilePost(postid uint64, text string, image string,
 		// Check if the result is inside the circle
 
 	}
-	var finalNumLikes uint64
-	var finalNumDislikes uint64
+	var finalNumLikes int64
+	var finalNumDislikes int64
 	if !numLikes.Valid {
 		finalNumLikes = 0
 	} else {
-		finalNumLikes = uint64(numLikes.Int64)
+		finalNumLikes = numLikes.Int64
 	}
 	if !numDislikes.Valid {
 		finalNumDislikes = 0
 	} else {
-		finalNumDislikes = uint64(numDislikes.Int64)
+		finalNumDislikes = numDislikes.Int64
 	}
 
 	if resEmotions.Err() != nil {

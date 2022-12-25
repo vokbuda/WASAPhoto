@@ -30,7 +30,9 @@ func (rt *_router) updateCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	}
 
 	var commentToUpdate CommentToUpdate
+
 	errDecode := json.NewDecoder(r.Body).Decode(&commentToUpdate)
+
 	if errDecode != nil {
 		ctx.Logger.WithError(errDecode).Error("can't decode data inside")
 		w.WriteHeader(http.StatusInternalServerError)
@@ -60,9 +62,9 @@ func (rt *_router) updateCommentRelatedToPost(w http.ResponseWriter, r *http.Req
 	// commenttext authorid and postid
 	// comment id postid authorid and text
 
-	num_likes, num_dislikes, err := rt.db.UpdateCommentRelatedToPost(commentidQuery, postidQuery, uid, commentToUpdate.text)
-	var likesNum string = rt.adjustNumber(num_likes)
-	var dislikesNum string = rt.adjustNumber(num_dislikes)
+	num_likes, num_dislikes, err := rt.db.UpdateCommentRelatedToPost(commentidQuery, postidQuery, uid, commentToUpdate.Text)
+	var likesNum int64 = num_likes
+	var dislikesNum int64 = num_dislikes
 
 	if err != nil {
 
