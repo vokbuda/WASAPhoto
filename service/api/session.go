@@ -34,6 +34,7 @@ func (rt *_router) session(w http.ResponseWriter, r *http.Request,
 		return
 
 	}
+
 	var sessionResponse SessionResponse
 	sessionResponse.Session = token
 	sessionResponse.Uid = uid

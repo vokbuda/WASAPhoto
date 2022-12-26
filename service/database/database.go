@@ -34,15 +34,18 @@ type PostDatabase struct {
 	Authorid         uint64        `json:"authorid"`
 	LastChange       string        `json:"lastChange"`
 	Me               bool          `json:"me"`
+	AuthorName       string        `json:"authorname"`
 	QuantityLikes    sql.NullInt64 `json:"quantityLikes"`
 	QuantityDislikes sql.NullInt64 `json:"quantityDislikes"`
 	CurrentEmotion   sql.NullInt64 `json:"currentemotion"`
 }
+
 type Post struct {
 	ID               uint64 `json:"postid"`
 	Text             string `json:"text"`
 	Image            string `json:"image"`
 	Authorid         uint64 `json:"authorid"`
+	AuthorName       string `json:"authorname"`
 	LastChange       string `json:"lastChange"`
 	Me               bool   `json:"me"`
 	QuantityLikes    int64  `json:"quantityLikes"`
@@ -76,11 +79,22 @@ type Comment struct {
 	Username         string `json:"username"`
 	CurrentEmotion   int64  `json:"currentemotion"`
 }
-type BannedUser struct {
-	Userid   uint64         `json:"userid"`
-	Username string         `json:"username"`
-	Avatar   sql.NullString `json:"avatar"`
+type SimpleUser struct {
+	Userid        uint64         `json:"userid"`
+	Username      string         `json:"username"`
+	Avatar        sql.NullString `json:"avatar"`
+	CurrentBan    bool           `json:"currentBan"`
+	CurrentFollow bool           `json:"currentFollow"`
 }
+type SimpleClient struct {
+	Userid        uint64 `json:"userid"`
+	Username      string `json:"username"`
+	Avatar        string `json:"avatar"`
+	CurrentBan    bool   `json:"currentBan"`
+	CurrentFollow bool   `json:"currentFollow"`
+	Mine          bool   `json:"mine"`
+}
+
 type Profile struct {
 	Userid                uint64         `json:"userid"`
 	Username              string         `json:"username"`
@@ -111,10 +125,10 @@ type SessionData struct {
 type AppDatabase interface {
 	// UpdatePost(Post) (string, error) is equaivalent of updatepost my profile check for the values inside of your component
 
-	GetBannedUsers(userid uint64, offset uint64) ([]BannedUser, error)
+	GetBannedUsers(userid uint64, offset uint64) ([]SimpleClient, error)
 	BanUser(banninguserid uint64, banneduserid uint64) error
 	UnbanUser(banninguserid uint64, banneduserid uint64) error
-	UserSearch(searchedData string, offset uint64) ([]ProfileClient, error)
+	UserSearch(searchedData string, offset uint64, uid uint64) ([]ProfileClient, error)
 	GetMyStream(userid uint64, offset uint64) ([]Post, error)
 	// then implement data for getting current stream inside
 	GetProfile(userid uint64, caller uint64) (uint64, uint64, Profile, error)
@@ -146,6 +160,8 @@ type AppDatabase interface {
 	ChangeUsername(userid uint64, username string) error
 	DeleteAccount(userid uint64) error
 	PostAuthUidCheck(postauthorid uint64) (uint64, error)
+	Following(uid uint64, offset uint64, caller uint64) ([]SimpleClient, error)
+	Followers(uid uint64, offset uint64, caller uint64) ([]SimpleClient, error)
 
 	// below u have component for register different users
 	Session(username string, password string, bearerToken string) (uint64, string, error)

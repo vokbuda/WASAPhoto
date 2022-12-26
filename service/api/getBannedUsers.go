@@ -20,7 +20,7 @@ import (
 func (rt *_router) getBannedUsers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var err error
-	var bannedUsers []database.BannedUser
+	var bannedUsers []database.SimpleClient
 
 	var path = r.URL.Path
 	var splited = strings.Split(path, "/")

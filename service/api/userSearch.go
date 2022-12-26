@@ -17,7 +17,7 @@ import (
 func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	bearerToken := r.Header.Get("Authorization")
 
-	errAuth := rt.db.Auth(bearerToken)
+	uid, errAuth := rt.db.AuthUid(bearerToken)
 	if errAuth != nil {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusUnauthorized)
@@ -38,7 +38,7 @@ func (rt *_router) userSearch(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	foundUsers, findUsersErr := rt.db.UserSearch(username, offset)
+	foundUsers, findUsersErr := rt.db.UserSearch(username, offset, uid)
 
 	if findUsersErr != nil {
 		ctx.Logger.WithError(findUsersErr).Error("This is an errors inside of findusers")

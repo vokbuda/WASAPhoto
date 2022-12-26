@@ -15,28 +15,29 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 	// if it is not existing then it should be created inside of session db
 
 	var sessionData SessionData
-	row := db.c.QueryRow(`select * from session where token=?`, bearerToken)
+	pass := []byte(password)
+
+	// then u should take data from current component inside of your database and check it inside
+
+	// Hashing the password
+
+	// below u have a hash function
+
+	h := sha256.New()
+
+	h.Write(pass)
+
+	hash_intermediate := h.Sum(nil)
+	hash := hex.EncodeToString(hash_intermediate)
+
+	row := db.c.QueryRow(`select * from session where token=?
+	union all select * from session where userid=(select userid from profiles where username=? and password=?)`, bearerToken, username, hash)
 
 	err := row.Scan(&sessionData.Token, &sessionData.Lastlogin, &sessionData.Created, &sessionData.Userid)
 
 	if err == sql.ErrNoRows {
 
 		// if there is no rows inside of current component then u should insert some data inside of db
-
-		pass := []byte(password)
-
-		// then u should take data from current component inside of your database and check it inside
-
-		// Hashing the password
-
-		// below u have a hash function
-
-		h := sha256.New()
-
-		h.Write(pass)
-
-		hash_intermediate := h.Sum(nil)
-		hash := hex.EncodeToString(hash_intermediate)
 
 		res, errorinsertDatabase := db.c.Exec(`insert into profiles(username, password) VALUES (?, ?)`,
 			username, hash)
@@ -74,9 +75,9 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 			return 0, "", err
 		}
 
-		return lastuid, token, err
+		return lastuid, "Bearer " + token, err
 	} else if err == nil {
-		return 0, "", nil
+		return sessionData.Userid, sessionData.Token, nil
 	} else {
 		return 0, bearerToken, nil
 	}

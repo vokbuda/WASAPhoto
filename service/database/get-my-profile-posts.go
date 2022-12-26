@@ -10,10 +10,12 @@ func (db *appdbimpl) GetProfilePosts(userid uint64, caller uint64,
 	(select sum(emotion=1)  from(select * from post_emotion where postid=posts.postid)),
 	(select emotion from post_emotion where postid=posts.postid and userid=?)
 	FROM posts
-	WHERE authorid=? limit 10 offset ?`
+	WHERE authorid=? 
+	and ? not in (select banneduserid from banusers where banninguserid=authorid)
+	limit 10 offset ?`
 	var ret []Post
 	rows, err := db.c.Query(query, caller, caller,
-		userid, offset*10)
+		userid, caller, offset*10)
 	if err != nil {
 		return nil, err
 	}

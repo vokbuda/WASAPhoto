@@ -38,7 +38,7 @@ export default {
 			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
             +'/like/'+this.userid, postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				}
 			}
 			)
@@ -70,7 +70,7 @@ export default {
 			fetch(__API_URL__+'/posts/'+this.$route.params.postid+'/comments/'+comment.commentid+'/like/'+this.userid,{
 				method:'DELETE',
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
 				body:postData
 			}
@@ -100,7 +100,7 @@ export default {
 			fetch(__API_URL__+'/posts/'+this.$route.params.postid+'/comments/'+comment.commentid+'/dislike/'+this.userid,{
 				method:'DELETE',
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
 				body:postData
 			}
@@ -130,7 +130,7 @@ export default {
 			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
             +'/dislike/'+this.userid, postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				}
 			}
 			)
@@ -165,7 +165,7 @@ export default {
 			
 			this.$axios.post('/posts/'+this.$route.params.postid+'/comments', postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				}
 			}
 			)
@@ -218,7 +218,7 @@ export default {
 			fetch(__API_URL__+'/posts/'+this.$route.params.postid+'/comments/'+choosenId,{
 				method:'DELETE',
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
 				
 			}
@@ -246,7 +246,7 @@ export default {
 			
 			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+this.tempComment.commentid,postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
                 
 			}
@@ -266,7 +266,7 @@ export default {
 
         },
         async getCommentsRelatedToPost(){
-            this.header="Bearer "+sessionStorage.getItem("token")
+            this.header=sessionStorage.getItem("token")
 		
 		
 			//this.userid=sessionStorage.getItem("userid")

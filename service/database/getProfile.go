@@ -13,8 +13,9 @@ quantitySubscriptions: '30m'
 
 func (db *appdbimpl) GetProfile(userid uint64, caller uint64) (uint64, uint64, Profile, error) {
 
-	const query_ins = `select userid,username,avatar,(select count(*) from subscriptions where followeduserid=?) as subscribers,
-	(select count(*) from subscriptions where followeruserid=?),
+	const query_ins = `select userid,username,avatar,
+	(case when ? not in (select banneduserid from banusers where banninguserid=?) then (select count(*) from subscriptions where followeduserid=?) else 0 end),
+	(case when ? not in (select banneduserid from banusers where banninguserid=?) then (select count(*) from subscriptions where followeruserid=?) else 0 end),
 	(select count(*)=1 from subscriptions where followeduserid=? and followeruserid=?),
 	(select count(*)=1 from banusers where banninguserid=? and banneduserid=?)
 	as subscribing
@@ -22,7 +23,7 @@ func (db *appdbimpl) GetProfile(userid uint64, caller uint64) (uint64, uint64, P
 
 	var myProfile Profile
 
-	row := db.c.QueryRow(query_ins, userid, userid, userid, caller, caller, userid, userid)
+	row := db.c.QueryRow(query_ins, caller, userid, userid, caller, userid, userid, userid, caller, caller, userid, userid)
 	var numberSubscribers uint64
 	var numberSubscriptions uint64
 

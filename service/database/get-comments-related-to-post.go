@@ -13,11 +13,12 @@ func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 	(select username from profiles where userid=authorid),
 	(select emotion from comment_emotion where commentid=comments.id and userid=?)
 	FROM comments
-	WHERE postid=? limit 10 offset ?`
+	WHERE postid=? and ? not in (select banneduserid from banusers where banninguserid=authorid)
+	limit 10 offset ?`
 
 	var ret []Comment
 	rows, err := db.c.Query(query, userid, userid,
-		postid, offset*10)
+		postid, userid, offset*10)
 	if err != nil {
 		return nil, err
 	}

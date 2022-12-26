@@ -1,9 +1,7 @@
 
 <script>
 import router from '../router'
-
 export default {
-	
 	data: function() {
 		return {
 			errormsg: null,
@@ -16,42 +14,106 @@ export default {
 		}
 	},
 	methods: {
-		async loadMorePosts(){
-			this.header=sessionStorage.getItem("token")
+		subscribe(profile){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "followingUserid": parseInt(this.userid),"followedUserid":profile.userid });
 			
-			try {
-				await fetch(__API_URL__+'/profiles?username='+username+'&&offset='+this.offset,
-				{headers:{
-					'Authorization':this.header,
-				
+			
+			
+			this.$axios.put('/profiles/'+this.userid+'/subscribe/'+profile.userid, postData,{
+				headers:{
+					"Authorization":sessionStorage.getItem("token")
 				}
-				}).then((response)=>{
-					return response.json();
-					}).then((data)=>{
-						return data
-						
-					})
-
-				
-				// this.answer = (await res.json()).answer
-				
-				
-			} catch (error) {
-				this.answer = 'Error! Could not reach the API. ' + error
 			}
-    	},
+			)
+			.then((response)=> {
+				if(response.status==204){
+					profile.currentFollow=true
+					
+
+
+				}
+				
+				
+				
+				
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		},
+		unsubscribe(profile){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "followingUserid": parseInt(this.userid),"followedUserid":profile.userid });
+			
+			
+			
+			
+			fetch(__API_URL__+'/profiles/'+this.userid+'/subscribe/'+profile.userid,{
+				method:'DELETE',
+				headers:{
+					"Authorization":sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					profile.currentFollow=false
+					
+					
+					
+					
+					//document.getElementById("closeModalPostCreate").click()
+					//this.createdPost()
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		},
+		unban(profile){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "banningUserid": parseInt(this.userid),"bannedUserid":profile.userid });
+			fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/banuser/'+profile.userid,{
+				method:'DELETE',
+				headers:{
+					"Authorization":sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					profile.currentBan=false
+					this.usersArray= this.usersArray.filter(function(el) { return el.userid != profile.userid; });
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+			
+
+		},
 		
 		gotoProfile(userid){
 			router.push("/profiles/"+userid)
 
-
 			
 		},
-		async getAnswer(username) {
+		async getBannedUsers() {
 			this.header=sessionStorage.getItem("token")
+            // then u should have data for the following users below 
+            // /profiles/:userid/following
 			
 			try {
-				await fetch(__API_URL__+'/profiles?username='+username+'&&offset=0',
+				await fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/banuser?offset=0',
 				{headers:{
 					'Authorization':this.header,
 				
@@ -60,7 +122,7 @@ export default {
 					return response.json();
 					}).then((data)=>{
 						this.usersArray=data
-						console.log(this.usersArray)
+						
 					})
 
 				
@@ -88,8 +150,8 @@ export default {
     },
   	},
 	mounted(){
-		this.offset+=10
-		
+        this.getBannedUsers()
+		// here u should have some additional data, check it inside of current component
 	}
 	
 }
@@ -147,11 +209,6 @@ export default {
     font-weight: 600;
     color: #777;
 }
-.card-img-top {
-    width: 100%;
-    height: 15vw;
-    object-fit: cover;
-}
 
 .profile-card-4 .profile-overview h4 {
     color: #273751;
@@ -178,57 +235,38 @@ export default {
 
 <template>
 	<div>
-		<div
-			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-			<h1 class="h2">Search</h1>
-			<!--
-			<div class="btn-toolbar mb-2 mb-md-0">
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="refresh">
-						Refresh
-					</button>
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="exportList">
-						Export
-					</button>
-				</div>
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-primary" @click="newItem">
-						New
-					</button>
-				</div>
-                
-			</div>-->
-		</div>
+		
         
                  
 
-		<div class="input-group">
-			<input class="form-control rounded" v-model="searchedUsername" placeholder="INSERT USERNAME" aria-label="Search" aria-describedby="search-addon" />
-			
-		</div>
+		
 		<div>
 		<div style="margin-top: 30px;">
         <div class="card-group" v-if="usersArray!=null">
             <div class="container-fluid">
-			<div class="row" ref="scrollComponent">
+			<div class="row">
 				<div class="col-md-4 py-2" v-for="(person, index) in usersArray" :key="index">
 					
 					<div  class="profile-card-4 text-center">
-						<div @click="this.gotoProfile(person.userid)" v-if="person.avatar"><img :src="'data:image/jpeg;base64,'+person.avatar" class="card-img-top"></div>
-						<div @click="this.gotoProfile(person.userid)" v-else><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images" class="card-img-top"></div>
+						<div @click="this.gotoProfile(person.userid)" v-if="person.avatar"><img :src="'data:image/jpeg;base64,'+person.avatar" class="img img-responsive"></div>
+						<div @click="this.gotoProfile(person.userid)" v-else><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images" class="img img-responsive"></div>
 						<div class="profile-content">
 							<div class="profile-name" @click="this.gotoProfile(person.userid)">{{person.username}}</div>
 							<div class="row">
 								
-								<div class="col-xs-4">
-									<div class="profile-overview">
-										<p>FOLLOWERS</p>
-										<h4>{{person.quantitySubscribers}}</h4></div>
+								<div v-if="!person.currentFollow" class="col-xs-4">
+									<button @click="this.subscribe(person)" style="margin-bottom:10px" type="button" class="btn btn-warning">follow</button>
 								</div>
-								<div class="col-xs-4">
-									<div class="profile-overview">
-										<p>FOLLOWING</p>
-										<h4 >{{person.quantitySubscriptions}}</h4></div>
+                                <div v-else class="col-xs-4">
+									<button @click="this.unsubscribe(person)" style="margin-bottom:10px" type="button" class="btn btn-warning">unfollow</button>
+								</div>
+
+								
+								
+                                <div class="col-xs-4">
+                                    <button @click="this.unban(person)" style="margin-top:5px" type="button" class="btn btn-danger">unban</button>
+                                    
+									
 								</div>
 							</div>
 						</div>

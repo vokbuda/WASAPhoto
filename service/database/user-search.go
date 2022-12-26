@@ -1,9 +1,13 @@
 // below u should have some data for searching users inside of your database and return some result inside
 package database
 
-func (db *appdbimpl) UserSearch(searchedData string, offset uint64) ([]ProfileClient, error) {
-	final_string := "select userid,username,avatar, (select count(*) from subscriptions where followeruserid=userid), (select count(*) from subscriptions where followeduserid=userid) from profiles where username like '%" + searchedData + "%' limit 10 offset ?"
-	rows, err := db.c.Query(final_string,
+func (db *appdbimpl) UserSearch(searchedData string, offset uint64, uid uint64) ([]ProfileClient, error) {
+	final_string := `select userid,username,avatar,
+	(case when ? not in (select banneduserid from banusers where banninguserid=userid) then (select count(*) from subscriptions where followeruserid=userid) else 0 end),
+	(case when ? not in (select banneduserid from banusers where banninguserid=userid) then (select count(*) from subscriptions where followeduserid=userid) else 0 end)
+	 from profiles
+	 where username like '%` + searchedData + `%' limit 10 offset ?`
+	rows, err := db.c.Query(final_string, uid, uid,
 		offset)
 
 	var ret []ProfileClient

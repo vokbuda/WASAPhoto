@@ -29,6 +29,23 @@ export default {
 	},
 	
 	methods: {
+		goToFollowing(){
+			var currentuserid=this.$route.params.userid
+			router.push('/profiles/'+currentuserid+'/following')
+
+		},
+		goToFollowers(){
+			var currentuserid=this.$route.params.userid
+			router.push('/profiles/'+currentuserid+'/followers')
+
+
+		},
+		goToBanned(){
+			var currentuserid=this.$route.params.userid
+			router.push('/profiles/'+currentuserid+'/banuser')
+			
+
+		},
 		ban(){
 			this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "banningUserid": parseInt(this.userid),"bannedUserid":parseInt(this.$route.params.userid) });
@@ -37,7 +54,7 @@ export default {
 			
 			this.$axios.put('/profiles/'+this.$route.params.userid+'/banuser/'+this.userid, postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				}
 			}
 			)
@@ -58,7 +75,7 @@ export default {
 			fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/banuser/'+this.userid,{
 				method:'DELETE',
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
 				body:postData
 			}
@@ -83,7 +100,7 @@ export default {
 			
 			this.$axios.put('/profiles/'+this.$route.params.userid+'/subscribe/'+this.userid, postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				}
 			}
 			)
@@ -117,7 +134,7 @@ export default {
 			fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/subscribe/'+this.userid,{
 				method:'DELETE',
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
 				body:postData
 			}
@@ -175,7 +192,7 @@ export default {
 			
 			this.$axios.put('/posts/'+post.postid+'/like/'+this.userid, postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				}
 			}
 			)
@@ -211,7 +228,7 @@ export default {
 			fetch(__API_URL__+'/posts/'+post.postid+'/like/'+this.userid,{
 				method:'DELETE',
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
 				body:postData
 			}
@@ -241,7 +258,7 @@ export default {
 			
 			this.$axios.put('/posts/'+post.postid+'/dislike/'+this.userid, postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				}
 			}
 			)
@@ -276,7 +293,7 @@ export default {
 			fetch(__API_URL__+'/posts/'+post.postid+'/dislike/'+this.userid,{
 				method:'DELETE',
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
 				body:postData
 			}
@@ -322,7 +339,7 @@ export default {
 			
 			this.$axios.post('/profiles/'+this.$route.params.userid+'/posts', postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				}
 			}
 			)
@@ -350,7 +367,7 @@ export default {
 			
 			this.$axios.put('/profiles/'+this.$route.params.userid+'/posts/'+this.choosenPost.postid, postData,{
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				}
 			}
 			)
@@ -399,7 +416,7 @@ export default {
 	
 		async getMyPosts(){
 			
-			this.header="Bearer "+sessionStorage.getItem("token")
+			this.header=sessionStorage.getItem("token")
 		
 		
 			//this.userid=sessionStorage.getItem("userid")
@@ -459,7 +476,7 @@ export default {
 			fetch(__API_URL__+'/profiles/'+this.userid+'/deleteAccount',{
 				method:'DELETE',
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
 				body:postData
 			}
@@ -479,7 +496,7 @@ export default {
 
 		},
 		async updateUsername(){
-			this.header="Bearer "+sessionStorage.getItem("token")
+			this.header=sessionStorage.getItem("token")
 			const postData = JSON.stringify({ "newValue": this.newUsername,"password":this.Password });
 			
 			
@@ -508,7 +525,7 @@ export default {
 
 		},
 		async updateAvatar(){
-			this.header="Bearer "+sessionStorage.getItem("token")
+			this.header=sessionStorage.getItem("token")
 			const postData = JSON.stringify({ "newValue": this.newAvatar,"password":this.Password });
 			
 			
@@ -537,7 +554,7 @@ export default {
 
 		},
 		async updatePassword(){
-			this.header="Bearer "+sessionStorage.getItem("token")
+			this.header=sessionStorage.getItem("token")
 			const postData = JSON.stringify({ "newValue": this.newPassword,"password":this.Password });
 			
 			
@@ -577,7 +594,7 @@ export default {
 			fetch(__API_URL__+'/profiles/'+this.userid+'/posts/'+choosenId,{
 				method:'DELETE',
 				headers:{
-					"Authorization":'Bearer '+sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token")
 				},
 				body:postData
 			}
@@ -611,7 +628,7 @@ export default {
 		async getMyProfile(){
 		
 		
-			this.header="Bearer "+sessionStorage.getItem("token")
+			this.header=sessionStorage.getItem("token")
 		
 		
 			
@@ -665,9 +682,7 @@ export default {
 body{
   min-height:100vh;
   min-width:100vw;
-  background:linear-gradient(to right bottom,rgba(blue,0.5),rgba(green,0.5)),url(http://i.imgur.com/woUbg3p.jpg);
-  background-size:cover;
-  background-position:center center;
+  
   display:flex;
   justify-content:center;
   align-items:center;
@@ -678,9 +693,7 @@ body{
   max-width:400px;
   min-width:300px;
   height:70px;
-  background:url(http://i.imgur.com/woUbg3p.jpg);
-  background-size:cover;
-  background-position: center center;
+  
   transition: all .08s linear;
 }
 
@@ -1050,16 +1063,16 @@ a:hover{
 			
 			
 			<div class="bottom">
-			<span class="following">
+			<span @click="this.goToFollowing()" class="following">
 			<span class="count">{{this.profile.quantitySubscriptions}}</span>
 			following
 			</span>
 			
-			<span class="followers">
+			<span @click="this.goToFollowers()" class="followers">
 				<span class="count">{{this.profile.quantitySubscribers}}</span>
 				followers
 			</span>
-			<span class="banned" v-if="this.profile.me">
+			<span @click="this.goToBanned()" class="banned" v-if="this.profile.me">
 				<div @onclick="this.getMyProfile">
 				banned</div>
 			</span>

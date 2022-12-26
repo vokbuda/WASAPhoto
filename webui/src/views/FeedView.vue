@@ -1,4 +1,7 @@
+
 <script>
+import {adjustNumber} from '../helpers/adjustNumber.js'
+import {convertToString} from '../helpers/convertToString.js'
 export default {
 	data: function() {
 		return {
@@ -9,6 +12,52 @@ export default {
 		}
 	},
 	methods: {
+		async getLastPosts(){
+			this.header=sessionStorage.getItem("token")
+
+		
+		
+			var userid=sessionStorage.getItem("userid")
+
+
+			
+		
+			await this.$axios.get('/posts?offset=0&userid='+userid,{
+				headers:{
+					'Authorization':this.header,
+				
+				}
+
+
+
+
+			})
+				.then(response => {
+					// Handle response
+					
+					
+					if (response.status==200){
+						this.feed_posts=response.data
+						console.log(this.feed_posts)
+						this.feed_posts.forEach((element, index) => {
+							element.quantityLikes=adjustNumber(element.quantityLikes)
+							element.quantityDislikes=adjustNumber(element.quantityDislikes)
+						});
+						
+
+					}else{
+						this.feed_posts=[]
+					}
+					
+					
+				})
+				.catch(err => {
+					// Handle errors
+					console.error(err);
+				
+				});
+
+		},
 		async refresh() {
 			this.loading = true;
 			this.errormsg = null;
@@ -24,12 +73,17 @@ export default {
 		},
 	},
 	mounted() {
-		this.refresh()
+		this.getLastPosts()
 	}
 }
 
 </script>
 <style scoped>
+.card-img-top {
+    width: 100%;
+    height: 15vw;
+    object-fit: cover;
+}
 .in_a_row{
 	display:flex;
 	justify-content:space-between;
@@ -62,69 +116,38 @@ export default {
 		<section id="gallery">
 		<div class="container">
 			<div class="row">
-		<div class="col-lg-4 mb-4" v-for="(post, index) in feed_posts" :key="index">
+			<div class="col-lg-4 mb-4" v-for="(post, index) in feed_posts" :key="index">
 		<div class="card">
-			<img src="https://images.unsplash.com/photo-1516214104703-d870798883c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=60" alt="" class="card-img-top">
+			<img v-bind:src="'data:image/jpeg;base64,'+post.image" alt="" class="card-img-top">
+			
 			<div class="card-body">
+				<div class="in_a_row">
+				<div>
 				<img class="card-user avatar avatar-large" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images">
-
-				<h5 class="card-title">{{post.username}}</h5>
+				
+				<h5 class="card-title">{{post.authorname}}</h5>
+				</div>
+				<btn @click="this.choosePost(post)" data-bs-toggle="modal" data-bs-target="#updatePostModal" style="margin-right:2px"><i style="font-size:2em;" class="bi bi-pencil-fill"></i></btn>
+				<btn @click="this.choosePost(post)" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i style="font-size:2em;" class="bi bi-trash-fill"></i></btn>
+				</div>
 				<p class="card-text">{{post.text}}</p>
 				<div class="in_a_row">
-				<btn class="btn btn-outline-success btn-sm">Comments</btn>
+				<btn @click="this.sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
 
-				<btn class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
-				<h5>32k</h5>
+				<btn v-if="post.currentemotion!=1" @click="this.likePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
+				<btn v-else @click="this.deletePostLike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn>
+				<h5>{{post.quantityLikes}}</h5>
 
-				<btn href="" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
-				<h5>64k</h5>
+				<btn v-if="post.currentemotion!=-1" @click="this.dislikePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
+				<btn v-else @click="this.deletePostDislike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn>
+				<h5>{{post.quantityDislikes}}</h5>
 				</div>
 				
 			</div>
 			</div>
 			</div>
-		<div class="col-lg-4 mb-4">
-		<div class="card">
-			<img src="https://images.unsplash.com/photo-1516214104703-d870798883c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=60" alt="" class="card-img-top">
-			<div class="card-body">
-				<img class="card-user avatar avatar-large" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images">
-
-				<h5 class="card-title">Sunset</h5>
-				<p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ut eum similique repellat a laborum, rerum voluptates ipsam eos quo tempore iusto dolore modi dolorum in pariatur. Incidunt repellendus praesentium quae!</p>
-				<div class="in_a_row">
-				<btn class="btn btn-outline-success btn-sm">Comments</btn>
-
-				<btn class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
-				<h5>32k</h5>
-
-				<btn href="" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
-				<h5>64k</h5>
-				</div>
-				
-			</div>
-			</div>
-			</div>
-		<div class="col-lg-4 mb-4">
-		<div class="card">
-			<img src="https://images.unsplash.com/photo-1516214104703-d870798883c5?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=700&q=60" alt="" class="card-img-top">
-			<div class="card-body">
-				<img class="card-user avatar avatar-large" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images">
-
-				<h5 class="card-title">Sunset</h5>
-				<p class="card-text">Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ut eum similique repellat a laborum, rerum voluptates ipsam eos quo tempore iusto dolore modi dolorum in pariatur. Incidunt repellendus praesentium quae!</p>
-				<div class="in_a_row">
-				<btn href="" class="btn btn-outline-success btn-sm">Comments</btn>
-
-				<btn class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
-				<h5>32k</h5>
-
-				<btn href="" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
-				<h5>64k</h5>
-				</div>
-				
-			</div>
-			</div>
-			</div>
+		
+			
 		</div>
 		</div>
 		</section>

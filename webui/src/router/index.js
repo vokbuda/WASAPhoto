@@ -6,6 +6,9 @@ import SearchProfileView from '../views/SearchProfileView.vue'
 import Register from '../views/Register.vue'
 import Application from '../views/Application.vue'
 import Comments from '../views/Comments.vue'
+import Followers from '../views/Followers.vue'
+import Following from '../views/Following.vue'
+import Banned from '../views/Banned.vue'
 
 import isAuthenticated from '../auth/auth'
 
@@ -34,7 +37,11 @@ const router = createRouter({
 				},
 				{path: '/posts/:postid/comments',component:Comments},
 				{path: '/profiles/:userid', component: MyProfileView},
-				{path: '/profiles', component: SearchProfileView}
+				{path: '/profiles', component: SearchProfileView},
+				{path:'/profiles/:userid/followers',component:Followers},
+				{path:'/profiles/:userid/following',component:Following},
+				{path:'/profiles/:userid/banuser',component:Banned}
+
 				// /posts/:postid/comments
 			]
 			
