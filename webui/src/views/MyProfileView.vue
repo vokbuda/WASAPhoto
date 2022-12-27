@@ -24,7 +24,8 @@ export default {
 			newPassword:"",
 			newAvatar:"",
 			choosenPost:{},
-			loaded:false
+			loaded:false,
+			offset:0
 		}
 	},
 	
@@ -414,7 +415,7 @@ export default {
 
 		},
 	
-		async getMyPosts(){
+		async getMyPosts(offset){
 			
 			this.header=sessionStorage.getItem("token")
 		
@@ -424,7 +425,7 @@ export default {
 
 			
 		
-			await this.$axios.get('/profiles/'+this.$route.params.userid+'/posts?offset=0',{
+			await this.$axios.get('/profiles/'+this.$route.params.userid+'/posts?offset='+offset,{
 				headers:{
 					'Authorization':this.header,
 				
@@ -435,17 +436,21 @@ export default {
 
 			})
 				.then(response => {
+					this.offset+=10
+					
 					// Handle response
+
 					if (response.data!=null){
-						this.postsProfile=response.data
-						this.postsProfile.forEach((element, index) => {
+						var current_data=response.data
+						current_data.forEach((element, index) => {
 							element.quantityLikes=adjustNumber(element.quantityLikes)
 							element.quantityDislikes=adjustNumber(element.quantityDislikes)
 						});
-						console.log(this.postsProfile)
+						this.postsProfile=this.postsProfile.concat(current_data)
+						
 
 					}else{
-						this.postsProfile=[]
+						this.offset-=10
 					}
 					
 					
@@ -625,6 +630,55 @@ export default {
 			
 
 		},
+		async visibilityChanged(){
+			console.log("Entrance in visibility")
+			
+			console.log(this.offset)
+			await this.getMyPosts(this.offset)
+			
+		},
+		async loadMorePosts(){
+			this.header=sessionStorage.getItem("token")
+			console.log(this.searchedUsername,this.offset)
+			this.offset+=10
+			
+			try {
+				await fetch(__API_URL__+'/profiles?username='+this.searchedUsername+'&&offset='+this.offset,
+				{headers:{
+					'Authorization':this.header,
+				
+				}
+				}).then((response)=>{
+					return response.json();
+					
+					}).then((data)=>{
+							console.log(this.offset)
+							console.log(data)
+							if(data){
+								
+								this.postsProfile=this.postsProfile.concat(data)
+
+
+							}else{
+								this.offset-=10
+							}
+						
+							
+
+										
+						
+						
+						
+					})
+
+				
+				// this.answer = (await res.json()).answer
+				
+				
+			} catch (error) {
+				this.answer = 'Error! Could not reach the API. ' + error
+			}
+    	},
 		async getMyProfile(){
 		
 		
@@ -671,7 +725,7 @@ export default {
 		
 		this.postCreation=true
 		this.getMyProfile()
-		this.getMyPosts()
+		
 		
 		
 	}
@@ -1124,12 +1178,17 @@ a:hover{
 				
 			</div>
 			</div>
+			
 			</div>
+			<div v-observe-visibility="this.visibilityChanged"></div>
 		
 			
 		</div>
+		
+		
 		</div>
 		</section>
+		
 		
 
 

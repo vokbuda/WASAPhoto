@@ -10,7 +10,8 @@ export default {
 			searchedUsername: "",
 			answer:"",
 			header:"",
-			usersArray:[]
+			usersArray:[],
+			offset:0
 		}
 	},
 	methods: {
@@ -113,7 +114,7 @@ export default {
             // /profiles/:userid/following
 			
 			try {
-				await fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/banuser?offset=0',
+				await fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/banuser?offset='+this.offset,
 				{headers:{
 					'Authorization':this.header,
 				

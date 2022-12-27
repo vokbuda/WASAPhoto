@@ -18,7 +18,7 @@ func (db *appdbimpl) GetCommentsRelatedToPost(postid uint64,
 
 	var ret []Comment
 	rows, err := db.c.Query(query, userid, userid,
-		postid, userid, offset*10)
+		postid, userid, offset)
 	if err != nil {
 		return nil, err
 	}

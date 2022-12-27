@@ -8,7 +8,8 @@ export default {
 			errormsg: null,
 			loading: false,
 			some_data: null,
-			feed_posts:[]
+			feed_posts:[],
+			offset:0
 		}
 	},
 	methods: {
@@ -22,7 +23,7 @@ export default {
 
 			
 		
-			await this.$axios.get('/posts?offset=0&userid='+userid,{
+			await this.$axios.get('/posts?offset='+this.offset+'&userid='+userid,{
 				headers:{
 					'Authorization':this.header,
 				
@@ -35,18 +36,18 @@ export default {
 				.then(response => {
 					// Handle response
 					
-					
+					this.offset+=10
 					if (response.status==200){
-						this.feed_posts=response.data
+						let current_data=response.data
 						console.log(this.feed_posts)
-						this.feed_posts.forEach((element, index) => {
+						current_data.forEach((element, index) => {
 							element.quantityLikes=adjustNumber(element.quantityLikes)
 							element.quantityDislikes=adjustNumber(element.quantityDislikes)
 						});
-						
+						this.feed_posts=this.feed_posts.concat(current_data)
 
 					}else{
-						this.feed_posts=[]
+						this.offset-=10
 					}
 					
 					
@@ -73,7 +74,7 @@ export default {
 		},
 	},
 	mounted() {
-		this.getLastPosts()
+		
 	}
 }
 
@@ -149,6 +150,7 @@ export default {
 		
 			
 		</div>
+		<div v-observe-visibility="this.getLastPosts()"></div>
 		</div>
 		</section>
 

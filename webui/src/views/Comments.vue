@@ -19,7 +19,8 @@ export default {
 			commentText:"",
             commentsToPost:[],
             tempComment:{},
-            notificationText:""
+            notificationText:"",
+            offset:0
 		}
 	},
 	
@@ -238,6 +239,13 @@ export default {
 			});
             
         },
+        async visibilityChanged(){
+            console.log("Entrance inside of current component")
+            console.log(this.offset)
+            await this.getCommentsRelatedToPost(this.offset)
+
+
+        },
         async updateComment(){
             
             const postData = JSON.stringify({ "text":this.commentText, });
@@ -265,7 +273,7 @@ export default {
 
 
         },
-        async getCommentsRelatedToPost(){
+        async getCommentsRelatedToPost(offset){
             this.header=sessionStorage.getItem("token")
 		
 		
@@ -274,7 +282,7 @@ export default {
 
 			
 		
-			await this.$axios.get('/posts/'+this.$route.params.postid+'/comments?offset=0',{
+			await this.$axios.get('/posts/'+this.$route.params.postid+'/comments?offset='+this.offset,{
 				headers:{
 					'Authorization':this.header,
 				
@@ -286,15 +294,18 @@ export default {
 			})
 				.then(response => {
 					// Handle response
+                    this.offset+=10
 					if(response.data!==null){
-                        this.commentsToPost=response.data
-                        this.commentsToPost.forEach((element, index) => {
+                        var current_data=response.data
+                        current_data.forEach((element, index) => {
 							element.quantityLikes=adjustNumber(element.quantityLikes)
 							element.quantityDislikes=adjustNumber(element.quantityDislikes)
 					    });
+                        this.commentsToPost=this.commentsToPost.concat(current_data)
                         
                     }else{
-                        this.commentsToPost=[]
+                        this.offset-=10
+                       
                     }
 					
 					
@@ -316,7 +327,7 @@ export default {
         script.setAttribute("src","https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js");
         document.head.appendChild(script);
 
-        this.getCommentsRelatedToPost()
+        //this.getCommentsRelatedToPost()
 
 
 
@@ -1300,6 +1311,7 @@ h6, .h6 {
 				</div>
 			</div>
 			</div>
+            <div v-observe-visibility="this.visibilityChanged"></div>
     </div>
 
 

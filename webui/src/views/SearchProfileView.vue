@@ -2,6 +2,9 @@
 <script>
 import router from '../router'
 
+
+
+
 export default {
 	
 	data: function() {
@@ -12,15 +15,25 @@ export default {
 			searchedUsername: "",
 			answer:"",
 			header:"",
-			usersArray:[]
+			usersArray:[],
+			offset:0,
+			searchedUsername:""
 		}
 	},
 	methods: {
+		async visibilityChanged(){
+			
+			
+			await this.loadMorePosts()
+			
+		},
 		async loadMorePosts(){
 			this.header=sessionStorage.getItem("token")
+			console.log(this.searchedUsername,this.offset)
+			this.offset+=10
 			
 			try {
-				await fetch(__API_URL__+'/profiles?username='+username+'&&offset='+this.offset,
+				await fetch(__API_URL__+'/profiles?username='+this.searchedUsername+'&&offset='+this.offset,
 				{headers:{
 					'Authorization':this.header,
 				
@@ -28,7 +41,20 @@ export default {
 				}).then((response)=>{
 					return response.json();
 					}).then((data)=>{
-						return data
+							if(data){
+								
+								this.usersArray=this.usersArray.concat(data)
+
+
+							}else{
+								this.offset-=10
+							}
+						
+							
+
+										
+						
+						
 						
 					})
 
@@ -49,6 +75,7 @@ export default {
 		},
 		async getAnswer(username) {
 			this.header=sessionStorage.getItem("token")
+			this.searchedUsername=username
 			
 			try {
 				await fetch(__API_URL__+'/profiles?username='+username+'&&offset=0',
@@ -60,7 +87,7 @@ export default {
 					return response.json();
 					}).then((data)=>{
 						this.usersArray=data
-						console.log(this.usersArray)
+						this.offset=0
 					})
 
 				
@@ -247,7 +274,9 @@ export default {
 				</div>-->
 			</div>
 			</div>
+			
         </div>
+		<div v-observe-visibility="this.visibilityChanged"></div>
 		<div>
 			
 		</div>
@@ -255,7 +284,9 @@ export default {
 		<div v-if="!this.usersArray" style="text-align:center"><h2>There is no data</h2></div>
 
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+
 	</div>
+	
         
 
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>

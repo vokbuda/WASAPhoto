@@ -10,7 +10,8 @@ export default {
 			searchedUsername: "",
 			answer:"",
 			header:"",
-			usersArray:[]
+			usersArray:[],
+			offset:0
 		}
 	},
 	methods: {
@@ -111,16 +112,26 @@ export default {
             // /profiles/:userid/following
 			
 			try {
-				await fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/following?offset=0',
+				
+				await fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/following?offset='+this.offset,
 				{headers:{
 					'Authorization':this.header,
 				
 				}
 				}).then((response)=>{
+					this.offset+=10
+					
 					return response.json();
 					}).then((data)=>{
-						this.usersArray=data
-						console.log(this.usersArray)
+					
+						if(data){
+							
+							this.usersArray=this.usersArray.concat(data)
+						}else{
+							this.offset-=10
+						}
+						
+						
 						
 					})
 
@@ -137,7 +148,7 @@ export default {
 	},
 	
 	mounted(){
-        this.getFollowing()
+        
 		// here u should have some additional data, check it inside of current component
 	}
 	
@@ -260,6 +271,7 @@ export default {
 					</div>
                     
 				</div>
+				
 				<!--
 				<div class="col-md-4 py-2" v-for="(person, index) in usersArray" :key="index">
 				<div class="card h-100">
@@ -274,6 +286,7 @@ export default {
 			</div>
 			</div>
         </div>
+		<div v-observe-visibility="this.getFollowing"></div>
 		<div>
 			
 		</div>

@@ -15,7 +15,7 @@ func (db *appdbimpl) GetProfilePosts(userid uint64, caller uint64,
 	limit 10 offset ?`
 	var ret []Post
 	rows, err := db.c.Query(query, caller, caller,
-		userid, caller, offset*10)
+		userid, caller, offset)
 	if err != nil {
 		return nil, err
 	}

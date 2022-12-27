@@ -10,7 +10,8 @@ export default {
 			searchedUsername: "",
 			answer:"",
 			header:"",
-			usersArray:[]
+			usersArray:[],
+			offset:0
 		}
 	},
 	methods: {
@@ -134,16 +135,22 @@ export default {
             // /profiles/:userid/following
 			
 			try {
-				await fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/followers?offset=0',
+				await fetch(__API_URL__+'/profiles/'+this.$route.params.userid+'/followers?offset='+this.offset,
 				{headers:{
 					'Authorization':this.header,
 				
 				}
 				}).then((response)=>{
+					this.offset+=10
 					return response.json();
 					}).then((data)=>{
-						this.usersArray=data
-						console.log(this.usersArray)
+						if(data){
+							
+							this.usersArray=this.usersArray.concat(data)
+						}else{
+							this.offset-=10
+						}
+						
 						
 					})
 
@@ -172,7 +179,7 @@ export default {
     },
   	},
 	mounted(){
-        this.getFollowers()
+        
 		// here u should have some additional data, check it inside of current component
 	}
 	
@@ -316,6 +323,7 @@ export default {
 			
 		</div>
         </div>
+		<div v-observe-visibility="this.getFollowers"></div>
 		<div v-if="!this.usersArray" style="text-align:center"><h2>There is no data</h2></div>
 
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
