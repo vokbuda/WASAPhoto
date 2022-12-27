@@ -32,13 +32,7 @@ func (rt *_router) changeUsername(w http.ResponseWriter, r *http.Request, ps htt
 		return
 
 	}
-	errAuthPassword := rt.db.AuthWithPassword(uid, data_account_update.Password)
-	if errAuthPassword != nil {
-		ctx.Logger.WithError(errAuthPassword).Error("Password is not correct")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
 
-	}
 	var path = r.URL.Path
 	var splited = strings.Split(path, "/")
 	var result = splited[len(splited)-2]

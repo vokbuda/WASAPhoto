@@ -50,13 +50,6 @@ func (rt *_router) changeAvatar(w http.ResponseWriter, r *http.Request, ps httpr
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
-	errAuthPassword := rt.db.AuthWithPassword(uid, data_account_update.Password)
-	if errAuthPassword != nil {
-		ctx.Logger.WithError(errAuthPassword).Error("Password is not correct")
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-
-	}
 
 	var err error
 

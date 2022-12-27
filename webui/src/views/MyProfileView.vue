@@ -480,9 +480,9 @@ export default {
 		},
 		async deleteAccount(){
 			this.userid=sessionStorage.getItem("userid")
-			const postData = JSON.stringify({ "password": this.Password });
 			
-			console.log(sessionStorage.getItem('token'))
+			
+		
 			
 			
 			fetch(__API_URL__+'/profiles/'+this.userid+'/deleteAccount',{
@@ -490,7 +490,7 @@ export default {
 				headers:{
 					"Authorization":sessionStorage.getItem("token")
 				},
-				body:postData
+				
 			}
 			)
 			.then((response)=> {
@@ -509,7 +509,7 @@ export default {
 		},
 		async updateUsername(){
 			this.header=sessionStorage.getItem("token")
-			const postData = JSON.stringify({ "newValue": this.newUsername,"password":this.Password });
+			const postData = JSON.stringify({ "newValue": this.newUsername});
 			
 			
 			await this.$axios.patch('/profiles/'+this.$route.params.userid+'/changeUsername',postData,{
@@ -539,7 +539,7 @@ export default {
 		},
 		async updateAvatar(){
 			this.header=sessionStorage.getItem("token")
-			const postData = JSON.stringify({ "newValue": this.newAvatar,"password":this.Password });
+			const postData = JSON.stringify({ "newValue": this.newAvatar });
 			
 			
 			await this.$axios.patch('/profiles/'+this.$route.params.userid+'/changeAvatar',postData,{
@@ -567,51 +567,19 @@ export default {
 				});
 
 		},
-		async updatePassword(){
-			this.header=sessionStorage.getItem("token")
-			const postData = JSON.stringify({ "newValue": this.newPassword,"password":this.Password });
-			
-			
-			await this.$axios.patch('/profiles/'+this.$route.params.userid+'/changePassword',postData,{
-				headers:{
-					'Authorization':this.header,
-					'Content-Type':'application/json'
-				
-				}
-
-
-
-
-			})
-				.then(response => {
-					console.log(response)
-					if(response.status=='200'){
-						this.notification("Password had been updated","closeModalUpdatePassword")
-						
-
-					}
-				})
-				.catch(err => {
-					// Handle errors
-					console.error(err);
-				
-				});
-
-		},
+		
 		async deletePost(){
 			this.userid=sessionStorage.getItem("userid")
-			const postData = JSON.stringify({ "password": this.Password });
 			
-			console.log(sessionStorage.getItem('token'))
-			console.log(this.choosenPost.postid)
+			
+			
 			var choosenId=this.choosenPost.postid
 			
 			fetch(__API_URL__+'/profiles/'+this.userid+'/posts/'+choosenId,{
 				method:'DELETE',
 				headers:{
 					"Authorization":sessionStorage.getItem("token")
-				},
-				body:postData
+				}
 			}
 			)
 			.then((response)=> {
@@ -641,15 +609,15 @@ export default {
 
 		},
 		async visibilityChanged(){
-			console.log("Entrance in visibility")
 			
-			console.log(this.offset)
+			
+			
 			await this.getMyPosts(this.offset)
 			
 		},
 		async loadMorePosts(){
 			this.header=sessionStorage.getItem("token")
-			console.log(this.searchedUsername,this.offset)
+			
 			this.offset+=10
 			
 			try {
@@ -663,8 +631,7 @@ export default {
 					return response.json();
 					
 					}).then((data)=>{
-							console.log(this.offset)
-							console.log(data)
+							
 							if(data){
 								
 								this.postsProfile=this.postsProfile.concat(data)
@@ -719,7 +686,6 @@ export default {
 					
 					this.profile.quantitySubscriptions=this.adjustNumber(this.profile.quantitySubscriptions)
 					this.profile.quantitySubscribers=this.adjustNumber(this.profile.quantitySubscribers)
-					console.log(this.profile)
 					
 					
 				})
@@ -920,21 +886,38 @@ a:hover{
 		<div id="profile">
 			<div class="absolution">
 			<div id="element1">
+			<div v-if="this.profile.me">
+			<div data-bs-toggle="modal" data-bs-target="#imageModal" v-if="this.profile.avatar">
+				<img class="image" v-bind:src="'data:image/jpeg;base64,'+this.profile.avatar">
+			</div>
 			
-			<div data-bs-toggle="modal" data-bs-target="#imageModal" v-if="this.profile.avatar"><img class="image" v-bind:src="'data:image/jpeg;base64,'+this.profile.avatar"></div>
+
+
 			<div data-bs-toggle="modal" data-bs-target="#imageModal" v-else><img class="image" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images"></div>
 			<!--<img src="https://a4-images.myspacecdn.com/images03/2/85a286a4bbe84b56a6d57b1e5bd03ef4/300x300.jpg" alt="" />-->
-			
 			</div>
-			<div id="element2">
+			<div v-else>
+				<div  v-if="this.profile.avatar">
+				<img class="image" v-bind:src="'data:image/jpeg;base64,'+this.profile.avatar">
+			</div>
+			
+
+
+			<div  v-else><img class="image" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images"></div>
+			
+				
+
+			</div>
+			</div>
+			<div v-if="this.profile.me" id="element2">
 				<btn data-bs-toggle="modal" data-bs-target="#deleteAccountModal"><i style="font-size:2em;" class="bi bi-trash3-fill"></i></btn>
 			</div>
 			
 			</div>
 			<div class="name">
 			{{this.profile.username}}
-			<btn data-bs-toggle="modal" data-bs-target="#usernameModal"><i class="bi bi-pencil-square"></i></btn>
-			Password<btn data-bs-toggle="modal" data-bs-target="#passwordModal"><i class="bi bi-pencil-square"></i></btn>
+			<btn v-if="this.profile.me" data-bs-toggle="modal" data-bs-target="#usernameModal"><i class="bi bi-pencil-square"></i></btn>
+			
 			
 			<div class="modal fade" id="usernameModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
@@ -945,10 +928,7 @@ a:hover{
 				</div>
 				<div class="modal-body">
 					<form>
-					<div class="mb-3">
-						<label for="recipient-name" class="col-form-label">Current password:</label>
-						<input v-model="this.Password" type="password" class="form-control" id="recipient-name">
-					</div>
+					
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">New username:</label>
 						<input v-model="newUsername" type="text" class="form-control" id="message-text">
@@ -1028,32 +1008,7 @@ a:hover{
 				</div>
 			</div>
 			</div>
-			<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="exampleModalLabel">Setup new Password</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<form>
-					<div class="mb-3">
-						<label for="oldpassword" class="col-form-label">Current password:</label>
-						<input v-model="this.Password" type="password" class="form-control" id="oldpassword">
-					</div>
-					<div class="mb-3">
-						<label for="newpassword" class="col-form-label">New password:</label>
-						<input v-model="this.newPassword" type="password" class="form-control" id="newpassword">
-					</div>
-					</form>
-				</div>
-				<div class="modal-footer">
-					<button id="closeModalUpdatePassword" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button @click="this.updatePassword()" type="button" class="btn btn-warning">Save updates</button>
-				</div>
-				</div>
-			</div>
-			</div>
+			
 			<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
@@ -1061,18 +1016,10 @@ a:hover{
 					<h5 class="modal-title" id="exampleModalLabel">Delete Account</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
-				<div class="modal-body">
-					<form>
-					<div class="mb-3">
-						<label for="oldpassword" class="col-form-label">Current password:</label>
-						<input v-model="this.Password" type="password" class="form-control" id="oldpassword">
-					</div>
-					
-					</form>
-				</div>
+				
 				<div class="modal-footer">
 					<button id="closeModalDeleteAccount" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button @click="this.deleteAccount()" type="button" class="btn btn-danger">Delete Account</button>
+					<button @click="this.deleteAccount()" type="button" class="btn btn-danger">Confirm</button>
 				</div>
 				</div>
 			</div>
@@ -1103,10 +1050,7 @@ a:hover{
 				</div>
 				<div class="modal-body">
 					<form>
-					<div class="mb-3">
-						<label for="oldpassword" class="col-form-label">Current password:</label>
-						<input v-model="this.Password" type="password" class="form-control" id="oldpassword">
-					</div>
+					
 						<div class="input-group mb-3">
 						<input type="file" @change="this.handleImageAvatar" accept="image/*" class="form-control" id="inputGroupFile02">
 						

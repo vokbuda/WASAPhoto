@@ -1335,32 +1335,7 @@ paths:
   
     
         
-  /profiles/{userid}/changePassword:
-    parameters:
-      - $ref: "#/components/parameters/userid"
-    patch:
-      operationId: changePassword
-      tags:
-      - Account
-      summary: Modifies password of user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: "#/components/schemas/DataAccountUpdate" }
-         
-      description: |-
-        Changes user's password
-      responses:
-        "200":
-          description: user password had been changed successfully
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/DataAccountUpdated" }
-        "400": { $ref: "#/components/responses/BadRequest" }
-        "401": { $ref: "#/components/responses/UnauthorizedRequest" }
-        "403": { $ref: "#/components/responses/ForbiddenRequest" }
-        "500": { $ref: "#/components/responses/InternalServerError" }
+  
   /profiles/{userid}/changeAvatar:
     parameters:
       - $ref: "#/components/parameters/userid"

@@ -14,7 +14,7 @@ export default {
 	
 	methods: {
 		async session(username, password) {
-			console.log(username,password)
+			
 			const sessionData = JSON.stringify({ "username": username,"password":password,"token":"" });
 			this.$axios.post('http://192.168.126.129:3000/session', sessionData
 			)
@@ -56,7 +56,7 @@ export default {
 		},
 	},
     mounted() {
-		console.log("Entrance inside of register vue check inside current components")
+		
 	}
 	
 }

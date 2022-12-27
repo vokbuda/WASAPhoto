@@ -20,12 +20,9 @@ type PostCreate struct {
 	Text  string `json:"text"`
 	Image string `json:"image"`
 }
-type DataAccountDelete struct {
-	Password string `json:"password"`
-}
+
 type DataAccountUpdate struct {
 	NewValue string `json:"newValue"`
-	Password string `json:"password"`
 }
 type DataAccountUpdated struct {
 	Entity string `json:"entity"`
@@ -55,7 +52,6 @@ type CommentToDelete struct {
 }
 type LoginRequest struct {
 	Username string `json:"username"`
-	Password string `json:"password"`
 }
 
 type SessionUser struct {

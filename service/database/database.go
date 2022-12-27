@@ -169,7 +169,6 @@ type AppDatabase interface {
 
 	Auth(token string) error
 	AuthUid(token string) (uint64, error)
-	AuthWithPassword(uid uint64, password string) error
 
 	// and then after all implement token inside of your component
 

@@ -46,7 +46,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/profiles/:userid/banuser/:userid", rt.wrap(rt.banUser))
 	rt.router.DELETE("/profiles/:userid/banuser/:userid", rt.wrap(rt.unbanUser))
 	rt.router.GET("/profiles/:userid/banuser", rt.wrap(rt.getBannedUsers))
-	rt.router.PATCH("/profiles/:userid/changePassword", rt.wrap(rt.changePassword))
+	// rt.router.PATCH("/profiles/:userid/changePassword", rt.wrap(rt.changePassword))
 	rt.router.PATCH("/profiles/:userid/changeAvatar", rt.wrap(rt.changeAvatar))
 	rt.router.PATCH("/profiles/:userid/changeUsername", rt.wrap(rt.changeUsername))
 	rt.router.DELETE("/profiles/:userid/deleteAccount", rt.wrap(rt.deleteAccount))
