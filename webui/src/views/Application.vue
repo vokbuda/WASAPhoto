@@ -67,6 +67,14 @@ export default {
 							</RouterLink>
 						</li>
 					</ul>
+					<ul class="nav flex-column">
+						<li class="nav-item">
+							<RouterLink :to="'/dologin'" class="nav-link">
+								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#log-out"/></svg>
+								LogOut
+							</RouterLink>
+						</li>
+					</ul>
 				</div>
 			</nav>
 

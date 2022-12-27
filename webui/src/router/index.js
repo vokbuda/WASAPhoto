@@ -71,6 +71,10 @@ router.beforeEach(async (to, from,next) => {
 	if(to.fullPath!=='/dologin'&& !sessionStorage.getItem("token")){
 		next({path:'/dologin'})
 	}
+	if(to.fullPath=='/dologin'&& sessionStorage.getItem("token")){
+		sessionStorage.clear()
+		next({path:'/dologin'})
+	}
 	else{
 		next()
 	}

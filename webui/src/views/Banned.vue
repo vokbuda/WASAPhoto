@@ -120,9 +120,16 @@ export default {
 				
 				}
 				}).then((response)=>{
+					this.offset+=10
 					return response.json();
 					}).then((data)=>{
-						this.usersArray=data
+						if(data){
+							this.usersArray=this.usersArray.concat(data)
+
+						}else{
+							this.offset-=10
+						}
+						
 						
 					})
 
@@ -151,7 +158,7 @@ export default {
     },
   	},
 	mounted(){
-        this.getBannedUsers()
+        
 		// here u should have some additional data, check it inside of current component
 	}
 	
@@ -292,6 +299,7 @@ export default {
 		</div>
         </div>
 		<div v-if="!this.usersArray" style="text-align:center"><h2>There is no data</h2></div>
+		<div v-observe-visibility="this.getBannedUsers"></div>
 
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 	</div>

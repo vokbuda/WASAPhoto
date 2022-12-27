@@ -7,7 +7,7 @@ func (db *appdbimpl) GetBannedUsers(banninguserid uint64, offset uint64) ([]Simp
 	rows, err := db.c.Query(`select userid,username,avatar from profiles right join 
 	(SELECT banneduserid FROM banusers WHERE banninguserid=?) as foo 
 	on banneduserid=profiles.userid limit 10 offset ?`,
-		banninguserid, offset*10)
+		banninguserid, offset)
 
 	var ret []SimpleClient
 
