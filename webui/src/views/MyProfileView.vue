@@ -55,7 +55,8 @@ export default {
 			
 			this.$axios.put('/profiles/'+this.$route.params.userid+'/banuser/'+this.userid, postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+					"Content-Type":'application/json'
 				}
 			}
 			)
@@ -101,7 +102,8 @@ export default {
 			
 			this.$axios.put('/profiles/'+this.$route.params.userid+'/subscribe/'+this.userid, postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+					"Content-Type":'application/json'
 				}
 			}
 			)
@@ -193,7 +195,8 @@ export default {
 			
 			this.$axios.put('/posts/'+post.postid+'/like/'+this.userid, postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+					"Content-Type":'application/json'
 				}
 			}
 			)
@@ -259,7 +262,8 @@ export default {
 			
 			this.$axios.put('/posts/'+post.postid+'/dislike/'+this.userid, postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+					"Content-Type":'application/json'
 				}
 			}
 			)
@@ -340,7 +344,8 @@ export default {
 			
 			this.$axios.post('/profiles/'+this.$route.params.userid+'/posts', postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+					"Content-Type":'application/json'
 				}
 			}
 			)
@@ -368,7 +373,8 @@ export default {
 			
 			this.$axios.put('/profiles/'+this.$route.params.userid+'/posts/'+this.choosenPost.postid, postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+					"Content-Type":'application/json'
 				}
 			}
 			)
@@ -428,6 +434,7 @@ export default {
 			await this.$axios.get('/profiles/'+this.$route.params.userid+'/posts?offset='+offset,{
 				headers:{
 					'Authorization':this.header,
+					'Content-Type':'application/json'
 				
 				}
 
@@ -508,6 +515,7 @@ export default {
 			await this.$axios.patch('/profiles/'+this.$route.params.userid+'/changeUsername',postData,{
 				headers:{
 					'Authorization':this.header,
+					'Content-Type':'application/json'
 				
 				}
 
@@ -537,6 +545,7 @@ export default {
 			await this.$axios.patch('/profiles/'+this.$route.params.userid+'/changeAvatar',postData,{
 				headers:{
 					'Authorization':this.header,
+					'Content-Type':'application/json'
 				
 				}
 
@@ -566,6 +575,7 @@ export default {
 			await this.$axios.patch('/profiles/'+this.$route.params.userid+'/changePassword',postData,{
 				headers:{
 					'Authorization':this.header,
+					'Content-Type':'application/json'
 				
 				}
 
@@ -646,6 +656,7 @@ export default {
 				await fetch(__API_URL__+'/profiles?username='+this.searchedUsername+'&&offset='+this.offset,
 				{headers:{
 					'Authorization':this.header,
+					'Content-Type':'application/json'
 				
 				}
 				}).then((response)=>{
@@ -693,6 +704,7 @@ export default {
 			await this.$axios.get('/profiles/'+this.$route.params.userid,{
 				headers:{
 					'Authorization':this.header,
+					'Content-Type':'application/json'
 				
 				}
 

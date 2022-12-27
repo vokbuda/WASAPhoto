@@ -8,14 +8,13 @@ import (
 	"time"
 )
 
-func (db *appdbimpl) Session(username string, password string, bearerToken string) (uint64, string, error) {
+func (db *appdbimpl) Session(username string, bearerToken string) (uint64, string, error) {
 
 	// then u should also have component for insertion data inside of
 
 	// if it is not existing then it should be created inside of session db
 
 	var sessionData SessionData
-	pass := []byte(password)
 
 	// then u should take data from current component inside of your database and check it inside
 
@@ -23,15 +22,7 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 
 	// below u have a hash function
 
-	h := sha256.New()
-
-	h.Write(pass)
-
-	hash_intermediate := h.Sum(nil)
-	hash := hex.EncodeToString(hash_intermediate)
-
-	row := db.c.QueryRow(`select * from session where token=?
-	union all select * from session where userid=(select userid from profiles where username=? and password=?)`, bearerToken, username, hash)
+	row := db.c.QueryRow(`select * from session where userid=(select userid from profiles where username=?)`, username)
 
 	err := row.Scan(&sessionData.Token, &sessionData.Lastlogin, &sessionData.Created, &sessionData.Userid)
 
@@ -39,8 +30,8 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 
 		// if there is no rows inside of current component then u should insert some data inside of db
 
-		res, errorinsertDatabase := db.c.Exec(`insert into profiles(username, password) VALUES (?, ?)`,
-			username, hash)
+		res, errorinsertDatabase := db.c.Exec(`insert into profiles(username) VALUES (?)`,
+			username)
 
 		if errorinsertDatabase != nil {
 			return 0, "", errorinsertDatabase
@@ -59,7 +50,7 @@ func (db *appdbimpl) Session(username string, password string, bearerToken strin
 		uidString := strconv.Itoa(int(lastuid))
 		// then u should apply some data inside of current function
 		t := sha256.New()
-		t.Write([]byte(currentTime + uidString + password))
+		t.Write([]byte(currentTime + uidString))
 		token_bytes := t.Sum(nil)
 
 		token := hex.EncodeToString(token_bytes)

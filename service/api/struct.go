@@ -60,8 +60,6 @@ type LoginRequest struct {
 
 type SessionUser struct {
 	Username string `json:"username"`
-	Password string `json:"password"`
-	Token    string `json:"token"`
 }
 type SessionResponse struct {
 	Session string `json:"session"`

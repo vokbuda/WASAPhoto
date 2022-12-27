@@ -164,7 +164,7 @@ type AppDatabase interface {
 	Followers(uid uint64, offset uint64, caller uint64) ([]SimpleClient, error)
 
 	// below u have component for register different users
-	Session(username string, password string, bearerToken string) (uint64, string, error)
+	Session(username string, bearerToken string) (uint64, string, error)
 	// then in case of username u should remove data from current accoutn
 
 	Auth(token string) error
@@ -311,7 +311,6 @@ func New(db *sql.DB) (AppDatabase, error) {
 		profiles := `CREATE TABLE "profiles" (
 			"userid"	INTEGER NOT NULL,
 			"username"	TEXT NOT NULL UNIQUE,
-			"password"	TEXT NOT NULL,
 			"avatar"	BLOB,
 			PRIMARY KEY("userid" AUTOINCREMENT)
 		);`

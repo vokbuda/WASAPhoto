@@ -127,24 +127,18 @@ components:
       description: this is a request body for login execution
       type: object
       properties:
-        name:
+        username:
           description: This is a username of person
           type: string
           example: check
           pattern: '^.*?$'
           minLength: 3
           maxLength: 16
-        password:
-          description: this is a password for login execution
-          type: string 
-          pattern: '^.*?$'
-          minLength: 3
-          maxLength: 16
-          example: somepasswo
+        
       example:
             {
-              name: "username",
-              password: "password"
+              username: "username"
+              
             }
     LoginResponse:
       type: object

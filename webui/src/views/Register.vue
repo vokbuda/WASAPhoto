@@ -7,16 +7,26 @@ import router from '../router'
 export default {
 	data: function() {
 		return {
-			username:"",
-			password:""
+			username:""
 		}
 	},
 	
 	methods: {
-		async session(username, password) {
-			console.log(username,password)
-			const sessionData = JSON.stringify({ "username": username,"password":password,"token":"" });
-			this.$axios.post('/session', sessionData
+		async session(username) {
+			
+			const sessionData = JSON.stringify({ "username": username});
+			var current_token=""
+			if(sessionStorage.getItem("token")){
+				current_token=sessionStorage.getItem("token")
+
+			}
+			
+			this.$axios.post('/session', sessionData,{
+				headers:{
+					"Authorization":current_token,
+					"Content-Type":'application/json'
+				}
+			}
 			)
 			.then(function (response) {
 				
@@ -25,44 +35,17 @@ export default {
 					sessionStorage.setItem("token",response.data.session)
 					sessionStorage.setItem("userid",response.data.uid)
 					sessionStorage.setItem("username",username)
-				
-					
-
-					
 					router.push('/welcome')
-
-					
-					/*
-					localStorage.token=data.token
-					router.push({path:'/'})
-					*/
-					
-					// below u set some token inside of session
-					
-
 
 				}
 			})
 			.catch(function (error) {
 				console.log(error);
-			});
-
-			/*
-			try {
-				
-				let response = await this.$axios.post("/session")
-				// there should be data inside of component
-
-				this.some_data = response.data;
-			} catch (e) {
-				this.errormsg = e.toString();
-			}*/
-			
-			
+			});	
 		},
 	},
     mounted() {
-		console.log("Entrance inside of register vue check inside current components")
+		
 	}
 	
 }
@@ -86,10 +69,7 @@ export default {
 				<input type="text" class="form-control" aria-describedby="emailHelp" v-model="username">
 				<div id="emailHelp" class="form-text" ></div>
 			</div>
-			<div class="mb-3">
-				<label class="form-label" >Password</label>
-				<input type="password" class="form-control" v-model="password">
-			</div>
+			
 			<button type=button @click="session(username,password)" class="btn btn-success">Submit</button>
 		</form>
 	</div>

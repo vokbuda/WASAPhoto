@@ -39,7 +39,8 @@ export default {
 			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
             +'/like/'+this.userid, postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+                    "Content-Type":'application/json'
 				}
 			}
 			)
@@ -131,7 +132,8 @@ export default {
 			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
             +'/dislike/'+this.userid, postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+                    "Content-Type":'application/json'
 				}
 			}
 			)
@@ -166,7 +168,8 @@ export default {
 			
 			this.$axios.post('/posts/'+this.$route.params.postid+'/comments', postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+                    "Content-Type":'application/json'
 				}
 			}
 			)
@@ -254,7 +257,8 @@ export default {
 			
 			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+this.tempComment.commentid,postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+                    "Content-Type":'application/json'
 				},
                 
 			}

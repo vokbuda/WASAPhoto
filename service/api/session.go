@@ -12,6 +12,7 @@ func (rt *_router) session(w http.ResponseWriter, r *http.Request,
 	ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	var err error
+	bearerToken := r.Header.Get("Authorization")
 
 	var sessionUser SessionUser
 	err_Decode := json.NewDecoder(r.Body).Decode(&sessionUser)
@@ -26,7 +27,7 @@ func (rt *_router) session(w http.ResponseWriter, r *http.Request,
 	// commenttext authorid and postid
 	// text, image, authorid
 
-	uid, token, err := rt.db.Session(sessionUser.Username, sessionUser.Password, sessionUser.Token)
+	uid, token, err := rt.db.Session(sessionUser.Username, bearerToken)
 	// above u see a token for our user which u can use for client
 	if token == "" {
 		ctx.Logger.WithError(err).Error("it is not possible to login with current data")

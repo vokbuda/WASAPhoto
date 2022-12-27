@@ -23,7 +23,8 @@ export default {
 			
 			this.$axios.put('/profiles/'+this.userid+'/subscribe/'+profile.userid, postData,{
 				headers:{
-					"Authorization":sessionStorage.getItem("token")
+					"Authorization":sessionStorage.getItem("token"),
+					"Content-Type":'application/json'
 				}
 			}
 			)

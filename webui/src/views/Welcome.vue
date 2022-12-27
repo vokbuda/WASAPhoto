@@ -8,25 +8,10 @@ export default {
 		}
 	},
 	methods: {
-		async refresh() {
-			this.loading = true;
-			this.errormsg = null;
-			/*
-			try {
-				
-				let response = await this.$axios.get("/");
-				this.some_data = response.data;
-			} catch (e) {
-				this.errormsg = e.toString();
-			}
-			this.loading = false;*/
-		},
+		
 	},
 	mounted() {
-		var something=sessionStorage.getItem("userid")
-		console.log("Below u see data of your application")
-		console.log(something)
-		this.refresh()
+		
 	}
 }
 </script>

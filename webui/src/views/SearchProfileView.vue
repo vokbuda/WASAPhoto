@@ -29,7 +29,7 @@ export default {
 		},
 		async loadMorePosts(){
 			this.header=sessionStorage.getItem("token")
-			console.log(this.searchedUsername,this.offset)
+			
 			this.offset+=10
 			
 			try {
