@@ -2,6 +2,7 @@
 <script>
 import {adjustNumber} from '../helpers/adjustNumber.js'
 import {convertToString} from '../helpers/convertToString.js'
+import router from '../router'
 export default {
 	data: function() {
 		return {
@@ -13,6 +14,18 @@ export default {
 		}
 	},
 	methods: {
+		sendToComments(postid){
+			
+			router.push('/posts/'+postid+'/comments')
+			
+
+		},
+		gotoProfile(userid){
+			router.push("/profiles/"+userid)
+
+
+			
+		},
 		async getLastPosts(){
 			this.header=sessionStorage.getItem("token")
 
@@ -38,13 +51,22 @@ export default {
 					
 					this.offset+=10
 					if (response.status==200){
+						
 						let current_data=response.data
-						console.log(this.feed_posts)
-						current_data.forEach((element, index) => {
+						if(current_data){
+							current_data.forEach((element, index) => {
 							element.quantityLikes=adjustNumber(element.quantityLikes)
 							element.quantityDislikes=adjustNumber(element.quantityDislikes)
 						});
+						
 						this.feed_posts=this.feed_posts.concat(current_data)
+					
+
+
+
+
+						}
+						
 
 					}else{
 						this.offset-=10
@@ -57,6 +79,137 @@ export default {
 					console.error(err);
 				
 				});
+
+		},
+		likePost(post){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
+			
+			
+			
+			this.$axios.put('/posts/'+post.postid+'/like/'+this.userid, postData,{
+				headers:{
+					"Authorization":sessionStorage.getItem("token"),
+					"Content-Type":'application/json'
+				}
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					
+					//document.getElementById("closeModalPostCreate").click()
+					//this.createdPost()
+					
+					if(post.currentemotion==-1){
+						post.quantityDislikes=convertToString(post.quantityDislikes,-1)
+						
+					}
+					post.quantityLikes=convertToString(post.quantityLikes,1)
+					
+
+					post.currentemotion=1
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		},
+		deletePostLike(post){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
+			
+		
+			
+			
+			fetch(__API_URL__+'/posts/'+post.postid+'/like/'+this.userid,{
+				method:'DELETE',
+				headers:{
+					"Authorization":sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					post.currentemotion=0
+					
+					post.quantityLikes=convertToString(post.quantityLikes,-1)
+					
+					//document.getElementById("closeModalPostCreate").click()
+					//this.createdPost()
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+		},
+		dislikePost(post){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
+			
+			
+			
+			this.$axios.put('/posts/'+post.postid+'/dislike/'+this.userid, postData,{
+				headers:{
+					"Authorization":sessionStorage.getItem("token"),
+					"Content-Type":'application/json'
+				}
+			}
+			)
+			.then((response)=> {
+				if (response.status==204){
+					if(post.currentemotion==1){
+						post.quantityLikes=convertToString(post.quantityLikes,-1)
+						
+					}
+					post.quantityDislikes=convertToString(post.quantityDislikes,1)
+					post.currentemotion=-1
+
+					
+					
+					//document.getElementById("closeModalPostCreate").click()
+					//this.createdPost()
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+
+
+		},
+		deletePostDislike(post){
+			this.userid=sessionStorage.getItem("userid")
+			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
+			
+			
+			
+			fetch(__API_URL__+'/posts/'+post.postid+'/dislike/'+this.userid,{
+				method:'DELETE',
+				headers:{
+					"Authorization":sessionStorage.getItem("token")
+				},
+				body:postData
+			}
+			)
+			.then((response)=> {
+				
+				if (response.status==204){
+					post.currentemotion=0
+					post.quantityDislikes=convertToString(post.quantityDislikes,-1)
+					//document.getElementById("closeModalPostCreate").click()
+					//this.createdPost()
+					
+				}
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
 
 		},
 		async refresh() {
@@ -123,13 +276,16 @@ export default {
 			
 			<div class="card-body">
 				<div class="in_a_row">
-				<div>
+				<div @click="this.gotoProfile(post.authorid)">
+				<div v-if="!post.avatar">	
 				<img class="card-user avatar avatar-large" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images">
-				
+				</div>
+				<div v-else>
+					<img class="card-user avatar avatar-large" v-bind:src="'data:image/jpeg;base64,'+post.avatar">	
+				</div>
 				<h5 class="card-title">{{post.authorname}}</h5>
 				</div>
-				<btn @click="this.choosePost(post)" data-bs-toggle="modal" data-bs-target="#updatePostModal" style="margin-right:2px"><i style="font-size:2em;" class="bi bi-pencil-fill"></i></btn>
-				<btn @click="this.choosePost(post)" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i style="font-size:2em;" class="bi bi-trash-fill"></i></btn>
+				
 				</div>
 				<p class="card-text">{{post.text}}</p>
 				<div class="in_a_row">
@@ -150,7 +306,7 @@ export default {
 		
 			
 		</div>
-		<div v-observe-visibility="this.getLastPosts()"></div>
+		<div v-observe-visibility="this.getLastPosts"></div>
 		</div>
 		</section>
 

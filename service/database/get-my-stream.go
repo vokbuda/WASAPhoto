@@ -8,7 +8,8 @@ func (db *appdbimpl) GetMyStream(userid uint64,
 	(select sum(emotion=-1) from(select * from post_emotion where postid=posts.postid)), 
 	(select sum(emotion=1)  from(select * from post_emotion where postid=posts.postid)),
 	(select emotion from post_emotion where postid=posts.postid and userid=?),
-	(select username from profiles where userid=authorid) 
+	(select username from profiles where userid=authorid),
+	(select avatar from profiles where userid=authorid) 
 	from posts where authorid in (select followeduserid from subscriptions where followeruserid=?)
 	 and ? not in (select banneduserid from banusers where banninguserid=authorid) order by lastupdate desc limit 10 offset ?`
 	var ret []Post
@@ -23,7 +24,7 @@ func (db *appdbimpl) GetMyStream(userid uint64,
 	// Read all fountains in the resultset
 	for rows.Next() {
 		var f PostDatabase
-		err = rows.Scan(&f.ID, &f.Text, &f.Image, &f.Authorid, &f.Me, &f.QuantityDislikes, &f.QuantityLikes, &f.CurrentEmotion, &f.AuthorName)
+		err = rows.Scan(&f.ID, &f.Text, &f.Image, &f.Authorid, &f.Me, &f.QuantityDislikes, &f.QuantityLikes, &f.CurrentEmotion, &f.AuthorName, &f.Avatar)
 		var post Post
 		post.ID = f.ID
 		post.Authorid = f.Authorid
@@ -44,10 +45,15 @@ func (db *appdbimpl) GetMyStream(userid uint64,
 			f.QuantityDislikes.Int64 = 0
 			f.QuantityDislikes.Valid = true
 		}
+		if !f.Avatar.Valid {
+			f.Avatar.String = ""
+			f.Avatar.Valid = true
+		}
 
 		post.QuantityLikes = f.QuantityLikes.Int64
 		post.QuantityDislikes = f.QuantityDislikes.Int64
 		post.AuthorName = f.AuthorName
+		post.Avatar = f.Avatar.String
 
 		if err != nil {
 			return nil, err

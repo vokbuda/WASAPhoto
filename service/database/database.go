@@ -28,16 +28,17 @@ type Fountain struct {
 
 // adjust post component below and check for re
 type PostDatabase struct {
-	ID               uint64        `json:"postid"`
-	Text             string        `json:"text"`
-	Image            string        `json:"image"`
-	Authorid         uint64        `json:"authorid"`
-	LastChange       string        `json:"lastChange"`
-	Me               bool          `json:"me"`
-	AuthorName       string        `json:"authorname"`
-	QuantityLikes    sql.NullInt64 `json:"quantityLikes"`
-	QuantityDislikes sql.NullInt64 `json:"quantityDislikes"`
-	CurrentEmotion   sql.NullInt64 `json:"currentemotion"`
+	ID               uint64         `json:"postid"`
+	Text             string         `json:"text"`
+	Image            string         `json:"image"`
+	Authorid         uint64         `json:"authorid"`
+	LastChange       string         `json:"lastChange"`
+	Me               bool           `json:"me"`
+	AuthorName       string         `json:"authorname"`
+	QuantityLikes    sql.NullInt64  `json:"quantityLikes"`
+	QuantityDislikes sql.NullInt64  `json:"quantityDislikes"`
+	CurrentEmotion   sql.NullInt64  `json:"currentemotion"`
+	Avatar           sql.NullString `json:"avatar"`
 }
 
 type Post struct {
@@ -51,6 +52,7 @@ type Post struct {
 	QuantityLikes    int64  `json:"quantityLikes"`
 	QuantityDislikes int64  `json:"quantityDislikes"`
 	CurrentEmotion   int64  `json:"currentemotion"`
+	Avatar           string `json:"avatar"`
 }
 
 type CommentDatabase struct {

@@ -6,7 +6,13 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig(({command, mode, ssrBuild}) => {
 	const ret = {
-		plugins: [vue()],
+		plugins: [vue({
+			template: {
+			  compilerOptions: {
+				isCustomElement: (tag) => ['btn'].includes(tag),
+			  }
+			}
+		  })],
 		resolve: {
 			alias: {
 				'@': fileURLToPath(new URL('./src', import.meta.url))

@@ -30,7 +30,7 @@ export default {
         },
 		commentLike(comment){
             this.userid=sessionStorage.getItem("userid")
-            console.log(this.$route.params.postid)
+          
 			const postData = JSON.stringify({ "idPostEmotion": parseInt(this.$route.params.postid),"idUser":parseInt(this.userid),
             "idCommentEmotion":comment.commentid });
 			
@@ -243,8 +243,7 @@ export default {
             
         },
         async visibilityChanged(){
-            console.log("Entrance inside of current component")
-            console.log(this.offset)
+           
             await this.getCommentsRelatedToPost(this.offset)
 
 
@@ -1273,7 +1272,7 @@ h6, .h6 {
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalCommentCreate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" @click="this.createComment()" class="btn btn-primary">Create</button>
+					<button type="button" @click="this.createComment()" class="btn btn-success">Create</button>
 				</div>
 				</div>
 			</div>

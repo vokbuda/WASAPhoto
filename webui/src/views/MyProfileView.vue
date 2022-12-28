@@ -1,5 +1,5 @@
 <script>
-import router from '../router'
+import router from '../router/index.js'
 import Post from '../entities/Post'
 import {adjustNumber} from '../helpers/adjustNumber.js'
 import {convertToString} from '../helpers/convertToString.js'
@@ -25,9 +25,14 @@ export default {
 			newAvatar:"",
 			choosenPost:{},
 			loaded:false,
-			offset:0
+			offset:0,
+			newUsername:"",
+			notificationText:"",
+			profileLoaded:false
 		}
 	},
+	
+	
 	
 	methods: {
 		goToFollowing(){
@@ -110,9 +115,9 @@ export default {
 			.then((response)=> {
 				if(response.status==204){
 					this.profile.currentFollow=true
-					console.log(this.profile.quantitySubscribers)
+					
 					this.profile.quantitySubscribers=convertToString(this.profile.quantitySubscribers,1)
-					console.log(this.profile.quantitySubscribers)
+					
 
 
 
@@ -226,7 +231,7 @@ export default {
 			this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
 			
-			console.log(sessionStorage.getItem('token'))
+			
 			
 			
 			fetch(__API_URL__+'/posts/'+post.postid+'/like/'+this.userid,{
@@ -351,7 +356,7 @@ export default {
 			)
 			.then((response)=> {
 				if (response.status==200){
-					console.log(response.data.postid)
+				
 					const post=new Post(this.$route.params.userid,response.data.postid,this.postText,
 					'0','0',true,this.postImage,'',0)
 					this.postsProfile.unshift(post)
@@ -458,6 +463,7 @@ export default {
 
 					}else{
 						this.offset-=10
+						console.log(this.postsProfile)
 					}
 					
 					
@@ -683,6 +689,7 @@ export default {
 					// Handle response
 					
 					this.profile=response.data
+					this.profileLoaded=true
 					
 					this.profile.quantitySubscriptions=this.adjustNumber(this.profile.quantitySubscriptions)
 					this.profile.quantitySubscribers=this.adjustNumber(this.profile.quantitySubscribers)
@@ -697,10 +704,20 @@ export default {
 					},
 		
 	},
+	/*
+	watch: {
+	// when redirect to new category_name, this will be callback
+		'$route.params.userid': {
+			handler: function(userid) {
+				router.push('/profiles/'+userid)
+			},
+			
+		}
+	},*/
 	
 	
 	created() {
-		
+		this.profileLoaded=false
 		this.postCreation=true
 		this.getMyProfile()
 		
@@ -809,6 +826,9 @@ img{
 	margin-left: 10px;
    padding-right:30px;
 }
+.banned,.followers,.following:hover{
+	cursor:pointer
+}
 .bottom{
   margin-top:10px;
 }
@@ -881,7 +901,7 @@ a:hover{
     </div>
   </div>
 </div>
-		<div class="shadow overflow">
+		<div v-if="this.profileLoaded" class="shadow overflow">
 		<div id="header"></div>
 		<div id="profile">
 			<div class="absolution">
@@ -971,7 +991,7 @@ a:hover{
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalPostCreate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" @click="this.createPost()" class="btn btn-primary">Create</button>
+					<button type="button" @click="this.createPost()" class="btn btn-success">Create</button>
 				</div>
 				</div>
 			</div>
@@ -1100,11 +1120,18 @@ a:hover{
 		</div>
 		
 		</div>
+
+		<div v-else class="spinner-border text-warning center" role="status">
+  			<span class="sr-only">Loading...</span>
+		</div>
+
+
+
 		
 		
 		<section id="gallery">
 		<div class="container">
-			<div class="row">
+			<div v-if="this.postsProfile.length!=0" class="row">
 			<div class="col-lg-4 mb-4" v-for="(post, index) in postsProfile" :key="index">
 		<div class="card">
 			<img v-bind:src="'data:image/jpeg;base64,'+post.image" alt="" class="card-img-top">
@@ -1136,14 +1163,22 @@ a:hover{
 			</div>
 			
 			</div>
-			<div v-observe-visibility="this.visibilityChanged"></div>
+			<div v-observe-visibility="visibilityChanged"></div>
 		
 			
 		</div>
 		
+		<div v-else>
+			There is no data
+
+		</div>
 		
 		</div>
+		
+		
 		</section>
+		
+		
 		
 		
 
