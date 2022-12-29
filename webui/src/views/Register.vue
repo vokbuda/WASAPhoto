@@ -21,14 +21,14 @@ export default {
 
 			}
 			
-			this.$axios.post('/session', sessionData,{
+			await this.$axios.post('/session', sessionData,{
 				headers:{
 					"Authorization":current_token,
 					"Content-Type":'application/json'
 				}
 			}
 			)
-			.then(function (response) {
+			.then((response) =>{
 				
 				if (response.status==200){
 					

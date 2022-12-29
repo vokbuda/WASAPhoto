@@ -28,7 +28,7 @@ export default {
         adjustNumber(data){
             adjustNumber(data)
         },
-		commentLike(comment){
+		async commentLike(comment){
             this.userid=sessionStorage.getItem("userid")
           
 			const postData = JSON.stringify({ "idPostEmotion": parseInt(this.$route.params.postid),"idUser":parseInt(this.userid),
@@ -36,7 +36,7 @@ export default {
 			
 			
 			
-			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
+			await this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
             +'/like/'+this.userid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
@@ -122,14 +122,14 @@ export default {
 			});
 
         },
-        commentDislike(comment){
+        async commentDislike(comment){
             this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "idPostEmotion": parseInt(this.$route.params.postid),"idUser":parseInt(this.userid),
             "idCommentEmotion":comment.commentid });
 			
 			
 			
-			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
+			await this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+comment.commentid
             +'/dislike/'+this.userid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
@@ -162,11 +162,11 @@ export default {
             router.push("/profiles/"+userid)
 
         },
-        createComment(){
+        async createComment(){
             const postData = JSON.stringify({ "text": this.commentText });
 			
 			
-			this.$axios.post('/posts/'+this.$route.params.postid+'/comments', postData,{
+			await this.$axios.post('/posts/'+this.$route.params.postid+'/comments', postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
                     "Content-Type":'application/json'
@@ -254,7 +254,7 @@ export default {
             
 			
 			
-			this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+this.tempComment.commentid,postData,{
+			await this.$axios.put('/posts/'+this.$route.params.postid+'/comments/'+this.tempComment.commentid,postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
                     "Content-Type":'application/json'

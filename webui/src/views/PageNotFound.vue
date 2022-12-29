@@ -16,9 +16,9 @@ export default {
 		async session(username, password) {
 			
 			const sessionData = JSON.stringify({ "username": username,"password":password,"token":"" });
-			this.$axios.post('http://192.168.126.129:3000/session', sessionData
+			await this.$axios.post('http://192.168.126.129:3000/session', sessionData
 			)
-			.then(function (response) {
+			.then((response) => {
 				if (response.status==200){
 					
 					sessionStorage.setItem("token",response.data.session)

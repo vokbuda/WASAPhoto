@@ -59,14 +59,14 @@ export default {
 
 		},
 		
-		ban(profile){
+		async ban(profile){
 			this.userid=sessionStorage.getItem("userid")
 			
 			const postData = JSON.stringify({ "banningUserid": parseInt(this.userid),"bannedUserid":profile.userid });
 			
 			
 			
-			this.$axios.put('/profiles/'+this.userid+'/banuser/'+profile.userid, postData,{
+			await this.$axios.put('/profiles/'+this.userid+'/banuser/'+profile.userid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
 					"Content-Type":'application/json'

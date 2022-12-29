@@ -52,13 +52,13 @@ export default {
 			
 
 		},
-		ban(){
+		async ban(){
 			this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "banningUserid": parseInt(this.userid),"bannedUserid":parseInt(this.$route.params.userid) });
 			
 			
 			
-			this.$axios.put('/profiles/'+this.$route.params.userid+'/banuser/'+this.userid, postData,{
+			await this.$axios.put('/profiles/'+this.$route.params.userid+'/banuser/'+this.userid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
 					"Content-Type":'application/json'
@@ -99,13 +99,13 @@ export default {
 			
 
 		},
-		subscribe(){
+		async subscribe(){
 			this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "followingUserid": parseInt(this.userid),"followedUserid":parseInt(this.$route.params.userid) });
 			
 			
 			
-			this.$axios.put('/profiles/'+this.$route.params.userid+'/subscribe/'+this.userid, postData,{
+			await this.$axios.put('/profiles/'+this.$route.params.userid+'/subscribe/'+this.userid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
 					"Content-Type":'application/json'
@@ -192,13 +192,13 @@ export default {
 
 
 		},
-		likePost(post){
+		async likePost(post){
 			this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
 			
 			
 			
-			this.$axios.put('/posts/'+post.postid+'/like/'+this.userid, postData,{
+			await this.$axios.put('/posts/'+post.postid+'/like/'+this.userid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
 					"Content-Type":'application/json'
@@ -259,13 +259,13 @@ export default {
 			});
 
 		},
-		dislikePost(post){
+		async dislikePost(post){
 			this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
 			
 			
 			
-			this.$axios.put('/posts/'+post.postid+'/dislike/'+this.userid, postData,{
+			await this.$axios.put('/posts/'+post.postid+'/dislike/'+this.userid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
 					"Content-Type":'application/json'
@@ -342,12 +342,12 @@ export default {
 
 
 		},
-		createPost(){
+		async createPost(){
 			
 			const postData = JSON.stringify({ "text": this.postText,"image":this.postImage });
 			
 			
-			this.$axios.post('/profiles/'+this.$route.params.userid+'/posts', postData,{
+			await this.$axios.post('/profiles/'+this.$route.params.userid+'/posts', postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
 					"Content-Type":'application/json'
@@ -370,13 +370,13 @@ export default {
 			});
 
 		},
-		updatePost(){
+		async updatePost(){
 			
 			const postData = JSON.stringify({ "text": this.postText,"image":this.postImage });
 
 			
 			
-			this.$axios.put('/profiles/'+this.$route.params.userid+'/posts/'+this.choosenPost.postid, postData,{
+			await this.$axios.put('/profiles/'+this.$route.params.userid+'/posts/'+this.choosenPost.postid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
 					"Content-Type":'application/json'
@@ -621,48 +621,7 @@ export default {
 			await this.getMyPosts(this.offset)
 			
 		},
-		async loadMorePosts(){
-			this.header=sessionStorage.getItem("token")
-			
-			this.offset+=10
-			
-			try {
-				await fetch(__API_URL__+'/profiles?username='+this.searchedUsername+'&&offset='+this.offset,
-				{headers:{
-					'Authorization':this.header,
-					'Content-Type':'application/json'
-				
-				}
-				}).then((response)=>{
-					return response.json();
-					
-					}).then((data)=>{
-							
-							if(data){
-								
-								this.postsProfile=this.postsProfile.concat(data)
-
-
-							}else{
-								this.offset-=10
-							}
-						
-							
-
-										
-						
-						
-						
-					})
-
-				
-				// this.answer = (await res.json()).answer
-				
-				
-			} catch (error) {
-				this.answer = 'Error! Could not reach the API. ' + error
-			}
-    	},
+		
 		async getMyProfile(){
 		
 		

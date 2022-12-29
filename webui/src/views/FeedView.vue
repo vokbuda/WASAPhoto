@@ -81,13 +81,13 @@ export default {
 				});
 
 		},
-		likePost(post){
+		async likePost(post){
 			this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
 			
 			
 			
-			this.$axios.put('/posts/'+post.postid+'/like/'+this.userid, postData,{
+			await this.$axios.put('/posts/'+post.postid+'/like/'+this.userid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
 					"Content-Type":'application/json'
@@ -148,13 +148,13 @@ export default {
 			});
 
 		},
-		dislikePost(post){
+		async dislikePost(post){
 			this.userid=sessionStorage.getItem("userid")
 			const postData = JSON.stringify({ "idPostEmotion": post.postid,"idUser":parseInt(this.userid) });
 			
 			
 			
-			this.$axios.put('/posts/'+post.postid+'/dislike/'+this.userid, postData,{
+			await this.$axios.put('/posts/'+post.postid+'/dislike/'+this.userid, postData,{
 				headers:{
 					"Authorization":sessionStorage.getItem("token"),
 					"Content-Type":'application/json'
