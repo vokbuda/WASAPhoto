@@ -34,6 +34,9 @@ func (db *appdbimpl) UpdateCommentRelatedToPost(commentid uint64, postid uint64,
 		// Check if the result is inside the circle
 
 	}
+	if resEmotions.Err() != nil {
+		return 0, 0, resEmotions.Err()
+	}
 
 	defer func() { _ = resEmotions.Close() }()
 	var finalNumLikes int64
