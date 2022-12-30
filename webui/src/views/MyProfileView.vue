@@ -453,6 +453,7 @@ export default {
 					// Handle response
 
 					if (response.data!=null){
+						console.log(response)
 						var current_data=response.data
 						current_data.forEach((element, index) => {
 							element.quantityLikes=adjustNumber(element.quantityLikes)
@@ -463,7 +464,7 @@ export default {
 
 					}else{
 						this.offset-=10
-						console.log(this.postsProfile)
+						
 					}
 					
 					
@@ -856,18 +857,18 @@ a:hover{
       
     </div>
     <div class="toast-body">
-      {{this.notificationText}}
+      {{notificationText}}
     </div>
   </div>
 </div>
-		<div v-if="this.profileLoaded" class="shadow overflow">
+		<div v-if="profileLoaded" class="shadow overflow">
 		<div id="header"></div>
 		<div id="profile">
 			<div class="absolution">
 			<div id="element1">
-			<div v-if="this.profile.me">
-			<div data-bs-toggle="modal" data-bs-target="#imageModal" v-if="this.profile.avatar">
-				<img class="image" v-bind:src="'data:image/jpeg;base64,'+this.profile.avatar">
+			<div v-if="profile.me">
+			<div data-bs-toggle="modal" data-bs-target="#imageModal" v-if="profile.avatar">
+				<img class="image" v-bind:src="'data:image/jpeg;base64,'+profile.avatar">
 			</div>
 			
 
@@ -876,8 +877,8 @@ a:hover{
 			<!--<img src="https://a4-images.myspacecdn.com/images03/2/85a286a4bbe84b56a6d57b1e5bd03ef4/300x300.jpg" alt="" />-->
 			</div>
 			<div v-else>
-				<div  v-if="this.profile.avatar">
-				<img class="image" v-bind:src="'data:image/jpeg;base64,'+this.profile.avatar">
+				<div  v-if="profile.avatar">
+				<img class="image" v-bind:src="'data:image/jpeg;base64,'+profile.avatar">
 			</div>
 			
 
@@ -888,14 +889,14 @@ a:hover{
 
 			</div>
 			</div>
-			<div v-if="this.profile.me" id="element2">
+			<div v-if="profile.me" id="element2">
 				<btn data-bs-toggle="modal" data-bs-target="#deleteAccountModal"><i style="font-size:2em;" class="bi bi-trash3-fill"></i></btn>
 			</div>
 			
 			</div>
 			<div class="name">
-			{{this.profile.username}}
-			<btn v-if="this.profile.me" data-bs-toggle="modal" data-bs-target="#usernameModal"><i class="bi bi-pencil-square"></i></btn>
+			{{profile.username}}
+			<btn v-if="profile.me" data-bs-toggle="modal" data-bs-target="#usernameModal"><i class="bi bi-pencil-square"></i></btn>
 			
 			
 			<div class="modal fade" id="usernameModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -916,12 +917,12 @@ a:hover{
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalUsernameUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button @click="this.updateUsername()" type="button" class="btn btn-warning">Save updates</button>
+					<button @click="updateUsername()" type="button" class="btn btn-warning">Save updates</button>
 				</div>
 				</div>
 			</div>
 			</div>
-			<div v-if="this.postCreation" class="modal fade" id="postModal" tabindex="-1" aria-labelledby="exampleModalLabel" >
+			<div v-if="postCreation" class="modal fade" id="postModal" tabindex="-1" aria-labelledby="exampleModalLabel" >
 			<div class="modal-dialog">
 				<div class="modal-content">
 				<div class="modal-header">
@@ -933,29 +934,29 @@ a:hover{
 					
 					<div class="mb-3">
 						<div class="input-group mb-3">
-						<input type="file" @change="this.handleImage" accept="image/*" class="form-control" id="inputGroupFile02">
+						<input type="file" @change="handleImage" accept="image/*" class="form-control" id="inputGroupFile02">
 						
 						</div>
 					</div>
 					<div>
-						<img v-if="this.postImage" class="image" v-bind:src="'data:image/jpeg;base64,'+this.postImage">
+						<img v-if="postImage" class="image" v-bind:src="'data:image/jpeg;base64,'+this.postImage">
 						<img v-else class="image" src="../images/nophoto.jpg">
 
 					</div>
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">Text:</label>
-						<input v-model="this.postText" type="text" class="form-control" id="message-text">
+						<input v-model="postText" type="text" class="form-control" id="message-text">
 					</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalPostCreate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" @click="this.createPost()" class="btn btn-success">Create</button>
+					<button type="button" @click="createPost()" class="btn btn-success">Create</button>
 				</div>
 				</div>
 			</div>
 			</div>
-			<div v-if="this.postCreation" class="modal fade" id="updatePostModal" tabindex="-1" aria-labelledby="exampleModalLabel" >
+			<div v-if="postCreation" class="modal fade" id="updatePostModal" tabindex="-1" aria-labelledby="exampleModalLabel" >
 			<div class="modal-dialog">
 				<div class="modal-content">
 				<div class="modal-header">
@@ -967,7 +968,7 @@ a:hover{
 					
 					<div class="mb-3">
 						<div class="input-group mb-3">
-						<input type="file" @change="this.handleImage" accept="image/*" class="form-control" id="inputGroupFile02">
+						<input type="file" @change="handleImage" accept="image/*" class="form-control" id="inputGroupFile02">
 						
 						</div>
 					</div>
@@ -976,13 +977,13 @@ a:hover{
 					</div>
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">Text:</label>
-						<input v-model="this.postText" type="text" class="form-control" id="message-text">
+						<input v-model="postText" type="text" class="form-control" id="message-text">
 					</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalPostUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" @click="this.updatePost()" class="btn btn-primary">Update</button>
+					<button type="button" @click="updatePost()" class="btn btn-primary">Update</button>
 				</div>
 				</div>
 			</div>
@@ -998,7 +999,7 @@ a:hover{
 				
 				<div class="modal-footer">
 					<button id="closeModalDeleteAccount" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button @click="this.deleteAccount()" type="button" class="btn btn-danger">Confirm</button>
+					<button @click="deleteAccount()" type="button" class="btn btn-danger">Confirm</button>
 				</div>
 				</div>
 			</div>
@@ -1013,7 +1014,7 @@ a:hover{
 				
 				<div class="modal-footer">
 					<button id="closeModalDeletePost" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button @click="this.deletePost()" type="button" class="btn btn-danger">Delete Post</button>
+					<button @click="deletePost()" type="button" class="btn btn-danger">Delete Post</button>
 				</div>
 				</div>
 			</div>
@@ -1031,14 +1032,14 @@ a:hover{
 					<form>
 					
 						<div class="input-group mb-3">
-						<input type="file" @change="this.handleImageAvatar" accept="image/*" class="form-control" id="inputGroupFile02">
+						<input type="file" @change="handleImageAvatar" accept="image/*" class="form-control" id="inputGroupFile02">
 						
 						</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalAvatarUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button @click="this.updateAvatar()" type="button" class="btn btn-warning">Save updates</button>
+					<button @click="updateAvatar()" type="button" class="btn btn-warning">Save updates</button>
 				</div>
 				</div>
 			</div>
@@ -1052,28 +1053,28 @@ a:hover{
 			
 			
 			<div class="bottom">
-			<span @click="this.goToFollowing()" class="following">
-			<span class="count">{{this.profile.quantitySubscriptions}}</span>
+			<span @click="goToFollowing()" class="following">
+			<span class="count">{{profile.quantitySubscriptions}}</span>
 			following
 			</span>
 			
-			<span @click="this.goToFollowers()" class="followers">
-				<span class="count">{{this.profile.quantitySubscribers}}</span>
+			<span @click="goToFollowers()" class="followers">
+				<span class="count">{{profile.quantitySubscribers}}</span>
 				followers
 			</span>
-			<span @click="this.goToBanned()" class="banned" v-if="this.profile.me">
-				<div @onclick="this.getMyProfile">
+			<span @click="goToBanned()" class="banned" v-if="profile.me">
+				<div @onclick="getMyProfile">
 				banned</div>
 			</span>
 			
 			
 			
 			</div>
-			<div v-if="!this.profile.me">
-			<button @click="this.subscribe" v-if="!this.profile.currentFollow" style="margin-top:5px" type="button" class="btn btn-warning">follow</button>
-			<button @click="this.unsubscribe" v-else style="margin-top:5px" type="button" class="btn btn-warning">unfollow</button>
-			<button @click="this.ban" v-if="!this.profile.currentBan" style="margin-top:5px; margin-left:10px" type="button" class="btn btn-danger">ban</button>
-			<button @click="this.unban" v-else style="margin-top:5px; margin-left:10px" type="button" class="btn btn-danger">unban</button>
+			<div v-if="!profile.me">
+			<button @click="subscribe" v-if="!this.profile.currentFollow" style="margin-top:5px" type="button" class="btn btn-warning">follow</button>
+			<button @click="unsubscribe" v-else style="margin-top:5px" type="button" class="btn btn-warning">unfollow</button>
+			<button @click="ban" v-if="!this.profile.currentBan" style="margin-top:5px; margin-left:10px" type="button" class="btn btn-danger">ban</button>
+			<button @click="unban" v-else style="margin-top:5px; margin-left:10px" type="button" class="btn btn-danger">unban</button>
 			</div>
 			
 		</div>
@@ -1090,7 +1091,7 @@ a:hover{
 		
 		<section id="gallery">
 		<div class="container">
-			<div v-if="this.postsProfile.length!=0" class="row">
+			<div v-if="postsProfile.length!=0" class="row">
 			<div class="col-lg-4 mb-4" v-for="(post, index) in postsProfile" :key="index">
 		<div class="card">
 			<img v-bind:src="'data:image/jpeg;base64,'+post.image" alt="" class="card-img-top">
@@ -1102,19 +1103,19 @@ a:hover{
 				
 				<h5 class="card-title">{{this.profile.username}}</h5>
 				</div>
-				<btn @click="this.choosePost(post)" data-bs-toggle="modal" data-bs-target="#updatePostModal" style="margin-right:2px"><i style="font-size:2em;" class="bi bi-pencil-fill"></i></btn>
-				<btn @click="this.choosePost(post)" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i style="font-size:2em;" class="bi bi-trash-fill"></i></btn>
+				<btn @click="choosePost(post)" data-bs-toggle="modal" data-bs-target="#updatePostModal" style="margin-right:2px"><i style="font-size:2em;" class="bi bi-pencil-fill"></i></btn>
+				<btn @click="choosePost(post)" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i style="font-size:2em;" class="bi bi-trash-fill"></i></btn>
 				</div>
 				<p class="card-text">{{post.text}}</p>
 				<div class="in_a_row">
-				<btn @click="this.sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
+				<btn @click="sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
 
-				<btn v-if="post.currentemotion!=1" @click="this.likePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
-				<btn v-else @click="this.deletePostLike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn>
+				<btn v-if="post.currentemotion!=1" @click="likePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
+				<btn v-else @click="deletePostLike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn>
 				<h5>{{post.quantityLikes}}</h5>
 
-				<btn v-if="post.currentemotion!=-1" @click="this.dislikePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
-				<btn v-else @click="this.deletePostDislike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn>
+				<btn v-if="post.currentemotion!=-1" @click="dislikePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
+				<btn v-else @click="deletePostDislike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn>
 				<h5>{{post.quantityDislikes}}</h5>
 				</div>
 				
@@ -1122,7 +1123,7 @@ a:hover{
 			</div>
 			
 			</div>
-			<div v-observe-visibility="visibilityChanged"></div>
+			
 		
 			
 		</div>
@@ -1131,6 +1132,7 @@ a:hover{
 			There is no data
 
 		</div>
+		<div v-observe-visibility="visibilityChanged"></div>
 		
 		</div>
 		
@@ -1165,7 +1167,7 @@ a:hover{
         <div>
             <p>This is some(myprofile page) component inside for checking data and then implement all necessary stuff</p>
         </div>-->
-		<div v-if="this.profile.me" class="fab-container">
+		<div v-if="profile.me" class="fab-container">
         
             
             <i data-bs-toggle="modal" data-bs-target="#postModal" style="font-size:4em;" class="bi bi-pencil-square"></i>

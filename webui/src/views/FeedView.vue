@@ -10,7 +10,8 @@ export default {
 			loading: false,
 			some_data: null,
 			feed_posts:[],
-			offset:0
+			offset:0,
+			userid:""
 		}
 	},
 	methods: {
@@ -276,7 +277,7 @@ export default {
 			
 			<div class="card-body">
 				<div class="in_a_row">
-				<div @click="this.gotoProfile(post.authorid)">
+				<div @click="gotoProfile(post.authorid)">
 				<div v-if="!post.avatar">	
 				<img class="card-user avatar avatar-large" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images">
 				</div>
@@ -289,14 +290,14 @@ export default {
 				</div>
 				<p class="card-text">{{post.text}}</p>
 				<div class="in_a_row">
-				<btn @click="this.sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
+				<btn @click="sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
 
-				<btn v-if="post.currentemotion!=1" @click="this.likePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
-				<btn v-else @click="this.deletePostLike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn>
+				<btn v-if="post.currentemotion!=1" @click="likePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
+				<btn v-else @click="deletePostLike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn>
 				<h5>{{post.quantityLikes}}</h5>
 
-				<btn v-if="post.currentemotion!=-1" @click="this.dislikePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
-				<btn v-else @click="this.deletePostDislike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn>
+				<btn v-if="post.currentemotion!=-1" @click="dislikePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
+				<btn v-else @click="deletePostDislike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn>
 				<h5>{{post.quantityDislikes}}</h5>
 				</div>
 				
@@ -306,7 +307,7 @@ export default {
 		
 			
 		</div>
-		<div v-observe-visibility="this.getLastPosts"></div>
+		<div v-observe-visibility="getLastPosts"></div>
 		</div>
 		</section>
 

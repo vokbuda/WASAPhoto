@@ -11,8 +11,10 @@ export default {
 	methods:{
 
 	},
-	mounted() {
-		this.userid=sessionStorage.getItem("userid")
+	created() {
+		
+		this.userid=sessionStorage.userid
+		
 	}
 	
 }
@@ -48,7 +50,7 @@ export default {
 							</RouterLink>
 						</li>
                         <li class="nav-item">
-							<RouterLink :to="'/profiles/'+this.userid" class="nav-link">
+							<RouterLink :to='/profiles/+userid' class="nav-link"><!--this.userid-->
 								<svg class="feather"><use href="/feather-sprite-v4.29.0.svg#user"/></svg>
                                 ME
 							</RouterLink>

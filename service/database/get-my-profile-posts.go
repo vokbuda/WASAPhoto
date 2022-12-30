@@ -12,6 +12,7 @@ func (db *appdbimpl) GetProfilePosts(userid uint64, caller uint64,
 	FROM posts
 	WHERE authorid=? 
 	and ? not in (select banneduserid from banusers where banninguserid=authorid)
+	order by lastupdate desc
 	limit 10 offset ?`
 	var ret []Post
 	rows, err := db.c.Query(query, caller, caller,

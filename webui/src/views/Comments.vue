@@ -324,8 +324,9 @@ export default {
 	},
     
     
-    mounted() {
-		
+    created() {
+		this.notificationText=""
+        this.commentText=""
         let script=document.createElement("script");
         script.setAttribute("src","https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js");
         document.head.appendChild(script);
@@ -1206,7 +1207,7 @@ h6, .h6 {
         
         </div>
         <div class="toast-body">
-            {{this.notificationText}}
+            {{notificationText}}
         
         </div>
     </div>
@@ -1223,7 +1224,7 @@ h6, .h6 {
 	    								</h4>
                                 <div class="ftr">
                                     <div class="author">
-                                        <a @click="this.goAnotherProfile(comment.authorid)"> <div v-if="!comment.avatar"><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images" alt="" class="avatar img-raised"> </div>
+                                        <a @click="goAnotherProfile(comment.authorid)"> <div v-if="!comment.avatar"><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images" alt="" class="avatar img-raised"> </div>
                                         <div v-else><img v-bind:src="'data:image/jpeg;base64,'+comment.avatar" alt="" class="avatar img-raised"></div>
                                         <span>{{comment.username}}</span>
                                             <div class="ripple-cont">
@@ -1232,14 +1233,14 @@ h6, .h6 {
                                         </a>
                                     </div>
                                     <div class="stats"> 
-                                    <btn @click="this.chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#updateCommentModal"><i style="font-size:1em;" class="bi bi-pencil-fill"></i></btn>
-                                    <btn @click="this.chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#deleteCommentModal"><i style="font-size:1em;" class="bi bi-trash-fill"></i></btn>
-                                    <div v-if="comment.currentemotion!==1"><btn @click="this.commentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn></div>
-                                    <div v-else><btn @click="this.deleteCommentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn></div>
+                                    <btn @click="chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#updateCommentModal"><i style="font-size:1em;" class="bi bi-pencil-fill"></i></btn>
+                                    <btn @click="chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#deleteCommentModal"><i style="font-size:1em;" class="bi bi-trash-fill"></i></btn>
+                                    <div v-if="comment.currentemotion!==1"><btn @click="commentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn></div>
+                                    <div v-else><btn @click="deleteCommentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn></div>
 				{{adjustNumber(comment.quantityLikes)}}
 
-				<div v-if="comment.currentemotion!=-1"><btn @click="this.commentDislike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn></div>
-                <div v-else><btn @click="this.deleteCommentDislike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn></div>
+				<div v-if="comment.currentemotion!=-1"><btn @click="commentDislike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn></div>
+                <div v-else><btn @click="deleteCommentDislike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn></div>
 				{{adjustNumber(comment.quantityDislikes)}}</div>
                                     
                                 </div>
@@ -1266,13 +1267,13 @@ h6, .h6 {
 					
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">Text:</label>
-						<input v-model="this.commentText" type="text" class="form-control" id="message-text">
+						<input v-model="commentText" type="text" class="form-control" id="message-text">
 					</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalCommentCreate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" @click="this.createComment()" class="btn btn-success">Create</button>
+					<button type="button" @click="createComment()" class="btn btn-success">Create</button>
 				</div>
 				</div>
 			</div>
@@ -1289,13 +1290,13 @@ h6, .h6 {
 					
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">Text:</label>
-						<input v-model="this.commentText" type="text" class="form-control" id="message-text">
+						<input v-model="commentText" type="text" class="form-control" id="message-text">
 					</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalCommentUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" @click="this.updateComment()" class="btn btn-warning">Update</button>
+					<button type="button" @click="updateComment()" class="btn btn-warning">Update</button>
 				</div>
 				</div>
 			</div>
@@ -1309,12 +1310,12 @@ h6, .h6 {
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalCommentDelete" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" @click="this.deleteComment()" class="btn btn-danger">Delete</button>
+					<button type="button" @click="deleteComment()" class="btn btn-danger">Delete</button>
 				</div>
 				</div>
 			</div>
 			</div>
-            <div v-observe-visibility="this.visibilityChanged"></div>
+            <div v-observe-visibility="visibilityChanged"></div>
     </div>
 
 

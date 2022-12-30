@@ -257,23 +257,23 @@ export default {
 				<div class="col-md-4 py-2" v-for="(person, index) in usersArray" :key="index">
 					
 					<div  class="profile-card-4 text-center">
-						<div @click="this.gotoProfile(person.userid)" v-if="person.avatar"><img :src="'data:image/jpeg;base64,'+person.avatar" class="img img-responsive"></div>
-						<div @click="this.gotoProfile(person.userid)" v-else><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images" class="img img-responsive"></div>
+						<div @click="gotoProfile(person.userid)" v-if="person.avatar"><img :src="'data:image/jpeg;base64,'+person.avatar" class="img img-responsive"></div>
+						<div @click="gotoProfile(person.userid)" v-else><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images" class="img img-responsive"></div>
 						<div class="profile-content">
-							<div class="profile-name" @click="this.gotoProfile(person.userid)">{{person.username}}</div>
+							<div class="profile-name" @click="gotoProfile(person.userid)">{{person.username}}</div>
 							<div class="row">
 								
 								<div v-if="!person.currentFollow" class="col-xs-4">
-									<button @click="this.subscribe(person)" style="margin-bottom:10px" type="button" class="btn btn-warning">follow</button>
+									<button @click="subscribe(person)" style="margin-bottom:10px" type="button" class="btn btn-warning">follow</button>
 								</div>
                                 <div v-else class="col-xs-4">
-									<button @click="this.unsubscribe(person)" style="margin-bottom:10px" type="button" class="btn btn-warning">unfollow</button>
+									<button @click="unsubscribe(person)" style="margin-bottom:10px" type="button" class="btn btn-warning">unfollow</button>
 								</div>
 
 								
 								
                                 <div class="col-xs-4">
-                                    <button @click="this.unban(person)" style="margin-top:5px" type="button" class="btn btn-danger">unban</button>
+                                    <button @click="unban(person)" style="margin-top:5px" type="button" class="btn btn-danger">unban</button>
                                     
 									
 								</div>
@@ -300,7 +300,7 @@ export default {
 		</div>
         </div>
 		<div v-if="!this.usersArray" style="text-align:center"><h2>There is no data</h2></div>
-		<div v-observe-visibility="this.getBannedUsers"></div>
+		<div v-observe-visibility="getBannedUsers"></div>
 
 		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
 	</div>

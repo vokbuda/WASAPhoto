@@ -12,6 +12,7 @@ export default {
 	},
 	mounted() {
 		
+		
 	}
 }
 </script>
@@ -26,9 +27,9 @@ export default {
 		
 		<h4>At the moment there had been developed following unique functionalities:</h4>
 		<ul class="list-group">
-			<li class="list-group-item">Operations with account(change photo, delete account)</li>
-			<li class="list-group-item">Checks to avoid IDOR vulnerability,
-				injections(can't to modify post if you are not author)</li>
+			<li class="list-group-item">Operations with account(change avatrar,change username, delete account)</li>
+			<li class="list-group-item">Ban and unban users component</li>
+			<li class="list-group-item">Operations with posts and comments(create,update, delete)</li>
 			<li class="list-group-item">Dislikes on posts and comments</li>
 			<li class="list-group-item">Search users</li>
 		</ul>
