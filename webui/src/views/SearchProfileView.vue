@@ -104,8 +104,13 @@ export default {
 	watch: {
     // whenever question changes, this function will run
 		searchedUsername(newSearchedUsername, oldSearchedUsername) {
-			
+			if (newSearchedUsername==''){
+				this.usersArray=[]
+				return
+			}
 			this.getAnswer(newSearchedUsername)
+			
+			
 			
       
 			//this.searchUsers(newSearchedUsername)
