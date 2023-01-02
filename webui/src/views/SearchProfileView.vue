@@ -17,7 +17,7 @@ export default {
 			header:"",
 			usersArray:[],
 			offset:0,
-			searchedUsername:""
+			
 		}
 	},
 	methods: {

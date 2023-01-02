@@ -12,6 +12,7 @@ export default {
 	},
 	
 	methods: {
+		
 		async session(username) {
 			
 			const sessionData = JSON.stringify({ "username": username});
@@ -64,15 +65,15 @@ export default {
 
 
     <div style="margin-top:50px; margin-left:50px;">
-		<form>
+		
 			<div class="mb-3">
 				<label class="form-label">Username</label>
-				<input type="text" class="form-control" aria-describedby="emailHelp" v-model="username">
+				<input type="text" class="form-control" aria-describedby="emailHelp" v-model="username" @keyup.enter="session(username)">
 				<div id="emailHelp" class="form-text" ></div>
 			</div>
 			
-			<button type=button @click="session(username,password)" class="btn btn-success">Submit</button>
-		</form>
+			<button type=button @click="session(username)" class="btn btn-success">Submit</button>
+		
 	</div>
 
 	<div class="container-fluid">

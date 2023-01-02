@@ -298,16 +298,19 @@ export default {
 				.then(response => {
 					// Handle response
                     this.offset+=10
-					if(response.data!==null){
+                    
+					if(response.data!=null){
                         var current_data=response.data
                         current_data.forEach((element, index) => {
 							element.quantityLikes=adjustNumber(element.quantityLikes)
 							element.quantityDislikes=adjustNumber(element.quantityDislikes)
 					    });
                         this.commentsToPost=this.commentsToPost.concat(current_data)
+                        console.log(this.commentsToPost)
                         
                     }else{
                         this.offset-=10
+                        
                        
                     }
 					
@@ -330,6 +333,7 @@ export default {
         let script=document.createElement("script");
         script.setAttribute("src","https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js");
         document.head.appendChild(script);
+        
 
         //this.getCommentsRelatedToPost()
 
@@ -1214,6 +1218,7 @@ h6, .h6 {
     </div>
     
     <div style="margin-top:30px">
+    <div v-if="commentsToPost.length!=0">
        
 	<div class="col-md-" v-for="(comment, index) in commentsToPost" :key="index">
                         <div class="card">
@@ -1235,7 +1240,7 @@ h6, .h6 {
                                     <div class="stats"> 
                                     <btn @click="chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#updateCommentModal"><i style="font-size:1em;" class="bi bi-pencil-fill"></i></btn>
                                     <btn @click="chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#deleteCommentModal"><i style="font-size:1em;" class="bi bi-trash-fill"></i></btn>
-                                    <div v-if="comment.currentemotion!==1"><btn @click="commentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn></div>
+                                    <div v-if="comment.currentemotion!=1"><btn @click="commentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn></div>
                                     <div v-else><btn @click="deleteCommentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn></div>
 				{{adjustNumber(comment.quantityLikes)}}
 
@@ -1246,6 +1251,10 @@ h6, .h6 {
                                 </div>
                             </div>
                         </div>
+    </div>
+    </div>
+    <div v-else>
+        <h1>There is no comments</h1>
     </div>
         <div class="fab-container">
         

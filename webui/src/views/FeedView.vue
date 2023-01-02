@@ -270,6 +270,7 @@ export default {
 		
 		<section id="gallery">
 		<div class="container">
+			<div v-if="feed_posts.length!=0">
 			<div class="row">
 			<div class="col-lg-4 mb-4" v-for="(post, index) in feed_posts" :key="index">
 		<div class="card">
@@ -307,6 +308,8 @@ export default {
 		
 			
 		</div>
+			</div>
+		<div v-else><h2>There is no posts</h2></div>
 		<div v-observe-visibility="getLastPosts"></div>
 		</div>
 		</section>
