@@ -28,7 +28,8 @@ export default {
 			offset:0,
 			newUsername:"",
 			notificationText:"",
-			profileLoaded:false
+			profileLoaded:false,
+			modifyPost:false
 		}
 	},
 	
@@ -346,6 +347,8 @@ export default {
 		},
 		async createPost(){
 			
+
+			
 			const postData = JSON.stringify({ "text": this.postText,"image":this.postImage });
 			
 			
@@ -361,11 +364,15 @@ export default {
 				
 					const post=new Post(this.$route.params.userid,response.data.postid,this.postText,
 					'0','0',true,this.postImage,'',0)
+					this.modifyPost=true
+					
+					
 					this.postsProfile.unshift(post)
 					
 					
 					this.notification("Post had been created","closeModalPostCreate")
 					document.getElementById("inputImage").value = "";
+					
 				}
 			})
 			.catch(function (error) {
@@ -391,6 +398,7 @@ export default {
 					this.choosenPost.image=this.postImage
 					this.choosenPost.text=this.postText
 										
+					this.modifyPost=true
 					this.notification("Post had been updated","closeModalPostUpdate")
 				}
 			})
@@ -454,9 +462,12 @@ export default {
 					this.offset+=10
 					
 					// Handle response
+					
 
-					if (response.data!=null){
-						console.log(response)
+					if (response.data!=null && !this.modifyPost){
+						
+						console.log(response.data)
+						
 						var current_data=response.data
 						current_data.forEach((element, index) => {
 							element.quantityLikes=adjustNumber(element.quantityLikes)
@@ -466,6 +477,7 @@ export default {
 						
 
 					}else{
+						this.modifyPost=true
 						this.offset-=10
 						
 					}
@@ -601,6 +613,7 @@ export default {
 					// closeModalDeleteAccount
 					this.postsProfile = this.postsProfile.filter(function(el) { return el.postid != choosenId; });
 					this.notification("Post had been removed","closeModalDeletePost")
+					this.modifyPost=true
 					
 					
 					
@@ -622,10 +635,9 @@ export default {
 
 		},
 		async visibilityChanged(){
-			
-			
-			
 			await this.getMyPosts(this.offset)
+			
+			
 			
 		},
 		
@@ -653,8 +665,9 @@ export default {
 			})
 				.then(response => {
 					// Handle response
-					console.log(response.data)
+				
 					this.profile=response.data
+					
 					this.profileLoaded=true
 					
 					this.profile.quantitySubscriptions=this.adjustNumber(this.profile.quantitySubscriptions)
@@ -955,9 +968,13 @@ a:hover{
 					</div>
 					</form>
 				</div>
+				<div v-if="!postText||!postImage"><p class="text-center text-danger">u should insert data</p></div>
+				<div v-else>
 				<div class="modal-footer">
 					<button id="closeModalPostCreate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 					<button type="button" @click="createPost()" class="btn btn-success">Create</button>
+					
+				</div>
 				</div>
 				</div>
 			</div>
@@ -1120,7 +1137,7 @@ a:hover{
 				</div>
 				</div>
 
-				<p class="card-text">{{post.text}}</p>
+				<h3 class="card-text">{{post.text}}</h3>
 				<div class="in_a_row">
 				<btn @click="sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
 

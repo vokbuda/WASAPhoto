@@ -308,7 +308,7 @@ export default {
 							element.quantityDislikes=adjustNumber(element.quantityDislikes)
 					    });
                         this.commentsToPost=this.commentsToPost.concat(current_data)
-                        console.log(this.commentsToPost)
+                       
                         
                     }else{
                         this.offset-=10
