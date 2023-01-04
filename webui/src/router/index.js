@@ -61,7 +61,7 @@ const router = createRouter({
 router.beforeEach(async (to, from,next) => {
 	
 	
-	/*
+	
 	if(!sessionStorage.getItem("token") && to.fullPath!=='/dologin') {
 
 		
@@ -77,8 +77,8 @@ router.beforeEach(async (to, from,next) => {
 	}
 	else{
 		next()
-	}*/
-	next()
+	}
+	
 	
 	
 	
