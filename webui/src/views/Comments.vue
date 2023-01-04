@@ -198,15 +198,14 @@ export default {
                         
             document.getElementById("liveToast").style.display="block";
 			//setTimeout(1500)
-			const delay = ms => new Promise(res => setTimeout(res, ms));
-
-
-			const yourFunction = async () => {
-				await delay(1500);
-				document.getElementById("liveToast").style.display="none";
+			
+            setTimeout(() => {
+                document.getElementById("liveToast").style.display="none";
                 this.notificationText=""
-			};
-			yourFunction()
+            }, 1500)
+
+
+			
 
 
 
