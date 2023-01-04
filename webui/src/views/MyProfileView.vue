@@ -336,6 +336,8 @@ export default {
 				await delay(2000);
 				document.getElementById("liveToast").style.display="none";
 				this.notificationText=""
+				this.postText=""
+				this.postImage=""
 			};
 			yourFunction()
 
@@ -363,6 +365,7 @@ export default {
 					
 					
 					this.notification("Post had been created","closeModalPostCreate")
+					document.getElementById("inputImage").value = "";
 				}
 			})
 			.catch(function (error) {
@@ -534,6 +537,8 @@ export default {
 					if(response.status=='200'){
 						this.notification("Username had been updated","closeModalUsernameUpdate")
 						this.profile.username=this.newUsername
+						sessionStorage.setItem("username",this.newUsername)
+
 
 					}
 				})
@@ -564,6 +569,7 @@ export default {
 					if(response.status=='200'){
 						this.notification("Avatar had been updated","closeModalAvatarUpdate")
 						this.profile.avatar=this.newAvatar
+						sessionStorage.setItem("avatar",this.newAvatar)
 
 					}
 				})
@@ -934,7 +940,7 @@ a:hover{
 					
 					<div class="mb-3">
 						<div class="input-group mb-3">
-						<input type="file" @change="handleImage" accept="image/*" class="form-control" id="inputGroupFile02">
+						<input type="file" @change="handleImage" accept="image/*" class="form-control" id="inputImage">
 						
 						</div>
 					</div>

@@ -177,12 +177,14 @@ export default {
 				if (response.status==200){
                   
                     var username=sessionStorage.getItem("username")
+                    var avatar=sessionStorage.getItem("avatar")
                     const comment=new Comment(this.$route.params.userid,this.$route.params.postid,response.data.commentid,username,this.commentText,
-					'0','0',true,'',0)
+					'0','0',true,'',0,avatar)
 					this.commentsToPost.unshift(comment)
                     
 					this.notification("closeModalCommentCreate","Comment was created")
 					
+                    this.commentText=""
 				}
 			})
 			.catch(function (error) {

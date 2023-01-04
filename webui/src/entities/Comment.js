@@ -11,8 +11,9 @@ export default class Comment {
     lastChange=null
     currentemotion=null
     username=null
+    avatar=null
  
-    constructor(authorid, postid,commentid,username,text, quantityLikes,quantityDislikes,me,lastChange,currentemotion) 
+    constructor(authorid, postid,commentid,username,text, quantityLikes,quantityDislikes,me,lastChange,currentemotion, avatar) 
     {
       this.authorid = authorid
       this.postid = postid
@@ -20,7 +21,7 @@ export default class Comment {
       this.quantityLikes=quantityLikes
       this.quantityDislikes=quantityDislikes
       this.me=me
-     
+      this.avatar=avatar
       this.lastChange=lastChange
       this.currentemotion=currentemotion
       this.username=username

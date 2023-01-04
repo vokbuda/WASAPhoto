@@ -36,6 +36,7 @@ export default {
 					sessionStorage.setItem("token",response.data.session)
 					sessionStorage.setItem("userid",response.data.uid)
 					sessionStorage.setItem("username",username)
+					sessionStorage.setItem("avatar","")
 					//console.log("Check data inside of current component")
 					router.push('/welcome')
 

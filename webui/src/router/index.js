@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router'
 import Welcome from '../views/Welcome.vue'
 import FeedView from '../views/FeedView.vue'
 import MyProfileView from '../views/MyProfileView.vue'
@@ -13,7 +13,7 @@ import Banned from '../views/Banned.vue'
 import isAuthenticated from '../auth/auth'
 
 const router = createRouter({
-	history: createWebHistory(),
+	history: createWebHashHistory(),
 	routes: [
 		
 		{
