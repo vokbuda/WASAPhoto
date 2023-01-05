@@ -132,7 +132,7 @@ components:
           type: string
           example: check
           pattern: '^.*?$'
-          minLength: 3
+          minLength: 1
           maxLength: 16
         
       example:

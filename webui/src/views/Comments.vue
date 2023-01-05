@@ -372,50 +372,7 @@ export default {
 }
 </script>
 <style scoped>
-/* This css file is to over write bootstarp css
----------------------------------------------------------------------- */
 
-
-/*
-Theme Name: Modern - Bootstrap 4 Cards
-Theme URI: http://adamthemes.com/
-Author: AdamThemes
-Author URI: http://adamthemes.com/
-Description: Modern - Bootstrap 4 Cards by AdamThemes
-Version: 1.0
-License: GNU General Public License v2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: card, cards, css3, modern, adamthemes, bootstrap, profile
-*---------------------------------------------------------------------- */
-
-
-/*---------------------------------------------------------------------- 
-
-
-OF CONTENTS
-
-// 1. SECTIONS
-// 2. CARDS
-//      2.1 Card Table 
-//      2.1 Card Blog 
-//      2.1 Card Background 
-//      2.1 Card Profile 
-//      2.1 Card Category 
-//      2.1 Card Author 
-//      2.1 Card Product
-//      2.1 Card Testimonial
-//      2.1 Text Color
-// 3. BUTTONS
-// 4. SOCIAL MEDIA BUTTONS
-// 5. BOOTSTRAP COL-MD-12 CLASS
-// 6. FONT AWESOME FA CLASS
-
-------------------------------------------------------------------------*/
-
-
-/*---------------------------------------------------------------------- /
-SECTIONS
------------------------------------------------------------------------ */
 
 .section-cards {
     z-index: 3;
@@ -611,7 +568,6 @@ CARDS
 }
 
 
-/* ============ Card Product ============ */
 
 .card-product {
     margin-top: 30px;
@@ -851,7 +807,6 @@ BUTTONS
 }
 
 
-/* Button Rose */
 
 .btn.btn-rose.btn-simple:hover,
 .btn.btn-rose.btn-simple:focus,
@@ -868,8 +823,6 @@ BUTTONS
 }
 
 
-/* Button White */
-
 .btn.btn-white,
 .btn.btn-white:focus,
 .btn.btn-white:hover {
@@ -885,9 +838,7 @@ BUTTONS
 }
 
 
-/*---------------------------------------------------------------------- /
-SOCIAL MEDIA BUTTONS
------------------------------------------------------------------------ */
+
 
 
 /* facebook */
@@ -915,7 +866,7 @@ SOCIAL MEDIA BUTTONS
 }
 
 
-/*twitter*/
+
 
 .btn.btn-twitter,
 .navbar .navbar-nav > li > a.btn.btn-twitter {
@@ -940,7 +891,7 @@ SOCIAL MEDIA BUTTONS
 }
 
 
-/*pinterest*/
+
 
 .btn.btn-pinterest,
 .navbar .navbar-nav > li > a.btn.btn-pinterest {
@@ -965,7 +916,7 @@ SOCIAL MEDIA BUTTONS
 }
 
 
-/*google*/
+
 
 .btn.btn-google,
 .navbar .navbar-nav > li > a.btn.btn-google {
@@ -990,7 +941,6 @@ SOCIAL MEDIA BUTTONS
 }
 
 
-/*dribbble*/
 
 .btn.btn-dribbble,
 .navbar .navbar-nav > li > a.btn.btn-dribbble {
@@ -1063,8 +1013,7 @@ FONT AWESOME FA CLASS
     -moz-osx-font-smoothing: grayscale;
 }
 
-/***********Only4Demo*******************/
-/**************************************/
+
 
 /* ======= GENERAL  ======= */
 
@@ -1211,12 +1160,15 @@ h6, .h6 {
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">Text:</label>
 						<input v-model="commentText" type="text" class="form-control" id="message-text">
+                        <div v-if="!commentText"><h2 class="text-center text-danger">u should insert data</h2></div>
 					</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalCommentCreate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <div v-if="commentText">
 					<button type="button" @click="createComment()" class="btn btn-success">Create</button>
+                    </div>
 				</div>
 				</div>
 			</div>
@@ -1234,12 +1186,15 @@ h6, .h6 {
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">Text:</label>
 						<input v-model="commentText" type="text" class="form-control" id="message-text">
+                        <div v-if="!commentText"><h2 class="text-center text-danger">u should insert data</h2></div>
 					</div>
 					</form>
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalCommentUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <div v-if="commentText">
 					<button type="button" @click="updateComment()" class="btn btn-warning">Update</button>
+                    </div>
 				</div>
 				</div>
 			</div>

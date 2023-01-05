@@ -538,6 +538,13 @@ export default {
 
 		},
 		async updateUsername(){
+			if(!this.newUsername){
+				return
+			}
+			if(this.newUsername.length>16){
+				return
+			}
+
 			this.header=sessionStorage.getItem("token")
 			const postData = JSON.stringify({ "newValue": this.newUsername});
 			
@@ -835,7 +842,13 @@ img{
 	display:flex;
 	justify-content:space-between;
 	
+	
 }
+.row{
+	display:flex;
+	align-items: stretch;
+}
+
 .avatar {
   width: 30px;
   border-radius: 50%;
@@ -951,7 +964,11 @@ a:hover{
 				</div>
 				<div class="modal-footer">
 					<button id="closeModalUsernameUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<div v-if="newUsername">
+						<div v-if="newUsername.length<16 && newUsername.length>0">
 					<button @click="updateUsername()" type="button" class="btn btn-warning">Save updates</button>
+						</div>
+					</div>
 				</div>
 				</div>
 			</div>
@@ -979,7 +996,7 @@ a:hover{
 					</div>
 					<div class="mb-3">
 						<label for="message-text" class="col-form-label">Text:</label>
-						<input v-model="postText" type="text" class="form-control" id="message-text">
+						<input v-model="postText" type="text" class="form-control" >
 					</div>
 					</form>
 				</div>
@@ -1019,9 +1036,12 @@ a:hover{
 					</div>
 					</form>
 				</div>
+				<div v-if="!postText||!postImage"><p class="text-center text-danger">u should insert data</p></div>
+				<div v-else>
 				<div class="modal-footer">
 					<button id="closeModalPostUpdate" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-					<button type="button" @click="updatePost()" class="btn btn-primary">Update</button>
+					<button type="button" @click="updatePost()" class="btn btn-warning">Update</button>
+				</div>
 				</div>
 				</div>
 			</div>

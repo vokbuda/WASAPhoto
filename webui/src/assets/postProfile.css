@@ -3,7 +3,15 @@
     height: 15vw;
     object-fit: cover;
 }
+.last_data{
+    bottom:5px;
+    position:absolute;
+    
+    
+    
+}
 .in_a_row{
+   
 	display:flex;
 	justify-content:space-between;
 	
@@ -18,4 +26,7 @@
 }
 .avatar-large {
     width: 50px;
+}
+.card{
+    min-height: 100%;
 }

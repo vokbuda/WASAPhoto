@@ -43,7 +43,11 @@ func (rt *_router) changeUsername(w http.ResponseWriter, r *http.Request, ps htt
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
-
+	if len(data_account_update.NewValue) > 16 && len(data_account_update.NewValue) < 1 {
+		ctx.Logger.WithError(errAuth).Error("length of string is not allowed")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if uidQuery != uid {
 		ctx.Logger.WithError(errAuth).Error("not authorized request")
 		w.WriteHeader(http.StatusForbidden)
@@ -55,7 +59,7 @@ func (rt *_router) changeUsername(w http.ResponseWriter, r *http.Request, ps htt
 	if err != nil {
 
 		ctx.Logger.WithError(err).Error("it is not possible to change username")
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusConflict) // da aggiustare
 		return
 	}
 	var dataAccountUpdated DataAccountUpdated

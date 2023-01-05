@@ -14,6 +14,9 @@ export default {
 	methods: {
 		
 		async session(username) {
+			if(!username){
+				return
+			}
 			
 			const sessionData = JSON.stringify({ "username": username});
 			var current_token=""
@@ -72,9 +75,11 @@ export default {
 				<input type="text" class="form-control" aria-describedby="emailHelp" v-model="username" @keyup.enter="session(username)">
 				<div id="emailHelp" class="form-text" ></div>
 			</div>
-			
+			<div v-if="username">
+				<div v-if="username.length<16 && username.length>0">
 			<button type=button @click="session(username)" class="btn btn-success">Submit</button>
-		
+				</div>
+			</div>
 	</div>
 
 	<div class="container-fluid">

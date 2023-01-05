@@ -22,7 +22,7 @@ export default {
 			searchedUsername: "",
 			answer:"",
 			header:"",
-			usersArray:[],
+			usersArray:null,
 			offset:0,
 			loading:true
 		
@@ -129,7 +129,7 @@ export default {
 			
 			if (!newSearchedUsername){
 				console.log("are we removing data from here")
-				this.usersArray=[]
+				this.usersArray=null
 				this.loading=false
 				return
 			}
@@ -161,23 +161,7 @@ export default {
 		<div
 			class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
 			<h1 class="h2">Search</h1>
-			<!--
-			<div class="btn-toolbar mb-2 mb-md-0">
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="refresh">
-						Refresh
-					</button>
-					<button type="button" class="btn btn-sm btn-outline-secondary" @click="exportList">
-						Export
-					</button>
-				</div>
-				<div class="btn-group me-2">
-					<button type="button" class="btn btn-sm btn-outline-primary" @click="newItem">
-						New
-					</button>
-				</div>
-                
-			</div>-->
+			
 		</div>
         
                  
@@ -197,17 +181,7 @@ export default {
 					
 					
 				</SearchProfileItem>
-				<!--
-				<div class="col-md-4 py-2" v-for="(person, index) in usersArray" :key="index">
-				<div class="card h-100">
-					<img class="card-img-top" :src="person.avatar" alt="card image collar">
-					<div class="card-body d-flex flex-column align-items-start">
-					<h5 class="card-title">Product {{index}}</h5>
-					<p class="card-text">Product {{index}} - {{person.username}}</p>
-					<button v-on:click="addProductToCart(product)" class="btn btn-primary mt-auto">Add To Cart</button>
-					</div>
-				</div>
-				</div>-->
+				
 			</div>
 			</div>
 			
@@ -217,7 +191,7 @@ export default {
 			
 		</div>
         </div>
-		<div v-if="usersArray.length==0" style="text-align:center"><h2>There is no data</h2></div>
+		<div v-if="!usersArray" style="text-align:center"><h2>There is no data</h2></div>
 
 		
 

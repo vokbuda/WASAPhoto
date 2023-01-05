@@ -67,20 +67,33 @@ export default {
 				<btn @click="choosePost(post)" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i style="font-size:2em;" class="bi bi-trash-fill"></i></btn>
 				</div>
 				</div>
-
+                
 				<h3 class="card-text">{{post.text}}</h3>
+                <div style="margin-top:40px;">
+                <div class="last_data">
 				<div class="in_a_row">
+                
 				<btn @click="sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
-
+                <div style="margin-left:10px;">
 				<btn v-if="post.currentemotion!=1" @click="likePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
 				<btn v-else @click="deletePostLike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn>
-				<h5>{{post.quantityLikes}}</h5>
-
+                </div>
+                <div style="margin-left:10px;">
+                <h5>{{post.quantityLikes}}</h5>
+                </div>
+                <div style="margin-left:10px;">
 				<btn v-if="post.currentemotion!=-1" @click="dislikePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
 				<btn v-else @click="deletePostDislike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn>
-				<h5>{{post.quantityDislikes}}</h5>
+                </div>
+                <div style="margin-left:10px;">
+                <h5>{{post.quantityDislikes}}</h5>
+                </div>
 				</div>
-				
+                </div>
+                </div>
+                
+                
+                
 			</div>
 			</div>
 

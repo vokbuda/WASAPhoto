@@ -27,7 +27,7 @@ export default {
 		
 		<h4>At the moment there had been developed following unique functionalities:</h4>
 		<ul class="list-group">
-			<li class="list-group-item">Operations with account(change avatrar,change username, delete account)</li>
+			<li class="list-group-item">Operations with account(change avatar,change username, delete account)</li>
 			<li class="list-group-item">Ban and unban users component</li>
 			<li class="list-group-item">Operations with posts and comments(create,update, delete)</li>
 			<li class="list-group-item">Dislikes on posts and comments</li>
