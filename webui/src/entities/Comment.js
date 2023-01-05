@@ -1,18 +1,6 @@
 
 
-export default class Comment {
-    authorid=null
-    postid=null
-    commentid=null
-    text=null
-    quantityLikes=null
-    quantityDislikes=null
-    me=null
-    lastChange=null
-    currentemotion=null
-    username=null
-    avatar=null
- 
+export default class Comment { 
     constructor(authorid, postid,commentid,username,text, quantityLikes,quantityDislikes,me,lastChange,currentemotion, avatar) 
     {
       this.authorid = authorid
