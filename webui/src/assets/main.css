@@ -64,3 +64,20 @@
 	stroke-linejoin: round;
 	fill: none;
 }
+
+
+
+.card-caption,
+.card-caption a {
+    color: #333;
+    text-decoration: none;
+}
+
+.card-caption {
+    font-weight: 700;
+    font-family: "Roboto Slab", "Times New Roman", serif;
+}
+
+.card-testimonial .card-description + .card-caption {
+    margin-top: 30px;
+}

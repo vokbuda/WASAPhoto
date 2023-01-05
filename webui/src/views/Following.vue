@@ -1,7 +1,10 @@
 
 <script>
 import router from '../router'
+import FollowingUserItem from '../components/FollowingProfileItem.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
 export default {
+
 	data: function() {
 		return {
 			errormsg: null,
@@ -11,8 +14,13 @@ export default {
 			answer:"",
 			header:"",
 			usersArray:[],
-			offset:0
+			offset:0,
+			loading:true
 		}
+	},
+	components:{
+		FollowingUserItem,
+		LoadingSpinner
 	},
 	methods: {
 		keyupMetho(){
@@ -131,6 +139,7 @@ export default {
 						}else{
 							this.offset-=10
 						}
+						this.loading=false
 						
 						
 						
@@ -156,80 +165,7 @@ export default {
 }
 </script>
 <style scoped>
-.profile-card-4 {
-    max-width: 300px;
-    background-color: #FFF;
-    border-radius: 5px;
-    box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    position: relative;
-    margin: 10px auto;
-    cursor: pointer;
-}
 
-.profile-card-4 img {
-    transition: all 0.25s linear;
-}
-
-.profile-card-4 .profile-content {
-    position: relative;
-    padding: 15px;
-    background-color: #FFF;
-}
-
-.profile-card-4 .profile-name {
-    font-weight: bold;
-    position: absolute;
-    left: 0px;
-    right: 0px;
-    top: -70px;
-    color: #FFF;
-    font-size: 17px;
-}
-
-.profile-card-4 .profile-name p {
-    font-weight: 600;
-    font-size: 13px;
-    letter-spacing: 1.5px;
-}
-
-.profile-card-4 .profile-description {
-    color: #777;
-    font-size: 12px;
-    padding: 10px;
-}
-
-.profile-card-4 .profile-overview {
-    padding: 15px 0px;
-}
-
-.profile-card-4 .profile-overview p {
-    font-size: 10px;
-    font-weight: 600;
-    color: #777;
-}
-
-.profile-card-4 .profile-overview h4 {
-    color: #273751;
-    font-weight: bold;
-}
-
-.profile-card-4 .profile-content::before {
-    content: "";
-    position: absolute;
-    height: 20px;
-    top: -10px;
-    left: 0px;
-    right: 0px;
-    background-color: #FFF;
-    z-index: 0;
-    transform: skewY(3deg);
-}
-
-.profile-card-4:hover img {
-    transform: rotate(5deg) scale(1.1, 1.1);
-    filter: brightness(110%);
-}
 </style>
 
 <template>
@@ -239,39 +175,21 @@ export default {
                  
 
 		
-		<div>
+		<div v-if="!loading">
 		<div style="margin-top: 30px;">
         <div class="card-group" v-if="usersArray!=null">
             <div class="container-fluid">
 			<div class="row">
-				<div class="col-md-4 py-2" v-for="(person, index) in usersArray" :key="index">
+				<FollowingUserItem class="col-md-4 py-2" v-for="(person, index) in usersArray" :key="index" :person="person"
+				@gotoProfile="gotoProfile(person.userid)"
+				@ban="ban(person)"
+				@unban="unban(person)"
+				@unsubscribe="unsubscribe(person)"
+				>
 					
-					<div  class="profile-card-4 text-center">
-						<div @click="gotoProfile(person.userid)" v-if="person.avatar"><img :src="'data:image/jpeg;base64,'+person.avatar" class="img img-responsive"></div>
-						<div @click="gotoProfile(person.userid)" v-else><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images" class="img img-responsive"></div>
-						<div class="profile-content">
-							<div class="profile-name" @click="gotoProfile(person.userid)">{{person.username}}</div>
-						</div>
-                        <div v-if="person.mine" class="row">
-								
-								<div class="col-xs-4">
-									<button @click="unsubscribe(person)" style="margin-bottom:10px" type="button" class="btn btn-warning">unfollow</button>
-								</div>
-                                <div v-if="!person.currentBan" class="col-xs-4">
-                                    <button @click="ban(person)" style="margin-bottom:10px" type="button" class="btn btn-danger">ban</button>
-                                    
-									
-								</div>
-                                <div v-else class="col-xs-4">
-                                    <button @click="unban(person)" style="margin-bottom:10px" type="button" class="btn btn-danger">unban</button>
-                                    
-									
-								</div>
-								
-							</div>
-					</div>
+					
                     
-				</div>
+				</FollowingUserItem>
 				
 				<!--
 				<div class="col-md-4 py-2" v-for="(person, index) in usersArray" :key="index">
@@ -287,18 +205,23 @@ export default {
 			</div>
 			</div>
         </div>
-		<div v-observe-visibility="getFollowing"></div>
+		
 		<div>
 			
 		</div>
         </div>
-		<div v-if="!usersArray" style="text-align:center"><h2>There is no data</h2></div>
+		<div v-if="usersArray.length==0" style="text-align:center"><h2>There is no followed users</h2></div>
 
-		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+		
 	</div>
+	<div v-else>
+		<LoadingSpinner>
+		</LoadingSpinner>
+	</div>
+	<div v-observe-visibility="getFollowing"></div>
         
 
-		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+		
 	</div>
 	
 </template>

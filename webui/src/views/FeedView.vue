@@ -3,11 +3,17 @@
 import {adjustNumber} from '../helpers/adjustNumber.js'
 import {convertToString} from '../helpers/convertToString.js'
 import router from '../router'
+import FeedPostItem from '../components/FeedPostItem.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
 export default {
+	components:{
+		FeedPostItem,
+		LoadingSpinner
+	},
 	data: function() {
 		return {
 			errormsg: null,
-			loading: false,
+			loading: true,
 			some_data: null,
 			feed_posts:[],
 			offset:0,
@@ -22,6 +28,8 @@ export default {
 
 		},
 		gotoProfile(userid){
+			
+			
 			router.push("/profiles/"+userid)
 
 
@@ -72,6 +80,7 @@ export default {
 					}else{
 						this.offset-=10
 					}
+					this.loading=false
 					
 					
 				})
@@ -234,27 +243,7 @@ export default {
 
 </script>
 <style scoped>
-.card-img-top {
-    width: 100%;
-    height: 15vw;
-    object-fit: cover;
-}
-.in_a_row{
-	display:flex;
-	justify-content:space-between;
-	align-items: center
-}
-.avatar {
-  width: 30px;
-  border-radius: 50%;
-}
-.avatar-bordered {
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-  border: white 1px solid;
-}
-.avatar-large {
-  width: 50px;
-}
+
 #gallery{
 	margin-top: 30px
 }
@@ -267,52 +256,42 @@ export default {
 <template>
 	<div>
 		
-		
+		<div v-if="!loading">
 		<section id="gallery">
 		<div class="container">
 			<div v-if="feed_posts.length!=0">
 			<div class="row">
-			<div class="col-lg-4 mb-4" v-for="(post, index) in feed_posts" :key="index">
-		<div class="card">
-			<img v-bind:src="'data:image/jpeg;base64,'+post.image" alt="" class="card-img-top">
-			
-			<div class="card-body">
-				<div class="in_a_row">
-				<div @click="gotoProfile(post.authorid)">
-				<div v-if="!post.avatar">	
-				<img class="card-user avatar avatar-large" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images">
-				</div>
-				<div v-else>
-					<img class="card-user avatar avatar-large" v-bind:src="'data:image/jpeg;base64,'+post.avatar">	
-				</div>
-				<h5 class="card-title">{{post.authorname}}</h5>
-				</div>
-				
-				</div>
-				<p class="card-text">{{post.text}}</p>
-				<div class="in_a_row">
-				<btn @click="sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
-
-				<btn v-if="post.currentemotion!=1" @click="likePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
-				<btn v-else @click="deletePostLike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn>
-				<h5>{{post.quantityLikes}}</h5>
-
-				<btn v-if="post.currentemotion!=-1" @click="dislikePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
-				<btn v-else @click="deletePostDislike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn>
-				<h5>{{post.quantityDislikes}}</h5>
-				</div>
-				
-			</div>
-			</div>
-			</div>
+		<FeedPostItem class="col-lg-4 mb-4" v-for="(post, index) in feed_posts" :key="index"
+		:post="post"
+		@goToProfile="gotoProfile(post.authorid)"
+		@sendToComments="sendToComments(post.postid)"
+		@deletePostLike="deletePostLike(post)"
+		@deletePostDislike="deletePostDislike(post)"
+		@dislikePost="dislikePost(post)"
+		@likePost="likePost(post)"
+		
+		
+		>
+		
+			</FeedPostItem>
 		
 			
 		</div>
 			</div>
 		<div v-else><h2>There is no posts</h2></div>
-		<div v-observe-visibility="getLastPosts"></div>
+		
 		</div>
 		</section>
+		</div>
+
+		<div v-else>
+			<LoadingSpinner>
+			</LoadingSpinner>
+
+
+		</div>
+
+		<div v-observe-visibility="getLastPosts"></div>
 
 		<!--
 		<div style="margin-top: 30px;">
@@ -344,7 +323,7 @@ export default {
         </div>
         </div>-->
 
-		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+		
 	</div>
 </template>
 

@@ -1,13 +1,16 @@
 <script>
 import router from '../router/index.js'
 import Post from '../entities/Post'
+import PostProfileItem from '../components/PostProfileItem.vue'
 import {adjustNumber} from '../helpers/adjustNumber.js'
 import {convertToString} from '../helpers/convertToString.js'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
 export default {
 	data: function() {
 		return {
 			errormsg: null,
-			loading: false,
+			loadingPosts:true,
+			loadingProfile:true,
 			some_data: null,
 			me:null,
 			switcherSubscription: true,
@@ -29,8 +32,14 @@ export default {
 			newUsername:"",
 			notificationText:"",
 			profileLoaded:false,
-			modifyPost:false
+			modifyPost:false,
+			usernameExists:false
 		}
+	},
+	components:{
+		PostProfileItem,
+		LoadingSpinner
+
 	},
 	
 	
@@ -50,8 +59,6 @@ export default {
 		goToBanned(){
 			var currentuserid=this.$route.params.userid
 			router.push('/profiles/'+currentuserid+'/banuser')
-			
-
 		},
 		async ban(){
 			this.userid=sessionStorage.getItem("userid")
@@ -472,6 +479,8 @@ export default {
 							element.quantityDislikes=adjustNumber(element.quantityDislikes)
 						});
 						this.postsProfile=this.postsProfile.concat(current_data)
+						console.log("below u should check some data and then implement the rest!!!!!!")
+						console.log(this.postsProfile)
 						
 
 					}else{
@@ -479,6 +488,7 @@ export default {
 						this.offset-=10
 						
 					}
+					this.loadingPosts=false
 					
 					
 				})
@@ -493,8 +503,8 @@ export default {
 			// then here u should setup your posts of your profile
 
 		},
-		sendToComments(postid){
-			router.push('/posts/'+postid+'/comments')
+		sendToComments(post){
+			router.push('/posts/'+post.postid+'/comments')
 			
 
 		},
@@ -554,7 +564,12 @@ export default {
 				})
 				.catch(err => {
 					// Handle errors
-					console.error(err);
+					
+					this.usernameExists=true
+					setTimeout(() => {
+						this.usernameExists=false
+					}, "1500")
+					
 				
 				});
 
@@ -666,7 +681,7 @@ export default {
 				
 					this.profile=response.data
 					
-					this.profileLoaded=true
+					this.loadingProfile=false
 					
 					this.profile.quantitySubscriptions=this.adjustNumber(this.profile.quantitySubscriptions)
 					this.profile.quantitySubscribers=this.adjustNumber(this.profile.quantitySubscribers)
@@ -863,6 +878,7 @@ a:hover{
 </style>
 
 <template>
+<div>
 	<div>
 
 <div id="looker" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
@@ -878,7 +894,7 @@ a:hover{
     </div>
   </div>
 </div>
-		<div v-if="profileLoaded" class="shadow overflow">
+		<div v-if="!loadingProfile" class="shadow overflow">
 		<div id="header"></div>
 		<div id="profile">
 			<div class="absolution">
@@ -930,6 +946,7 @@ a:hover{
 						<label for="message-text" class="col-form-label">New username:</label>
 						<input v-model="newUsername" type="text" class="form-control" id="message-text">
 					</div>
+					<div v-if="usernameExists"><p class="text-center text-danger">Username already exists</p></div>
 					</form>
 				</div>
 				<div class="modal-footer">
@@ -1101,10 +1118,12 @@ a:hover{
 		</div>
 		
 		</div>
-
-		<div v-else class="spinner-border text-warning center" role="status">
-  			<span class="sr-only">Loading...</span>
+		<div v-else>
+			<LoadingSpinner>
+        </LoadingSpinner>
 		</div>
+
+		
 
 
 
@@ -1112,46 +1131,22 @@ a:hover{
 		
 		<section id="gallery">
 		<div class="container">
-			<div v-if="postsProfile.length!=0" class="row">
-			<div class="col-lg-4 mb-4" v-for="(post, index) in postsProfile" :key="index">
-		<div class="card">
-			<img v-bind:src="'data:image/jpeg;base64,'+post.image" alt="" class="card-img-top">
+		<div v-if="!loadingPosts">
+		<div v-if="postsProfile.length!=0" class="row">
+		<PostProfileItem class="col-lg-4 mb-4" v-for="(post, index) in postsProfile" :key="index"
+		:post="post"
+		:profile="profile"
+		@sendToComments="sendToComments(post)"
+		@deletePostLike="deletePostLike(post)"
+		@deletePostDislike="deletePostDislike(post)"
+		@likePost="likePost(post)"
+		@dislikePost="dislikePost(post)"
+		@choosePost="choosePost(post)"
+
+		>
+		
 			
-			<div class="card-body">
-				<div class="in_a_row">
-				<div>
-				<div v-if="!profile.avatar">
-				<img class="card-user avatar avatar-large" src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images">
-				</div>
-				<div v-else>
-					<img class="card-user avatar avatar-large" v-bind:src="'data:image/jpeg;base64,'+profile.avatar">
-
-				</div>
-				<h5 class="card-title">{{this.profile.username}}</h5>
-				</div>
-				<div v-if="profile.me">
-				<btn @click="choosePost(post)" data-bs-toggle="modal" data-bs-target="#updatePostModal" style="margin-right:2px"><i style="font-size:2em;" class="bi bi-pencil-fill"></i></btn>
-				<btn @click="choosePost(post)" data-bs-toggle="modal" data-bs-target="#deletePostModal"><i style="font-size:2em;" class="bi bi-trash-fill"></i></btn>
-				</div>
-				</div>
-
-				<h3 class="card-text">{{post.text}}</h3>
-				<div class="in_a_row">
-				<btn @click="sendToComments(post.postid)" class="btn btn-outline-success btn-sm">Comments</btn>
-
-				<btn v-if="post.currentemotion!=1" @click="likePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn>
-				<btn v-else @click="deletePostLike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn>
-				<h5>{{post.quantityLikes}}</h5>
-
-				<btn v-if="post.currentemotion!=-1" @click="dislikePost(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn>
-				<btn v-else @click="deletePostDislike(post)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn>
-				<h5>{{post.quantityDislikes}}</h5>
-				</div>
-				
-			</div>
-			</div>
-			
-			</div>
+		</PostProfileItem>
 			
 		
 			
@@ -1161,7 +1156,14 @@ a:hover{
 			There is no data
 
 		</div>
-		<div v-observe-visibility="visibilityChanged"></div>
+
+		</div>
+		<div v-else>
+		<LoadingSpinner>
+        </LoadingSpinner>
+
+
+		</div>
 		
 		</div>
 		
@@ -1205,7 +1207,9 @@ a:hover{
         
         </div>
 
-		<ErrorMsg v-if="errormsg" :msg="errormsg"></ErrorMsg>
+		
+	</div>
+	<div v-observe-visibility="visibilityChanged"></div>
 	</div>
 </template>
 

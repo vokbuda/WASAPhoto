@@ -6,6 +6,8 @@ import router from '../router'
 import Comment from '../entities/Comment'
 import {adjustNumber} from '../helpers/adjustNumber.js'
 import { convertToString } from '../helpers/convertToString'
+import CommentTemplate from '../components/CommentTemplate.vue'
+import LoadingSpinner from '../components/LoadingSpinner.vue'
 
 
 </script>
@@ -14,21 +16,35 @@ import { convertToString } from '../helpers/convertToString'
 <script>
 
 export default {
+    components:{
+        LoadingSpinner
+    },
 	data: function() {
 		return {
 			commentText:"",
             commentsToPost:[],
             tempComment:{},
             notificationText:"",
-            offset:0
+            offset:0,
+            loading:true,
+            userid:""
 		}
 	},
+    components:{
+        CommentTemplate
+    
+    
+    
+    },
+        
+    
 	
 	methods: {
         adjustNumber(data){
             adjustNumber(data)
         },
 		async commentLike(comment){
+            
             this.userid=sessionStorage.getItem("userid")
           
 			const postData = JSON.stringify({ "idPostEmotion": parseInt(this.$route.params.postid),"idUser":parseInt(this.userid),
@@ -47,6 +63,7 @@ export default {
 			.then((response)=> {
                 
 				if (response.status==204){
+                    
                     if(comment.currentemotion==-1){
                         comment.quantityDislikes=convertToString(comment.quantityDislikes,-1)
                         
@@ -78,10 +95,12 @@ export default {
 			}
 			)
 			.then((response)=> {
+                
 				
 				if (response.status==204){
+                    
 					comment.currentemotion=0
-                    comment.quantityLikes-=1
+                    comment.quantityLikes=convertToString(comment.quantityLikes,-1)
 					
 					
 				}
@@ -111,7 +130,7 @@ export default {
 				
 				if (response.status==204){
 					comment.currentemotion=0
-                    comment.quantityDislikes-=1
+                    comment.quantityDislikes=convertToString(comment.quantityDislikes,-1)
                     
 					
 					
@@ -244,8 +263,10 @@ export default {
             
         },
         async visibilityChanged(){
+            
            
             await this.getCommentsRelatedToPost(this.offset)
+            
 
 
         },
@@ -278,6 +299,8 @@ export default {
 
         },
         async getCommentsRelatedToPost(offset){
+            
+            
             this.header=sessionStorage.getItem("token")
 		
 		
@@ -314,6 +337,8 @@ export default {
                         
                        
                     }
+                    this.loading=false
+                    
 					
 					
 				})
@@ -331,6 +356,7 @@ export default {
     created() {
 		this.notificationText=""
         this.commentText=""
+        this.userid=sessionStorage.getItem("userid")
         let script=document.createElement("script");
         script.setAttribute("src","https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js");
         document.head.appendChild(script);
@@ -406,75 +432,7 @@ SECTIONS
 CARDS
 ----------------------------------------------------------------------- */
 
-.card {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    margin-bottom: 30px;
-    border-radius: 6px;
-    color: rgba(0, 0, 0, 0.87);
-    background: #fff;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-}
 
-.card .card-image {
-    height: 60%;
-    position: relative;
-    overflow: hidden;
-    margin-left: 15px;
-    margin-right: 15px;
-    margin-top: -30px;
-    border-radius: 6px;
-    box-shadow: 0 16px 38px -12px rgba(0, 0, 0, 0.56), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
-}
-
-.card .card-image img {
-    width: 100%;
-    height: 100%;
-    border-radius: 6px;
-    pointer-events: none;
-}
-
-.card .card-image .card-caption {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
-    color: #fff;
-    font-size: 1.3em;
-    text-shadow: 0 2px 5px rgba(33, 33, 33, 0.5);
-}
-
-.card img {
-    width: 100%;
-    height: auto;
-}
-
-.img-raised {
-    box-shadow: 0 16px 38px -12px rgba(0, 0, 0, 0.56), 0 4px 25px 0px rgba(0, 0, 0, 0.12), 0 8px 10px -5px rgba(0, 0, 0, 0.2);
-}
-
-.card .ftr {
-    margin-top: 15px;
-}
-
-.card .ftr div {
-    display: inline-block;
-}
-
-.card .ftr .author {
-    color: #888;
-}
-
-.card .ftr .stats {
-    float: right;
-    line-height: 30px;
-}
-
-.card .ftr .stats {
-    position: relative;
-    top: 1px;
-    font-size: 14px;
-}
 
 
 /* ============ Card Table ============ */
@@ -686,16 +644,7 @@ CARDS
     color: #888;
 }
 
-.card-caption,
-.card-caption a {
-    color: #333;
-    text-decoration: none;
-}
 
-.card-caption {
-    font-weight: 700;
-    font-family: "Roboto Slab", "Times New Roman", serif;
-}
 
 
 /* ============ Card Testimonial ============ */
@@ -736,9 +685,7 @@ CARDS
     font-style: italic;
 }
 
-.card-testimonial .card-description + .card-caption {
-    margin-top: 30px;
-}
+
 
 .card-testimonial .icon {
     margin-top: 30px;
@@ -1199,9 +1146,11 @@ h6, .h6 {
 
 
 <template>
+    
 
 
     <div>
+    <div v-if="!loading">
 
     <div id="looker" class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
     <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
@@ -1221,38 +1170,22 @@ h6, .h6 {
     <div style="margin-top:30px">
     <div v-if="commentsToPost.length!=0">
        
-	<div class="col-md-" v-for="(comment, index) in commentsToPost" :key="index">
-                        <div class="card">
-                            <div class="table">
-                                
-                                <h4 class="card-caption">
-	    									<a>{{comment.text}}</a>
-	    								</h4>
-                                <div class="ftr">
-                                    <div class="author">
-                                        <a @click="goAnotherProfile(comment.authorid)"> <div v-if="!comment.avatar"><img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsafeharborpartners.com%2Fwp-content%2Fuploads%2Fshutterstock_169562684-449x375.jpg&f=1&nofb=1&ipt=fe4b42d35bb3eb2cf3d88d1eb7ebcb7e883e15736e51a2db2367cbf4f9eca201&ipo=images" alt="" class="avatar img-raised"> </div>
-                                        <div v-else><img v-bind:src="'data:image/jpeg;base64,'+comment.avatar" alt="" class="avatar img-raised"></div>
-                                        <span>{{comment.username}}</span>
-                                            <div class="ripple-cont">
-                                                <div class="ripple ripple-on ripple-out" style="left: 574px; top: 364px; background-color: rgb(60, 72, 88); transform: scale(11.875);"></div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <div class="stats"> 
-                                    <btn @click="chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#updateCommentModal"><i style="font-size:1em;" class="bi bi-pencil-fill"></i></btn>
-                                    <btn @click="chooseComment(comment)" data-bs-toggle="modal" data-bs-target="#deleteCommentModal"><i style="font-size:1em;" class="bi bi-trash-fill"></i></btn>
-                                    <div v-if="comment.currentemotion!=1"><btn @click="commentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up"></i></btn></div>
-                                    <div v-else><btn @click="deleteCommentLike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-up-fill"></i></btn></div>
-				{{adjustNumber(comment.quantityLikes)}}
-
-				<div v-if="comment.currentemotion!=-1"><btn @click="commentDislike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down"></i></btn></div>
-                <div v-else><btn @click="deleteCommentDislike(comment)" class="btn btn-outline-danger btn-sm"><i class="bi bi-hand-thumbs-down-fill"></i></btn></div>
-				{{adjustNumber(comment.quantityDislikes)}}</div>
-                                    
-                                </div>
-                            </div>
-                        </div>
-    </div>
+	<CommentTemplate class="col-md" v-for="(comment, index) in commentsToPost" :key="index" :comment="comment"
+    :userid="userid"
+    
+    @choosenComment="chooseComment(comment)"
+    @deleteCommentLike="deleteCommentLike(comment)"
+    @deleteCommentDislike="deleteCommentDislike(comment)"
+    @commentLike="commentLike(comment)"
+    @commentDislike="commentDislike(comment)"
+    @goAnotherProfile="goAnotherProfile(comment.authorid)"
+    
+    
+    
+    
+    >
+                        
+    </CommentTemplate>
     </div>
     <div v-else>
         <h1>There is no comments</h1>
@@ -1325,7 +1258,7 @@ h6, .h6 {
 				</div>
 			</div>
 			</div>
-            <div v-observe-visibility="visibilityChanged"></div>
+            
     </div>
 
 
@@ -1335,6 +1268,15 @@ h6, .h6 {
 
 
     </div>
+    
+    <div v-else>
+        <LoadingSpinner>
+        </LoadingSpinner>
+
+    </div>
+    <div v-observe-visibility="visibilityChanged"></div>
+    </div>
+
 </template>
 
 <style>

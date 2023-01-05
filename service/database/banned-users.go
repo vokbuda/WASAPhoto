@@ -26,6 +26,8 @@ func (db *appdbimpl) GetBannedUsers(banninguserid uint64, offset uint64) ([]Simp
 		if !userProfile.Avatar.Valid {
 			userClient.Avatar = ""
 
+		} else {
+			userClient.Avatar = userProfile.Avatar.String
 		}
 		userClient.Userid = userProfile.Userid
 		userClient.Username = userProfile.Username
